@@ -1,8 +1,12 @@
 import 'package:mobile_dikasa/core/network/api_exception.dart';
+import 'package:mobile_dikasa/data/models/cash_session.dart';
 import 'package:mobile_dikasa/data/models/order_item.dart';
+import 'package:mobile_dikasa/data/models/order_type.dart';
 import 'package:mobile_dikasa/data/models/product.dart';
 import 'package:mobile_dikasa/data/models/user.dart';
 import 'package:mobile_dikasa/data/repositories/auth_repository.dart';
+import 'package:mobile_dikasa/data/repositories/cash_session_repository.dart';
+import 'package:mobile_dikasa/data/repositories/order_type_repository.dart';
 import 'package:mobile_dikasa/data/repositories/product_repository.dart';
 import 'package:mobx/mobx.dart';
 
@@ -16,27 +20,22 @@ class NewOrderViewModel = NewOrderViewModelBase with _$NewOrderViewModel;
 /// anggota statis tidak ikut terbawa ke class hasil mixin MobX.
 const String allCategoriesFilter = 'Filter Kategori';
 
-/// Pilihan pada dropdown "Pilih Jenis Order".
-enum OrderType {
-  bebasPilihMeja('Bebas Pilih Meja'),
-  pesanMeja('Pesan Meja'),
-  bawaPulang('Bawa Pulang');
-
-  const OrderType(this.label);
-
-  final String label;
-}
-
 /// State dan logika halaman Order (transaksi kasir).
 abstract class NewOrderViewModelBase with Store {
   NewOrderViewModelBase({
     required ProductRepository productRepository,
     required AuthRepository authRepository,
+    required OrderTypeRepository orderTypeRepository,
+    required CashSessionRepository cashSessionRepository,
   }) : _productRepository = productRepository,
-       _authRepository = authRepository;
+       _authRepository = authRepository,
+       _orderTypeRepository = orderTypeRepository,
+       _cashSessionRepository = cashSessionRepository;
 
   final ProductRepository _productRepository;
   final AuthRepository _authRepository;
+  final OrderTypeRepository _orderTypeRepository;
+  final CashSessionRepository _cashSessionRepository;
 
   // =========================
   // Katalog
@@ -70,6 +69,15 @@ abstract class NewOrderViewModelBase with Store {
   @observable
   OrderType? orderType;
 
+  @observable
+  ObservableList<OrderType> orderTypes = ObservableList<OrderType>();
+
+  @observable
+  bool isOrderTypesLoading = false;
+
+  @observable
+  String? orderTypesErrorMessage;
+
   /// Kas awal yang dipegang kasir. `null` selama dialog belum diisi.
   @observable
   int? openingCash;
@@ -78,6 +86,15 @@ abstract class NewOrderViewModelBase with Store {
   /// sehingga dialog tidak muncul lagi saat halaman di-rebuild.
   @observable
   bool isOpeningCashResolved = false;
+
+  @observable
+  bool isCheckingOpeningCash = false;
+
+  @observable
+  bool isOpeningCashSubmitting = false;
+
+  @observable
+  String? openingCashErrorMessage;
 
   User? get currentUser => _authRepository.currentUser;
 
@@ -153,6 +170,52 @@ abstract class NewOrderViewModelBase with Store {
   }
 
   @action
+  Future<void> loadOrderTypes({bool forceRefresh = false}) async {
+    isOrderTypesLoading = true;
+    orderTypesErrorMessage = null;
+    try {
+      final List<OrderType> result = await _orderTypeRepository.getOrderTypes(
+        forceRefresh: forceRefresh,
+      );
+      orderTypes = ObservableList<OrderType>.of(result);
+      if (orderType != null && !orderTypes.contains(orderType)) {
+        orderType = null;
+      }
+    } on ApiException catch (error) {
+      orderTypesErrorMessage = error.message;
+    } catch (_) {
+      orderTypesErrorMessage =
+          'Jenis order tidak dapat dimuat. Silakan coba lagi.';
+    } finally {
+      isOrderTypesLoading = false;
+    }
+  }
+
+  @action
+  Future<void> checkOpeningCash() async {
+    if (isCheckingOpeningCash || isOpeningCashResolved) {
+      return;
+    }
+
+    isCheckingOpeningCash = true;
+    openingCashErrorMessage = null;
+    try {
+      final CashSession? session = await _cashSessionRepository.getCurrent();
+      if (session != null) {
+        openingCash = session.openingCash;
+        isOpeningCashResolved = true;
+      }
+    } on ApiException catch (error) {
+      openingCashErrorMessage = error.message;
+    } catch (_) {
+      openingCashErrorMessage =
+          'Status sesi kas tidak dapat diperiksa. Silakan coba lagi.';
+    } finally {
+      isCheckingOpeningCash = false;
+    }
+  }
+
+  @action
   void selectGroup(ProductGroup group) {
     if (selectedGroup == group) {
       return;
@@ -211,8 +274,26 @@ abstract class NewOrderViewModelBase with Store {
   void clearOrder() => orderItems.clear();
 
   @action
-  void confirmOpeningCash(int? amount) {
-    openingCash = amount;
-    isOpeningCashResolved = true;
+  Future<bool> confirmOpeningCash(int? amount) async {
+    isOpeningCashSubmitting = true;
+    openingCashErrorMessage = null;
+    try {
+      // "Lewati" berarti membuka sesi dengan modal Rp0; transaksi backend
+      // tetap membutuhkan sesi kas aktif.
+      final CashSession session = await _cashSessionRepository.open(
+        amount ?? 0,
+      );
+      openingCash = session.openingCash;
+      isOpeningCashResolved = true;
+      return true;
+    } on ApiException catch (error) {
+      openingCashErrorMessage = error.message;
+      return false;
+    } catch (_) {
+      openingCashErrorMessage = 'Kas awal gagal disimpan. Silakan coba lagi.';
+      return false;
+    } finally {
+      isOpeningCashSubmitting = false;
+    }
   }
 }

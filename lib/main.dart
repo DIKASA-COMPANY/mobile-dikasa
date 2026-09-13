@@ -4,8 +4,12 @@ import 'package:mobile_dikasa/core/constants/colors.dart';
 import 'package:mobile_dikasa/core/network/api_client.dart';
 import 'package:mobile_dikasa/core/routing/app_routes.dart';
 import 'package:mobile_dikasa/data/repositories/auth_repository.dart';
+import 'package:mobile_dikasa/data/repositories/cash_session_repository.dart';
+import 'package:mobile_dikasa/data/repositories/order_type_repository.dart';
 import 'package:mobile_dikasa/data/repositories/product_repository.dart';
 import 'package:mobile_dikasa/data/services/auth_service.dart';
+import 'package:mobile_dikasa/data/services/cash_session_service.dart';
+import 'package:mobile_dikasa/data/services/order_type_service.dart';
 import 'package:mobile_dikasa/data/services/product_service.dart';
 import 'package:mobile_dikasa/features/login/view_model.dart';
 import 'package:mobile_dikasa/features/new_order/view_model.dart';
@@ -45,6 +49,16 @@ class MobileDikasaApp extends StatelessWidget {
             productService: ProductService(context.read<ApiClient>()),
           ),
         ),
+        Provider<OrderTypeRepository>(
+          create: (BuildContext context) => OrderTypeRepository(
+            orderTypeService: OrderTypeService(context.read<ApiClient>()),
+          ),
+        ),
+        Provider<CashSessionRepository>(
+          create: (BuildContext context) => CashSessionRepository(
+            cashSessionService: CashSessionService(context.read<ApiClient>()),
+          ),
+        ),
 
         // --- Lapisan presentasi ---
         Provider<LoginViewModel>(
@@ -55,6 +69,8 @@ class MobileDikasaApp extends StatelessWidget {
           create: (BuildContext context) => NewOrderViewModel(
             productRepository: context.read<ProductRepository>(),
             authRepository: context.read<AuthRepository>(),
+            orderTypeRepository: context.read<OrderTypeRepository>(),
+            cashSessionRepository: context.read<CashSessionRepository>(),
           ),
         ),
       ],

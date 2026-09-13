@@ -37,7 +37,18 @@ class ApiException implements Exception {
         );
 
       case DioExceptionType.connectionError:
+        return const ApiException(
+          type: ApiErrorType.network,
+          message: 'Tidak dapat terhubung ke server. Periksa koneksi internet.',
+        );
+
       case DioExceptionType.unknown:
+        if (error.response != null) {
+          return const ApiException(
+            type: ApiErrorType.parsing,
+            message: 'Format data dari server tidak sesuai.',
+          );
+        }
         return const ApiException(
           type: ApiErrorType.network,
           message: 'Tidak dapat terhubung ke server. Periksa koneksi internet.',
@@ -66,9 +77,7 @@ class ApiException implements Exception {
 
     // Backend boleh mengirim {"message": "..."}; kalau ada, itu yang dipakai.
     final dynamic body = response?.data;
-    final String? serverMessage = body is Map<String, dynamic>
-        ? body['message'] as String?
-        : null;
+    final String? serverMessage = _serverMessage(body);
 
     if (statusCode == 401 || statusCode == 403) {
       return ApiException(
@@ -81,7 +90,8 @@ class ApiException implements Exception {
       return ApiException(
         type: ApiErrorType.server,
         message:
-            serverMessage ?? 'Server sedang bermasalah. Coba beberapa saat lagi.',
+            serverMessage ??
+            'Server sedang bermasalah. Coba beberapa saat lagi.',
       );
     }
 
@@ -89,6 +99,24 @@ class ApiException implements Exception {
       type: ApiErrorType.server,
       message: serverMessage ?? 'Permintaan gagal diproses ($statusCode).',
     );
+  }
+
+  static String? _serverMessage(Object? body) {
+    if (body is! Map) {
+      return null;
+    }
+
+    final Object? message = body['message'];
+    if (message is String && message.trim().isNotEmpty) {
+      return message.trim();
+    }
+
+    final Object? error = body['error'];
+    if (error is Map) {
+      return _serverMessage(error);
+    }
+
+    return null;
   }
 
   @override

@@ -1,0 +1,18 @@
+generatorName: dart-dio
+inputSpec: openapi/dikasa.openapi.yaml
+outputDir: packages/dikasa_api
+globalProperties:
+  apiDocs: "false"
+  apiTests: "false"
+  modelDocs: "false"
+  modelTests: "false"
+additionalProperties:
+  pubName: dikasa_api
+  pubVersion: 1.0.0
+  pubDescription: Generated Dio client for the DIKASA backend API.
+  pubPublishTo: none
+  serializationLibrary: json_serializable
+  disallowAdditionalPropertiesIfNotPresent: false
+  enumUnknownDefaultCase: true
+  finalProperties: true
+

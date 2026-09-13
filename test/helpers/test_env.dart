@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 /// tidak pernah menyentuh jaringan sungguhan.
 void loadTestEnv() {
   dotenv.loadFromString(
-    envString: 'API_BASE_URL=https://api.dikasa.local/v1\nUSE_MOCK_API=true',
+    envString:
+        'API_BASE_URL=https://api.dikasa.local/dikasa/v1\nUSE_MOCK_API=true',
   );
 }

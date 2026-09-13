@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:mobile_dikasa/core/network/api_endpoints.dart';
 
@@ -10,6 +12,8 @@ class MockApiInterceptor extends Interceptor {
   /// Jeda buatan supaya indikator loading benar-benar terlihat saat dicoba.
   static const Duration _latency = Duration(milliseconds: 700);
 
+  Map<String, dynamic>? _currentCashSession;
+
   @override
   Future<void> onRequest(
     RequestOptions options,
@@ -20,6 +24,14 @@ class MockApiInterceptor extends Interceptor {
     switch (options.path) {
       case ApiEndpoints.login:
         return _handleLogin(options, handler);
+      case ApiEndpoints.currentUser:
+        return _handleCurrentUser(options, handler);
+      case ApiEndpoints.currentCashSession:
+        return _handleCurrentCashSession(options, handler);
+      case ApiEndpoints.cashSessions:
+        return _handleOpenCashSession(options, handler);
+      case ApiEndpoints.orderTypes:
+        return _handleOrderTypes(options, handler);
       case ApiEndpoints.products:
         return _handleProducts(options, handler);
       default:
@@ -27,13 +39,12 @@ class MockApiInterceptor extends Interceptor {
     }
   }
 
-  void _handleLogin(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) {
-    final Map<String, dynamic> body =
-        (options.data as Map<String, dynamic>?) ?? <String, dynamic>{};
-    final String username = (body['username'] as String? ?? '').trim();
+  void _handleLogin(RequestOptions options, RequestInterceptorHandler handler) {
+    final Object? requestData = options.data;
+    final Map<String, dynamic> body = requestData is String
+        ? jsonDecode(requestData) as Map<String, dynamic>
+        : (requestData as Map<String, dynamic>?) ?? <String, dynamic>{};
+    final String username = (body['identifier'] as String? ?? '').trim();
     final String password = body['password'] as String? ?? '';
 
     final bool isValid =
@@ -44,22 +55,125 @@ class MockApiInterceptor extends Interceptor {
         DioException(
           requestOptions: options,
           type: DioExceptionType.badResponse,
-          response: _response(options, 401, <String, dynamic>{
-            'message': 'Username atau password salah.',
-          }),
+          response: _errorResponse(
+            options,
+            401,
+            'AUTH_INVALID_CREDENTIALS',
+            'Username atau password salah.',
+          ),
         ),
       );
     }
 
     handler.resolve(
       _response(options, 200, <String, dynamic>{
-        'token': 'mock-token-dikasa',
-        'user': <String, dynamic>{
-          'id': '1',
-          'name': 'Jane Doe',
+        'data': <String, dynamic>{
+          'access_token': 'mock-token-dikasa',
+          'refresh_token': 'mock-refresh-token-dikasa',
+          'token_type': 'Bearer',
+          'expires_in': 3600,
+          'firebase_uid': 'user-1',
+        },
+      }),
+    );
+  }
+
+  void _handleCurrentCashSession(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) {
+    final Map<String, dynamic>? session = _currentCashSession;
+    if (session == null) {
+      return handler.reject(
+        DioException(
+          requestOptions: options,
+          type: DioExceptionType.badResponse,
+          response: _errorResponse(
+            options,
+            404,
+            'CASH_SESSION_NOT_FOUND',
+            'Belum ada sesi kas aktif.',
+          ),
+        ),
+      );
+    }
+
+    handler.resolve(
+      _response(options, 200, <String, dynamic>{'data': session}),
+    );
+  }
+
+  void _handleOpenCashSession(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) {
+    final Object? requestData = options.data;
+    final Map<String, dynamic> body = requestData is String
+        ? jsonDecode(requestData) as Map<String, dynamic>
+        : (requestData as Map<String, dynamic>?) ?? <String, dynamic>{};
+
+    _currentCashSession = <String, dynamic>{
+      'id': 'cash-session-1',
+      'user_id': 'user-1',
+      'outlet_id': 'warteg-bahari',
+      'opening_cash': body['opening_cash'] as int? ?? 0,
+      'opened_at': DateTime.utc(2026, 9, 14).toIso8601String(),
+      'status': 'open',
+    };
+
+    handler.resolve(
+      _response(options, 201, <String, dynamic>{'data': _currentCashSession}),
+    );
+  }
+
+  void _handleOrderTypes(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) {
+    handler.resolve(
+      _response(options, 200, <String, dynamic>{
+        'data': <Map<String, dynamic>>[
+          <String, dynamic>{
+            'id': 'order-type-dine-in',
+            'code': 'dine_in',
+            'name': 'Bebas Pilih Meja',
+            'sort_order': 1,
+            'is_active': true,
+          },
+          <String, dynamic>{
+            'id': 'order-type-reservation',
+            'code': 'reservation',
+            'name': 'Pesan Meja',
+            'sort_order': 2,
+            'is_active': true,
+          },
+          <String, dynamic>{
+            'id': 'order-type-takeaway',
+            'code': 'takeaway',
+            'name': 'Bawa Pulang',
+            'sort_order': 3,
+            'is_active': true,
+          },
+        ],
+      }),
+    );
+  }
+
+  void _handleCurrentUser(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) {
+    handler.resolve(
+      _response(options, 200, <String, dynamic>{
+        'data': <String, dynamic>{
+          'id': 'user-1',
+          'role_id': 'kasir',
+          'outlet_id': 'warteg-bahari',
           'username': demoUsername,
-          'role': 'Kasir',
-          'outlet_name': 'Warteg Bahari',
+          'phone_number': '081234567890',
+          'first_name': 'Jane',
+          'last_name': 'Doe',
+          'is_active': true,
         },
       }),
     );
@@ -69,7 +183,49 @@ class MockApiInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) {
-    handler.resolve(_response(options, 200, _products));
+    final List<Map<String, dynamic>> products = _products.indexed
+        .map((entry) {
+          final int index = entry.$1;
+          final Map<String, dynamic> product = entry.$2;
+          final String category = product['category'] as String;
+          final String group = product['group'] as String;
+
+          return <String, dynamic>{
+            'id': product['id'],
+            'name': product['name'],
+            'price': product['price'],
+            'selling_price': product['price'],
+            'stock_status': 'available',
+            'description': '',
+            'is_highlighted': product['is_highlighted'],
+            'sort_order': index + 1,
+            'is_active': true,
+            'category': <String, dynamic>{
+              'id': 'category-${category.toLowerCase().replaceAll(' ', '-')}',
+              'name': category,
+              'sort_order': index + 1,
+              'is_active': true,
+            },
+            'product_type': switch (group) {
+              'minuman' => 'drink',
+              'tambahan' => 'additional',
+              _ => 'food',
+            },
+            'variations': null,
+          };
+        })
+        .toList(growable: false);
+
+    handler.resolve(
+      _response(options, 200, <String, dynamic>{
+        'data': products,
+        'meta': <String, dynamic>{
+          'page': 1,
+          'page_size': 100,
+          'total': products.length,
+        },
+      }),
+    );
   }
 
   Response<dynamic> _response(
@@ -82,6 +238,21 @@ class MockApiInterceptor extends Interceptor {
       statusCode: statusCode,
       data: data,
     );
+  }
+
+  Response<dynamic> _errorResponse(
+    RequestOptions options,
+    int statusCode,
+    String code,
+    String message,
+  ) {
+    return _response(options, statusCode, <String, dynamic>{
+      'error': <String, dynamic>{
+        'code': code,
+        'message': message,
+        'details': <String, String>{},
+      },
+    });
   }
 
   /// Katalog contoh. Nama, harga, dan gambar mengikuti desain Figma

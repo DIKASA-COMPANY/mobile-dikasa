@@ -76,27 +76,10 @@ class ProductCard extends StatelessWidget {
       elevation: 1,
       shadowColor: AppColors.c4D0F0F0F,
       child: InkWell(
-        onTap: onPressed,
+        onTap: product.isAvailable ? onPressed : null,
         child: Row(
           children: <Widget>[
-            Image.asset(
-              product.imageAsset,
-              width: 108,
-              height: 110,
-              fit: BoxFit.cover,
-              // Katalog nanti diisi dari backend; gambar yang hilang tidak
-              // boleh membuat seluruh grid gagal digambar.
-              errorBuilder: (_, _, _) => Container(
-                width: 108,
-                height: 110,
-                color: AppColors.cD9D9D9,
-                child: Icon(
-                  Icons.restaurant_menu,
-                  color: AppColors.c8F8F8F,
-                  size: 28,
-                ),
-              ),
-            ),
+            _ProductImage(product: product),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
@@ -117,12 +100,21 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Text(
-                      formatRupiah(product.price),
-                      style: AppTextStyles.body.copyWith(
-                        color: AppColors.c546168,
+                    if (product.isAvailable)
+                      Text(
+                        formatRupiah(product.price),
+                        style: AppTextStyles.body.copyWith(
+                          color: AppColors.c546168,
+                        ),
+                      )
+                    else
+                      Text(
+                        'Stok habis',
+                        style: AppTextStyles.body.copyWith(
+                          color: AppColors.c9D1414,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -130,6 +122,57 @@ class ProductCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ProductImage extends StatelessWidget {
+  const _ProductImage({required this.product});
+
+  final Product product;
+
+  @override
+  Widget build(BuildContext context) {
+    final String? imageUrl = product.imageUrl;
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      return Image.network(
+        imageUrl,
+        width: 108,
+        height: 110,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => _assetOrPlaceholder(),
+      );
+    }
+
+    return _assetOrPlaceholder();
+  }
+
+  Widget _assetOrPlaceholder() {
+    final String? imageAsset = product.imageAsset;
+    if (imageAsset != null && imageAsset.isNotEmpty) {
+      return Image.asset(
+        imageAsset,
+        width: 108,
+        height: 110,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => const _ImagePlaceholder(),
+      );
+    }
+
+    return const _ImagePlaceholder();
+  }
+}
+
+class _ImagePlaceholder extends StatelessWidget {
+  const _ImagePlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 108,
+      height: 110,
+      color: AppColors.cD9D9D9,
+      child: Icon(Icons.restaurant_menu, color: AppColors.c8F8F8F, size: 28),
     );
   }
 }

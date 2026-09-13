@@ -40,14 +40,44 @@ dart run build_runner build
 flutter run
 ```
 
-Backend belum tersedia, sehingga request dilayani data tiruan
-(`lib/core/network/mock_api_interceptor.dart`). Kredensial demo:
+Untuk pengembangan tanpa backend, ubah `USE_MOCK_API=true` agar request
+dilayani data tiruan (`lib/core/network/mock_api_interceptor.dart`). Kredensial
+demo:
 
 - Username: `admin`
 - Password: `dikasa123`
 
-Begitu backend siap, set `USE_MOCK_API=false` di `.env`. Tidak ada kode
-Service yang perlu diubah.
+Untuk memakai `be-dikasa` lokal dari Android emulator, isi `.env`:
+
+```dotenv
+API_BASE_URL=http://10.0.2.2:8080/dikasa/v1
+USE_MOCK_API=false
+```
+
+Gunakan `localhost` sebagai host saat menjalankan Flutter desktop/web.
+
+## OpenAPI Code Generation
+
+Kontrak backend disimpan sebagai snapshot di `openapi/dikasa.openapi.yaml`.
+Seluruh DTO dan service Dio di `packages/dikasa_api/` dihasilkan otomatis;
+jangan mengedit file Dart di package tersebut secara manual.
+
+Setelah `api/openapi.yaml` pada backend berubah, sinkronkan dan generate ulang
+dengan PowerShell:
+
+```powershell
+.\tool\generate_api.ps1 -BackendSpec "D:\Golang Project\be-dikasa\api\openapi.yaml"
+```
+
+Tanpa `-BackendSpec`, script memakai snapshot yang sudah ada. Generator dipin
+ke OpenAPI Generator `7.24.0`, membuat model/service, menjalankan serializer,
+format, dan `flutter pub get`. Dibutuhkan Node.js serta Java 11+; bila `java`
+tidak ada di `PATH`, script otomatis mencoba runtime Java bawaan Android Studio
+pada instalasi Windows standar.
+
+Kode aplikasi memakai package generated lewat adapter Service/Repository. Alur
+yang sudah terhubung ke backend adalah login dan profil pengguna, katalog
+produk (termasuk gambar URL dan status stok), jenis order, serta sesi kas awal.
 
 ## Testing
 
