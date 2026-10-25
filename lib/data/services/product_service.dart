@@ -13,14 +13,33 @@ class ProductService {
   /// GET /products
   Future<List<Product>> fetchProducts() async {
     try {
-      final Response<dynamic> response = await _apiClient.dio.get<dynamic>(
-        ApiEndpoints.products,
-      );
+      final products = <Product>[];
+      var page = 1;
+      while (true) {
+        final Response<dynamic> response = await _apiClient.dio.get<dynamic>(
+          ApiEndpoints.products,
+          queryParameters: {'page': page, 'page_size': 100},
+        );
 
-      final List<dynamic> data = response.data as List<dynamic>;
-      return data
-          .map((dynamic item) => Product.fromJson(item as Map<String, dynamic>))
-          .toList();
+        final body = response.data;
+        final List<dynamic> data =
+            (body is List ? body : (body as Map<String, dynamic>)['data'])
+                as List<dynamic>;
+        products.addAll(
+          data
+              .map(
+                (dynamic item) =>
+                    Product.fromJson(item as Map<String, dynamic>),
+              )
+              .toList(),
+        );
+        if (body is List || data.isEmpty) return products;
+        final meta =
+            (body as Map<String, dynamic>)['meta'] as Map<String, dynamic>;
+        final total = (meta['total'] as num).toInt();
+        if (products.length >= total) return products;
+        page++;
+      }
     } on DioException catch (error) {
       throw ApiException.fromDio(error);
     } on TypeError {

@@ -1,0 +1,66 @@
+{
+  "figma_file": "jgBLUfP6OXyxmErwgTjfIT",
+  "frame": "1:14876",
+  "assets": {
+    "back": {
+      "path": "assets/icons/catalog_back.svg",
+      "width": 32.0,
+      "height": 25.0,
+      "sha256": "20d30dbce579c774a1c5c5a5f2390dfa79dee8931f7c3d4d3c6e6251243392d0"
+    },
+    "calendar": {
+      "path": "assets/icons/account_design_calendar.svg",
+      "width": 23.8,
+      "height": 26.2444,
+      "sha256": "81a61f30f98dc5eec61058651695cc67433a214406f06d47c6a0b147ad828b55"
+    },
+    "down": {
+      "path": "assets/icons/catalog_down.svg",
+      "width": 15.9199,
+      "height": 9.13601,
+      "sha256": "877fcdf8755e930f886a218920cc238faf023470d3e83443dde8b6950516c797"
+    },
+    "email": {
+      "path": "assets/icons/account_design_email.svg",
+      "width": 23.5,
+      "height": 16.5,
+      "sha256": "ca312d1a3489b30916f8cb89f7d1c6056c14a95c57eae8045823dbf1dd57e51f"
+    },
+    "gender": {
+      "path": "assets/icons/account_design_gender.png",
+      "width": 256.0,
+      "height": 256.0,
+      "sha256": "d95173ad32a0e725c5c2d52a7b3c91f707a79afc483399ad1d1986ec243be5c2"
+    },
+    "location": {
+      "path": "assets/icons/account_design_location.svg",
+      "width": 23.8024,
+      "height": 27.3076,
+      "sha256": "7a3c11fb0dcdd7ea49ac9cfc541f52c7d739364cdc7595ab1f521c8763462419"
+    },
+    "lock": {
+      "path": "assets/icons/catalog_lock.svg",
+      "width": 46.0,
+      "height": 46.0,
+      "sha256": "e9cbb767bff67fbaa13dca1a326f7a4b293d46ea03461f50122ba8a7aae72b25"
+    },
+    "menu": {
+      "path": "assets/icons/catalog_menu.svg",
+      "width": 34.4,
+      "height": 26.0,
+      "sha256": "0336772ab8955646730fda16804ddb19f85f1142c17dfae71d7bcc7cf468f676"
+    },
+    "phone": {
+      "path": "assets/icons/account_design_phone.svg",
+      "width": 22.0,
+      "height": 22.0,
+      "sha256": "22bbdb806820a473da00c73401f096e6a5a275044b124c54f09ffdfcefea5cdd"
+    },
+    "profile": {
+      "path": "assets/icons/account_design_profile.svg",
+      "width": 24.0,
+      "height": 24.0002,
+      "sha256": "962eb74ff64e74dddfa125979a7221809ca5f04a8c81f41664fd5c645a086a52"
+    }
+  }
+}

@@ -35,7 +35,8 @@ class CatalogFilterBar extends StatelessWidget {
                       options: viewModel.categories,
                       optionLabel: (String category) => category,
                       onSelected: viewModel.selectCategory,
-                      isActive: viewModel.selectedCategory != allCategoriesFilter,
+                      isActive:
+                          viewModel.selectedCategory != allCategoriesFilter,
                     ),
                   ),
                 ),
@@ -142,10 +143,7 @@ class _SearchField extends StatelessWidget {
               'assets/icons/search_icon.svg',
               width: 20,
               height: 20,
-              colorFilter: ColorFilter.mode(
-                AppColors.cA4A4A4,
-                BlendMode.srcIn,
-              ),
+              colorFilter: ColorFilter.mode(AppColors.cA4A4A4, BlendMode.srcIn),
             ),
           ),
           prefixIconConstraints: const BoxConstraints(minWidth: 0),

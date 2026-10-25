@@ -9,6 +9,7 @@ class User {
     required this.username,
     required this.role,
     required this.outletName,
+    this.avatarUrl,
   });
 
   final String id;
@@ -16,11 +17,15 @@ class User {
   final String username;
   final String role;
   final String outletName;
+  final String? avatarUrl;
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'].toString(),
-      name: json['name'] as String? ?? '',
+      avatarUrl: json['avatar_url'] as String?,
+      name:
+          json['name'] as String? ??
+          '${json['first_name'] ?? ''} ${json['last_name'] ?? ''}'.trim(),
       username: json['username'] as String? ?? '',
       role: json['role'] as String? ?? '',
       outletName: json['outlet_name'] as String? ?? '',

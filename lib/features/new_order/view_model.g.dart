@@ -54,6 +54,168 @@ mixin _$NewOrderViewModel on NewOrderViewModelBase, Store {
     () => super.totalPrice,
     name: 'NewOrderViewModelBase.totalPrice',
   )).value;
+  Computed<int>? _$taxAmountComputed;
+
+  @override
+  int get taxAmount => (_$taxAmountComputed ??= Computed<int>(
+    () => super.taxAmount,
+    name: 'NewOrderViewModelBase.taxAmount',
+  )).value;
+  Computed<int>? _$paymentTotalComputed;
+
+  @override
+  int get paymentTotal => (_$paymentTotalComputed ??= Computed<int>(
+    () => super.paymentTotal,
+    name: 'NewOrderViewModelBase.paymentTotal',
+  )).value;
+
+  late final _$savedOrderIdAtom = Atom(
+    name: 'NewOrderViewModelBase.savedOrderId',
+    context: context,
+  );
+
+  @override
+  String? get savedOrderId {
+    _$savedOrderIdAtom.reportRead();
+    return super.savedOrderId;
+  }
+
+  @override
+  set savedOrderId(String? value) {
+    _$savedOrderIdAtom.reportWrite(value, super.savedOrderId, () {
+      super.savedOrderId = value;
+    });
+  }
+
+  late final _$savedOrderRevisionAtom = Atom(
+    name: 'NewOrderViewModelBase.savedOrderRevision',
+    context: context,
+  );
+
+  @override
+  int? get savedOrderRevision {
+    _$savedOrderRevisionAtom.reportRead();
+    return super.savedOrderRevision;
+  }
+
+  @override
+  set savedOrderRevision(int? value) {
+    _$savedOrderRevisionAtom.reportWrite(value, super.savedOrderRevision, () {
+      super.savedOrderRevision = value;
+    });
+  }
+
+  late final _$savedOrderLabelAtom = Atom(
+    name: 'NewOrderViewModelBase.savedOrderLabel',
+    context: context,
+  );
+
+  @override
+  String? get savedOrderLabel {
+    _$savedOrderLabelAtom.reportRead();
+    return super.savedOrderLabel;
+  }
+
+  @override
+  set savedOrderLabel(String? value) {
+    _$savedOrderLabelAtom.reportWrite(value, super.savedOrderLabel, () {
+      super.savedOrderLabel = value;
+    });
+  }
+
+  late final _$isSavingOrderAtom = Atom(
+    name: 'NewOrderViewModelBase.isSavingOrder',
+    context: context,
+  );
+
+  @override
+  bool get isSavingOrder {
+    _$isSavingOrderAtom.reportRead();
+    return super.isSavingOrder;
+  }
+
+  @override
+  set isSavingOrder(bool value) {
+    _$isSavingOrderAtom.reportWrite(value, super.isSavingOrder, () {
+      super.isSavingOrder = value;
+    });
+  }
+
+  late final _$savedCommandUncertainAtom = Atom(
+    name: 'NewOrderViewModelBase.savedCommandUncertain',
+    context: context,
+  );
+
+  @override
+  bool get savedCommandUncertain {
+    _$savedCommandUncertainAtom.reportRead();
+    return super.savedCommandUncertain;
+  }
+
+  @override
+  set savedCommandUncertain(bool value) {
+    _$savedCommandUncertainAtom.reportWrite(
+      value,
+      super.savedCommandUncertain,
+      () {
+        super.savedCommandUncertain = value;
+      },
+    );
+  }
+
+  late final _$reopenWarningsAtom = Atom(
+    name: 'NewOrderViewModelBase.reopenWarnings',
+    context: context,
+  );
+
+  @override
+  ObservableList<String> get reopenWarnings {
+    _$reopenWarningsAtom.reportRead();
+    return super.reopenWarnings;
+  }
+
+  @override
+  set reopenWarnings(ObservableList<String> value) {
+    _$reopenWarningsAtom.reportWrite(value, super.reopenWarnings, () {
+      super.reopenWarnings = value;
+    });
+  }
+
+  late final _$refundActiveAtom = Atom(
+    name: 'NewOrderViewModelBase.refundActive',
+    context: context,
+  );
+
+  @override
+  bool get refundActive {
+    _$refundActiveAtom.reportRead();
+    return super.refundActive;
+  }
+
+  @override
+  set refundActive(bool value) {
+    _$refundActiveAtom.reportWrite(value, super.refundActive, () {
+      super.refundActive = value;
+    });
+  }
+
+  late final _$cashClosingActiveAtom = Atom(
+    name: 'NewOrderViewModelBase.cashClosingActive',
+    context: context,
+  );
+
+  @override
+  bool get cashClosingActive {
+    _$cashClosingActiveAtom.reportRead();
+    return super.cashClosingActive;
+  }
+
+  @override
+  set cashClosingActive(bool value) {
+    _$cashClosingActiveAtom.reportWrite(value, super.cashClosingActive, () {
+      super.cashClosingActive = value;
+    });
+  }
 
   late final _$productsAtom = Atom(
     name: 'NewOrderViewModelBase.products',
@@ -187,15 +349,177 @@ mixin _$NewOrderViewModel on NewOrderViewModelBase, Store {
   );
 
   @override
-  OrderType? get orderType {
+  PosOrderType? get orderType {
     _$orderTypeAtom.reportRead();
     return super.orderType;
   }
 
   @override
-  set orderType(OrderType? value) {
+  set orderType(PosOrderType? value) {
     _$orderTypeAtom.reportWrite(value, super.orderType, () {
       super.orderType = value;
+    });
+  }
+
+  late final _$orderTypesAtom = Atom(
+    name: 'NewOrderViewModelBase.orderTypes',
+    context: context,
+  );
+
+  @override
+  ObservableList<PosOrderType> get orderTypes {
+    _$orderTypesAtom.reportRead();
+    return super.orderTypes;
+  }
+
+  @override
+  set orderTypes(ObservableList<PosOrderType> value) {
+    _$orderTypesAtom.reportWrite(value, super.orderTypes, () {
+      super.orderTypes = value;
+    });
+  }
+
+  late final _$cashSessionAtom = Atom(
+    name: 'NewOrderViewModelBase.cashSession',
+    context: context,
+  );
+
+  @override
+  CashSession? get cashSession {
+    _$cashSessionAtom.reportRead();
+    return super.cashSession;
+  }
+
+  @override
+  set cashSession(CashSession? value) {
+    _$cashSessionAtom.reportWrite(value, super.cashSession, () {
+      super.cashSession = value;
+    });
+  }
+
+  late final _$isLoadingPosAtom = Atom(
+    name: 'NewOrderViewModelBase.isLoadingPos',
+    context: context,
+  );
+
+  @override
+  bool get isLoadingPos {
+    _$isLoadingPosAtom.reportRead();
+    return super.isLoadingPos;
+  }
+
+  @override
+  set isLoadingPos(bool value) {
+    _$isLoadingPosAtom.reportWrite(value, super.isLoadingPos, () {
+      super.isLoadingPos = value;
+    });
+  }
+
+  late final _$isPayingAtom = Atom(
+    name: 'NewOrderViewModelBase.isPaying',
+    context: context,
+  );
+
+  @override
+  bool get isPaying {
+    _$isPayingAtom.reportRead();
+    return super.isPaying;
+  }
+
+  @override
+  set isPaying(bool value) {
+    _$isPayingAtom.reportWrite(value, super.isPaying, () {
+      super.isPaying = value;
+    });
+  }
+
+  late final _$paymentUncertainAtom = Atom(
+    name: 'NewOrderViewModelBase.paymentUncertain',
+    context: context,
+  );
+
+  @override
+  bool get paymentUncertain {
+    _$paymentUncertainAtom.reportRead();
+    return super.paymentUncertain;
+  }
+
+  @override
+  set paymentUncertain(bool value) {
+    _$paymentUncertainAtom.reportWrite(value, super.paymentUncertain, () {
+      super.paymentUncertain = value;
+    });
+  }
+
+  late final _$checkoutErrorAtom = Atom(
+    name: 'NewOrderViewModelBase.checkoutError',
+    context: context,
+  );
+
+  @override
+  String? get checkoutError {
+    _$checkoutErrorAtom.reportRead();
+    return super.checkoutError;
+  }
+
+  @override
+  set checkoutError(String? value) {
+    _$checkoutErrorAtom.reportWrite(value, super.checkoutError, () {
+      super.checkoutError = value;
+    });
+  }
+
+  late final _$taxPercentageAtom = Atom(
+    name: 'NewOrderViewModelBase.taxPercentage',
+    context: context,
+  );
+
+  @override
+  double get taxPercentage {
+    _$taxPercentageAtom.reportRead();
+    return super.taxPercentage;
+  }
+
+  @override
+  set taxPercentage(double value) {
+    _$taxPercentageAtom.reportWrite(value, super.taxPercentage, () {
+      super.taxPercentage = value;
+    });
+  }
+
+  late final _$walletsAtom = Atom(
+    name: 'NewOrderViewModelBase.wallets',
+    context: context,
+  );
+
+  @override
+  ObservableList<PosOption> get wallets {
+    _$walletsAtom.reportRead();
+    return super.wallets;
+  }
+
+  @override
+  set wallets(ObservableList<PosOption> value) {
+    _$walletsAtom.reportWrite(value, super.wallets, () {
+      super.wallets = value;
+    });
+  }
+
+  late final _$tablesAtom = Atom(
+    name: 'NewOrderViewModelBase.tables',
+    context: context,
+  );
+
+  @override
+  ObservableList<PosOption> get tables {
+    _$tablesAtom.reportRead();
+    return super.tables;
+  }
+
+  @override
+  set tables(ObservableList<PosOption> value) {
+    _$tablesAtom.reportWrite(value, super.tables, () {
+      super.tables = value;
     });
   }
 
@@ -251,6 +575,58 @@ mixin _$NewOrderViewModel on NewOrderViewModelBase, Store {
     );
   }
 
+  late final _$loadPosAsyncAction = AsyncAction(
+    'NewOrderViewModelBase.loadPos',
+    context: context,
+  );
+
+  @override
+  Future<void> loadPos() {
+    return _$loadPosAsyncAction.run(() => super.loadPos());
+  }
+
+  late final _$openCashAsyncAction = AsyncAction(
+    'NewOrderViewModelBase.openCash',
+    context: context,
+  );
+
+  @override
+  Future<bool> openCash(int amount) {
+    return _$openCashAsyncAction.run(() => super.openCash(amount));
+  }
+
+  late final _$preparePaymentAsyncAction = AsyncAction(
+    'NewOrderViewModelBase.preparePayment',
+    context: context,
+  );
+
+  @override
+  Future<bool> preparePayment() {
+    return _$preparePaymentAsyncAction.run(() => super.preparePayment());
+  }
+
+  late final _$payAsyncAction = AsyncAction(
+    'NewOrderViewModelBase.pay',
+    context: context,
+  );
+
+  @override
+  Future<PaymentReceipt?> pay({
+    required String method,
+    required int paidAmount,
+    String? walletId,
+    String? tableId,
+  }) {
+    return _$payAsyncAction.run(
+      () => super.pay(
+        method: method,
+        paidAmount: paidAmount,
+        walletId: walletId,
+        tableId: tableId,
+      ),
+    );
+  }
+
   late final _$NewOrderViewModelBaseActionController = ActionController(
     name: 'NewOrderViewModelBase',
     context: context,
@@ -293,7 +669,7 @@ mixin _$NewOrderViewModel on NewOrderViewModelBase, Store {
   }
 
   @override
-  void selectOrderType(OrderType type) {
+  void selectOrderType(PosOrderType type) {
     final _$actionInfo = _$NewOrderViewModelBaseActionController.startAction(
       name: 'NewOrderViewModelBase.selectOrderType',
     );
@@ -353,8 +729,28 @@ mixin _$NewOrderViewModel on NewOrderViewModelBase, Store {
   }
 
   @override
+  void resolveUncertainPayment({required bool wasSaved}) {
+    final _$actionInfo = _$NewOrderViewModelBaseActionController.startAction(
+      name: 'NewOrderViewModelBase.resolveUncertainPayment',
+    );
+    try {
+      return super.resolveUncertainPayment(wasSaved: wasSaved);
+    } finally {
+      _$NewOrderViewModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
+savedOrderId: ${savedOrderId},
+savedOrderRevision: ${savedOrderRevision},
+savedOrderLabel: ${savedOrderLabel},
+isSavingOrder: ${isSavingOrder},
+savedCommandUncertain: ${savedCommandUncertain},
+reopenWarnings: ${reopenWarnings},
+refundActive: ${refundActive},
+cashClosingActive: ${cashClosingActive},
 products: ${products},
 isLoading: ${isLoading},
 errorMessage: ${errorMessage},
@@ -363,13 +759,24 @@ selectedCategory: ${selectedCategory},
 searchQuery: ${searchQuery},
 orderItems: ${orderItems},
 orderType: ${orderType},
+orderTypes: ${orderTypes},
+cashSession: ${cashSession},
+isLoadingPos: ${isLoadingPos},
+isPaying: ${isPaying},
+paymentUncertain: ${paymentUncertain},
+checkoutError: ${checkoutError},
+taxPercentage: ${taxPercentage},
+wallets: ${wallets},
+tables: ${tables},
 openingCash: ${openingCash},
 isOpeningCashResolved: ${isOpeningCashResolved},
 categories: ${categories},
 visibleProducts: ${visibleProducts},
 hasOrderItems: ${hasOrderItems},
 totalQuantity: ${totalQuantity},
-totalPrice: ${totalPrice}
+totalPrice: ${totalPrice},
+taxAmount: ${taxAmount},
+paymentTotal: ${paymentTotal}
     ''';
   }
 }

@@ -6,6 +6,7 @@ import 'package:mobile_dikasa/data/repositories/auth_repository.dart';
 import 'package:mobile_dikasa/data/repositories/product_repository.dart';
 import 'package:mobile_dikasa/data/services/auth_service.dart';
 import 'package:mobile_dikasa/data/services/product_service.dart';
+import 'package:mobile_dikasa/data/services/pos_service.dart';
 import 'package:mobile_dikasa/features/new_order/view_model.dart';
 
 import '../../helpers/test_env.dart';
@@ -27,6 +28,7 @@ void main() {
         productService: ProductService(apiClient),
       ),
       authRepository: authRepository,
+      posService: PosService(apiClient),
     );
 
     await viewModel.loadProducts();
@@ -38,6 +40,63 @@ void main() {
     expect(viewModel.selectedGroup, ProductGroup.makanan);
     expect(viewModel.visibleProducts, isNotEmpty);
   });
+
+  test('out of stock products cannot be added to an order', () {
+    final product = Product.fromJson({
+      'id': 'sold-out',
+      'name': 'Habis',
+      'price': 1000,
+      'stock_status': 'out_of_stock',
+      'product_type': 'food',
+    });
+    viewModel.addProduct(product);
+    expect(viewModel.orderItems, isEmpty);
+  });
+
+  test(
+    'variants stay distinct but consume one shared cart stock allowance',
+    () {
+      final product = Product.fromJson({
+        'id': 'stock-p',
+        'name': 'Nasi',
+        'price': 10000,
+        'category': 'Utama',
+        'track_stock': true,
+        'stock_quantity': 3,
+        'stock_status': 'available',
+        'variations': [
+          {
+            'id': 'v1',
+            'name': 'Jumbo',
+            'selling_price': 15000,
+            'stock_status': 'available',
+            'is_active': true,
+          },
+          {
+            'id': 'v2',
+            'name': 'Kecil',
+            'selling_price': 8000,
+            'stock_status': 'available',
+            'is_active': true,
+          },
+        ],
+      });
+      final jumbo = product.selectVariant(product.variations[0]);
+      final kecil = product.selectVariant(product.variations[1]);
+      viewModel.addProduct(jumbo);
+      viewModel.addProduct(kecil);
+      viewModel.addProduct(jumbo);
+      viewModel.addProduct(product);
+      expect(viewModel.orderItems.length, 2);
+      expect(viewModel.orderItems[0].quantity, 2);
+      expect(viewModel.totalPrice, 38000);
+      viewModel.updateItemNote(kecil, 'Tanpa pedas');
+      expect(viewModel.orderItems[1].note, 'Tanpa pedas');
+      expect(viewModel.orderItems[0].note, '');
+      viewModel.decreaseProduct(kecil);
+      expect(viewModel.orderItems.single.product.variantId, 'v1');
+    },
+  );
 
   group('penyaringan katalog', () {
     test('berpindah tab hanya menampilkan produk kelompok tersebut', () {
@@ -66,7 +125,8 @@ void main() {
       expect(viewModel.visibleProducts, isNotEmpty);
       expect(
         viewModel.visibleProducts.every(
-          (Product product) => product.name.toLowerCase().contains('nasi goreng'),
+          (Product product) =>
+              product.name.toLowerCase().contains('nasi goreng'),
         ),
         isTrue,
       );

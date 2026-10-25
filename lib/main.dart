@@ -7,6 +7,8 @@ import 'package:mobile_dikasa/data/repositories/auth_repository.dart';
 import 'package:mobile_dikasa/data/repositories/product_repository.dart';
 import 'package:mobile_dikasa/data/services/auth_service.dart';
 import 'package:mobile_dikasa/data/services/product_service.dart';
+import 'package:mobile_dikasa/data/services/pos_service.dart';
+import 'package:mobile_dikasa/data/services/catalog_service.dart';
 import 'package:mobile_dikasa/features/login/view_model.dart';
 import 'package:mobile_dikasa/features/new_order/view_model.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +33,7 @@ class MobileDikasaApp extends StatelessWidget {
         // --- Lapisan data ---
         // Repository dibuat sekali dan dipakai bersama, sehingga session
         // login tetap dikenali di seluruh halaman.
-        Provider<AuthRepository>(
+        ChangeNotifierProvider<AuthRepository>(
           create: (BuildContext context) {
             final ApiClient apiClient = context.read<ApiClient>();
             return AuthRepository(
@@ -45,6 +47,12 @@ class MobileDikasaApp extends StatelessWidget {
             productService: ProductService(context.read<ApiClient>()),
           ),
         ),
+        Provider<PosService>(
+          create: (context) => PosService(context.read<ApiClient>()),
+        ),
+        Provider<CatalogService>(
+          create: (context) => CatalogService(context.read<ApiClient>()),
+        ),
 
         // --- Lapisan presentasi ---
         Provider<LoginViewModel>(
@@ -55,6 +63,7 @@ class MobileDikasaApp extends StatelessWidget {
           create: (BuildContext context) => NewOrderViewModel(
             productRepository: context.read<ProductRepository>(),
             authRepository: context.read<AuthRepository>(),
+            posService: context.read<PosService>(),
           ),
         ),
       ],

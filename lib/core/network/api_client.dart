@@ -27,7 +27,7 @@ class ApiClient {
       InterceptorsWrapper(
         onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
           final String? token = _authToken;
-          if (token != null) {
+          if (token != null && !options.headers.containsKey('Authorization')) {
             options.headers['Authorization'] = 'Bearer $token';
           }
           handler.next(options);
@@ -42,7 +42,10 @@ class ApiClient {
 
     // Log request/response hanya saat debug, agar tidak bocor di build rilis.
     if (kDebugMode) {
-      dio.interceptors.add(LogInterceptor(responseBody: true));
+      // Avoid printing passwords, bearer tokens or token responses during login.
+      dio.interceptors.add(
+        LogInterceptor(requestHeader: false, responseHeader: false),
+      );
     }
   }
 

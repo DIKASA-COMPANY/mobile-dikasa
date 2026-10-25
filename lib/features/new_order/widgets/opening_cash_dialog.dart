@@ -10,15 +10,19 @@ import 'package:mobile_dikasa/core/utils/rupiah_input_formatter.dart';
 /// Mengembalikan nominal kas yang diisi, atau `null` bila kasir memilih
 /// "Lewati" maupun menutup dialog.
 class OpeningCashDialog extends StatefulWidget {
-  const OpeningCashDialog({super.key});
+  const OpeningCashDialog({super.key, this.onConfirm});
+  final Future<String?> Function(int amount)? onConfirm;
 
   /// Menampilkan dialog dan menunggu jawaban kasir.
-  static Future<int?> show(BuildContext context) {
+  static Future<int?> show(
+    BuildContext context, {
+    Future<String?> Function(int amount)? onConfirm,
+  }) {
     return showDialog<int>(
       context: context,
       barrierDismissible: false,
       barrierColor: AppColors.c0F0F0F.withAlpha(90),
-      builder: (_) => const OpeningCashDialog(),
+      builder: (_) => OpeningCashDialog(onConfirm: onConfirm),
     );
   }
 
@@ -28,6 +32,8 @@ class OpeningCashDialog extends StatefulWidget {
 
 class _OpeningCashDialogState extends State<OpeningCashDialog> {
   final TextEditingController _controller = TextEditingController();
+  bool _saving = false;
+  String? _error;
 
   @override
   void dispose() {
@@ -41,81 +47,117 @@ class _OpeningCashDialogState extends State<OpeningCashDialog> {
     return digits.isEmpty ? null : int.parse(digits);
   }
 
-  void _submit() => Navigator.of(context).pop(_amount);
+  Future<void> _submit() async {
+    if (_saving) return;
+    final amount = _amount;
+    if (amount == null) {
+      setState(
+        () => _error = 'Masukkan nominal kas, termasuk 0 bila tanpa modal.',
+      );
+      return;
+    }
+    setState(() {
+      _saving = true;
+      _error = null;
+    });
+    final error = await widget.onConfirm?.call(amount);
+    if (!mounted) return;
+    if (error == null) {
+      Navigator.of(context).pop(amount);
+      return;
+    }
+    setState(() {
+      _saving = false;
+      _error = error;
+    });
+  }
 
-  void _skip() => Navigator.of(context).pop();
+  void _skip() {
+    if (!_saving) Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: AppColors.cFFFFFF,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 560),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            _DialogHeader(onClose: _skip),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(28, 26, 28, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  _AmountField(controller: _controller, onSubmitted: _submit),
-                  const SizedBox(height: 14),
-                  Text(
-                    '**Uang Kas yang dipegang kasir sebagai modal kembalian',
-                    style: AppTextStyles.caption.copyWith(
-                      fontStyle: FontStyle.italic,
-                      fontSize: 13,
+    return PopScope(
+      canPop: !_saving,
+      child: Dialog(
+        backgroundColor: AppColors.cFFFFFF,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 560),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              _DialogHeader(onClose: _skip),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(28, 26, 28, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    _AmountField(controller: _controller, onSubmitted: _submit),
+                    if (_error != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: Text(
+                          _error!,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    const SizedBox(height: 14),
+                    Text(
+                      '**Uang Kas yang dipegang kasir sebagai modal kembalian',
+                      style: AppTextStyles.caption.copyWith(
+                        fontStyle: FontStyle.italic,
+                        fontSize: 13,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 26),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      TextButton(
-                        onPressed: _skip,
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppColors.c097BC2,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          minimumSize: const Size(0, 52),
-                          textStyle: AppTextStyles.button.copyWith(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        child: const Text('Lewati'),
-                      ),
-                      const SizedBox(width: 12),
-                      SizedBox(
-                        height: 52,
-                        width: 196,
-                        child: ElevatedButton(
-                          onPressed: _submit,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.cFF8227,
-                            foregroundColor: AppColors.cFFFFFF,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                    const SizedBox(height: 26),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        TextButton(
+                          onPressed: _skip,
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.c097BC2,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            minimumSize: const Size(0, 52),
                             textStyle: AppTextStyles.button.copyWith(
-                              fontSize: 19,
-                              fontWeight: FontWeight.w700,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          child: const Text('Masuk'),
+                          child: const Text('Lewati'),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        const SizedBox(width: 12),
+                        SizedBox(
+                          height: 52,
+                          width: 196,
+                          child: ElevatedButton(
+                            onPressed: _saving ? null : _submit,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.cFF8227,
+                              foregroundColor: AppColors.cFFFFFF,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              textStyle: AppTextStyles.button.copyWith(
+                                fontSize: 19,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            child: Text(_saving ? 'Menyimpan…' : 'Masuk'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -67,7 +67,9 @@ class ApiException implements Exception {
     // Backend boleh mengirim {"message": "..."}; kalau ada, itu yang dipakai.
     final dynamic body = response?.data;
     final String? serverMessage = body is Map<String, dynamic>
-        ? body['message'] as String?
+        ? (body['error'] is Map<String, dynamic>
+              ? (body['error'] as Map<String, dynamic>)['message'] as String?
+              : body['message'] as String?)
         : null;
 
     if (statusCode == 401 || statusCode == 403) {
@@ -81,7 +83,8 @@ class ApiException implements Exception {
       return ApiException(
         type: ApiErrorType.server,
         message:
-            serverMessage ?? 'Server sedang bermasalah. Coba beberapa saat lagi.',
+            serverMessage ??
+            'Server sedang bermasalah. Coba beberapa saat lagi.',
       );
     }
 

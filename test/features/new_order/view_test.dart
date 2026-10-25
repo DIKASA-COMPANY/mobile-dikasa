@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_dikasa/core/network/api_client.dart';
 import 'package:mobile_dikasa/core/network/mock_api_interceptor.dart';
@@ -6,6 +7,9 @@ import 'package:mobile_dikasa/data/repositories/auth_repository.dart';
 import 'package:mobile_dikasa/data/repositories/product_repository.dart';
 import 'package:mobile_dikasa/data/services/auth_service.dart';
 import 'package:mobile_dikasa/data/services/product_service.dart';
+import 'package:mobile_dikasa/data/services/pos_service.dart';
+import 'package:mobile_dikasa/data/services/catalog_service.dart';
+import 'package:mobile_dikasa/features/product/view.dart';
 import 'package:mobile_dikasa/features/new_order/view.dart';
 import 'package:mobile_dikasa/features/new_order/view_model.dart';
 import 'package:mobile_dikasa/features/new_order/widgets/opening_cash_dialog.dart';
@@ -14,6 +18,12 @@ import 'package:provider/provider.dart';
 import '../../helpers/test_env.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() async {
+    final font = FontLoader('Poppins')
+      ..addFont(rootBundle.load('assets/fonts/Poppins-Regular.ttf'));
+    await font.load();
+  });
   setUp(loadTestEnv);
 
   /// Ukuran layar tablet yang dipakai desain Figma.
@@ -46,11 +56,15 @@ void main() {
         productService: ProductService(apiClient),
       ),
       authRepository: authRepository,
+      posService: PosService(apiClient),
     );
 
     await tester.pumpWidget(
-      Provider<NewOrderViewModel>.value(
-        value: viewModel,
+      MultiProvider(
+        providers: [
+          Provider<NewOrderViewModel>.value(value: viewModel),
+          Provider<CatalogService>(create: (_) => CatalogService(apiClient)),
+        ],
         child: const MaterialApp(home: NewOrderView()),
       ),
     );
@@ -65,6 +79,24 @@ void main() {
     await tester.pump();
   }
 
+  testWidgets('cashier can refresh the catalog without losing an unpaid cart', (
+    tester,
+  ) async {
+    final vm = await pumpOrderPage(tester);
+    await settleCatalog(tester);
+    await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cumi Goreng Asam Manis'));
+    await tester.pump();
+    await tester.tap(find.byTooltip('Buka menu'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Muat ulang Katalog'));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 2));
+    expect(vm.orderItems.single.quantity, 1);
+    expect(find.textContaining('Katalog dimuat ulang'), findsOneWidget);
+  });
+
   testWidgets('dialog Kas Awal muncul saat halaman dibuka', (
     WidgetTester tester,
   ) async {
@@ -77,6 +109,46 @@ void main() {
       find.text('**Uang Kas yang dipegang kasir sebagai modal kembalian'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('cashier menu opens management and returns to the cashier', (
+    tester,
+  ) async {
+    await pumpOrderPage(tester);
+    await settleCatalog(tester);
+    await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Buka menu'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Katalog Produk'));
+    await tester.pumpAndSettle();
+    expect(find.byType(CatalogView), findsOneWidget);
+    expect(find.text('Tambah Produk'), findsOneWidget);
+    await tester.tap(find.byTooltip('Kembali'));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.byType(CatalogView), findsNothing);
+    expect(find.text('Belum ada menu yang dipilih'), findsOneWidget);
+  });
+
+  testWidgets('product management refuses navigation while order is unpaid', (
+    tester,
+  ) async {
+    await pumpOrderPage(tester);
+    await settleCatalog(tester);
+    await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cumi Goreng Asam Manis'));
+    await tester.pump();
+    await tester.tap(find.byTooltip('Buka menu'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Katalog Produk'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Selesaikan atau hapus pesanan sebelum mengubah katalog.'),
+      findsOneWidget,
+    );
+    expect(find.byType(NewOrderView), findsOneWidget);
   });
 
   testWidgets('menekan Lewati menutup dialog tanpa menyimpan nominal', (
@@ -159,7 +231,10 @@ void main() {
       // kedua tidak muncul walau total tetap ikut bertambah.
       final Finder panel = find.byType(ListView);
       expect(
-        find.descendant(of: panel, matching: find.text('Cumi Goreng Asam Manis')),
+        find.descendant(
+          of: panel,
+          matching: find.text('Cumi Goreng Asam Manis'),
+        ),
         findsOneWidget,
       );
       expect(

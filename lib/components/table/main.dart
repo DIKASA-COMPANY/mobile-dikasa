@@ -10,6 +10,7 @@ class TableFieldColumn<T> {
     this.cellTextAlign = TextAlign.left,
     this.headerTextStyle,
     this.cellTextStyle,
+    this.cellBuilder,
   });
 
   final String title;
@@ -19,6 +20,7 @@ class TableFieldColumn<T> {
   final TextAlign cellTextAlign;
   final TextStyle? headerTextStyle;
   final TextStyle? cellTextStyle;
+  final Widget Function(T row)? cellBuilder;
 }
 
 class TableField<T> extends StatelessWidget {
@@ -134,6 +136,7 @@ class TableField<T> extends StatelessWidget {
                     child: ConstrainedBox(
                       constraints: BoxConstraints(minWidth: minTableWidth),
                       child: DataTable(
+                        showCheckboxColumn: false,
                         horizontalMargin: horizontalMargin,
                         columnSpacing: columnSpacing,
                         headingRowHeight: headingRowHeight,
@@ -182,15 +185,19 @@ class TableField<T> extends StatelessWidget {
                                             alignment: _toAlignment(
                                               column.cellTextAlign,
                                             ),
-                                            child: Text(
-                                              column.valueBuilder(row),
-                                              textAlign: column.cellTextAlign,
-                                              style:
-                                                  column.cellTextStyle ??
-                                                  resolvedCellTextStyle,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
+                                            child:
+                                                column.cellBuilder?.call(row) ??
+                                                Text(
+                                                  column.valueBuilder(row),
+                                                  textAlign:
+                                                      column.cellTextAlign,
+                                                  style:
+                                                      column.cellTextStyle ??
+                                                      resolvedCellTextStyle,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
                                           ),
                                         ),
                                       ),

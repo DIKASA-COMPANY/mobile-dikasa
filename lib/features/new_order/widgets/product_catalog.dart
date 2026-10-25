@@ -76,27 +76,39 @@ class ProductCard extends StatelessWidget {
       elevation: 1,
       shadowColor: AppColors.c4D0F0F0F,
       child: InkWell(
-        onTap: onPressed,
+        onTap: product.isAvailable ? onPressed : null,
         child: Row(
           children: <Widget>[
-            Image.asset(
-              product.imageAsset,
-              width: 108,
-              height: 110,
-              fit: BoxFit.cover,
-              // Katalog nanti diisi dari backend; gambar yang hilang tidak
-              // boleh membuat seluruh grid gagal digambar.
-              errorBuilder: (_, _, _) => Container(
-                width: 108,
-                height: 110,
-                color: AppColors.cD9D9D9,
-                child: Icon(
-                  Icons.restaurant_menu,
-                  color: AppColors.c8F8F8F,
-                  size: 28,
-                ),
-              ),
-            ),
+            product.imageUrl != null
+                ? Image.network(
+                    product.imageUrl!,
+                    width: 108,
+                    height: 110,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => const SizedBox(
+                      width: 108,
+                      height: 110,
+                      child: Icon(Icons.image_not_supported_outlined),
+                    ),
+                  )
+                : Image.asset(
+                    product.imageAsset,
+                    width: 108,
+                    height: 110,
+                    fit: BoxFit.cover,
+                    // Katalog nanti diisi dari backend; gambar yang hilang tidak
+                    // boleh membuat seluruh grid gagal digambar.
+                    errorBuilder: (_, _, _) => Container(
+                      width: 108,
+                      height: 110,
+                      color: AppColors.cD9D9D9,
+                      child: Icon(
+                        Icons.restaurant_menu,
+                        color: AppColors.c8F8F8F,
+                        size: 28,
+                      ),
+                    ),
+                  ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
@@ -118,7 +130,9 @@ class ProductCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      formatRupiah(product.price),
+                      product.isAvailable
+                          ? formatRupiah(product.price)
+                          : 'Habis',
                       style: AppTextStyles.body.copyWith(
                         color: AppColors.c546168,
                       ),
