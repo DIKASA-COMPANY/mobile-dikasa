@@ -183,12 +183,12 @@ class _OutletIdentity extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              currentUser?.outletName ?? '-',
+              currentUser?.outletLabel ?? '-',
               style: AppTextStyles.sectionTitle,
             ),
             const SizedBox(height: 2),
             Text(
-              '${currentUser?.role ?? ''} ${currentUser?.name ?? ''}'.trim(),
+              currentUser?.name ?? '',
               style: AppTextStyles.caption.copyWith(
                 fontStyle: FontStyle.italic,
                 fontSize: 14,
@@ -197,19 +197,45 @@ class _OutletIdentity extends StatelessWidget {
           ],
         ),
         const SizedBox(width: 14),
-        Container(
-          width: 56,
-          height: 56,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.cD9D9D9),
-            image: const DecorationImage(
-              image: AssetImage('assets/images/avatar_profile_men.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
+        _UserAvatar(user: currentUser),
       ],
+    );
+  }
+}
+
+class _UserAvatar extends StatelessWidget {
+  const _UserAvatar({required this.user});
+
+  final User? user;
+
+  @override
+  Widget build(BuildContext context) {
+    final String? avatarUrl = user?.avatarUrl;
+
+    final Widget fallback = Image.asset(
+      'assets/images/avatar_profile_men.png',
+      width: 56,
+      height: 56,
+      fit: BoxFit.cover,
+    );
+
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.cD9D9D9),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: avatarUrl == null || avatarUrl.isEmpty
+          ? fallback
+          : Image.network(
+              avatarUrl,
+              width: 56,
+              height: 56,
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => fallback,
+            ),
     );
   }
 }

@@ -3,8 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_dikasa/core/network/api_client.dart';
 import 'package:mobile_dikasa/core/network/mock_api_interceptor.dart';
 import 'package:mobile_dikasa/data/repositories/auth_repository.dart';
+import 'package:mobile_dikasa/data/repositories/cash_session_repository.dart';
+import 'package:mobile_dikasa/data/repositories/order_type_repository.dart';
 import 'package:mobile_dikasa/data/repositories/product_repository.dart';
 import 'package:mobile_dikasa/data/services/auth_service.dart';
+import 'package:mobile_dikasa/data/services/cash_session_service.dart';
+import 'package:mobile_dikasa/data/services/order_type_service.dart';
 import 'package:mobile_dikasa/data/services/product_service.dart';
 import 'package:mobile_dikasa/features/new_order/view.dart';
 import 'package:mobile_dikasa/features/new_order/view_model.dart';
@@ -46,6 +50,12 @@ void main() {
         productService: ProductService(apiClient),
       ),
       authRepository: authRepository,
+      orderTypeRepository: OrderTypeRepository(
+        orderTypeService: OrderTypeService(apiClient),
+      ),
+      cashSessionRepository: CashSessionRepository(
+        cashSessionService: CashSessionService(apiClient),
+      ),
     );
 
     await tester.pumpWidget(
@@ -65,6 +75,15 @@ void main() {
     await tester.pump();
   }
 
+  Future<void> skipOpeningCash(WidgetTester tester) async {
+    await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
+    // Menutup dialog lebih dulu agar request POST /cash-sessions dimulai,
+    // lalu majukan fake clock melewati latency interceptor.
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+  }
+
   testWidgets('dialog Kas Awal muncul saat halaman dibuka', (
     WidgetTester tester,
   ) async {
@@ -79,17 +98,16 @@ void main() {
     );
   });
 
-  testWidgets('menekan Lewati menutup dialog tanpa menyimpan nominal', (
+  testWidgets('menekan Lewati membuka sesi kas dengan modal nol', (
     WidgetTester tester,
   ) async {
     final NewOrderViewModel viewModel = await pumpOrderPage(tester);
     await settleCatalog(tester);
 
-    await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
-    await tester.pumpAndSettle();
+    await skipOpeningCash(tester);
 
     expect(find.byType(OpeningCashDialog), findsNothing);
-    expect(viewModel.openingCash, isNull);
+    expect(viewModel.openingCash, 0);
     expect(viewModel.isOpeningCashResolved, isTrue);
   });
 
@@ -99,12 +117,11 @@ void main() {
     await pumpOrderPage(tester);
     await settleCatalog(tester);
 
-    await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
-    await tester.pumpAndSettle();
+    await skipOpeningCash(tester);
 
     // Identitas outlet pada baris teratas.
-    expect(find.text('Warteg Bahari'), findsOneWidget);
-    expect(find.text('Kasir Jane Doe'), findsOneWidget);
+    expect(find.text('Outlet aktif'), findsOneWidget);
+    expect(find.text('Jane Doe'), findsOneWidget);
 
     // Tab kelompok produk.
     expect(find.text('Makanan'), findsOneWidget);
@@ -124,8 +141,7 @@ void main() {
     await pumpOrderPage(tester);
     await settleCatalog(tester);
 
-    await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
-    await tester.pumpAndSettle();
+    await skipOpeningCash(tester);
 
     await tester.tap(find.text('Cumi Goreng Asam Manis'));
     await tester.pump();
@@ -142,8 +158,7 @@ void main() {
       await pumpOrderPage(tester);
       await settleCatalog(tester);
 
-      await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
-      await tester.pumpAndSettle();
+      await skipOpeningCash(tester);
 
       // Satu Cumi Goreng Asam Manis, dua Cumi Goreng Mentega.
       // `.first` menargetkan kartu di katalog (kiri), bukan baris di panel
@@ -159,7 +174,10 @@ void main() {
       // kedua tidak muncul walau total tetap ikut bertambah.
       final Finder panel = find.byType(ListView);
       expect(
-        find.descendant(of: panel, matching: find.text('Cumi Goreng Asam Manis')),
+        find.descendant(
+          of: panel,
+          matching: find.text('Cumi Goreng Asam Manis'),
+        ),
         findsOneWidget,
       );
       expect(

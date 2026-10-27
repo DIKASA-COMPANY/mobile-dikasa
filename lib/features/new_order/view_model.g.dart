@@ -199,6 +199,64 @@ mixin _$NewOrderViewModel on NewOrderViewModelBase, Store {
     });
   }
 
+  late final _$orderTypesAtom = Atom(
+    name: 'NewOrderViewModelBase.orderTypes',
+    context: context,
+  );
+
+  @override
+  ObservableList<OrderType> get orderTypes {
+    _$orderTypesAtom.reportRead();
+    return super.orderTypes;
+  }
+
+  @override
+  set orderTypes(ObservableList<OrderType> value) {
+    _$orderTypesAtom.reportWrite(value, super.orderTypes, () {
+      super.orderTypes = value;
+    });
+  }
+
+  late final _$isOrderTypesLoadingAtom = Atom(
+    name: 'NewOrderViewModelBase.isOrderTypesLoading',
+    context: context,
+  );
+
+  @override
+  bool get isOrderTypesLoading {
+    _$isOrderTypesLoadingAtom.reportRead();
+    return super.isOrderTypesLoading;
+  }
+
+  @override
+  set isOrderTypesLoading(bool value) {
+    _$isOrderTypesLoadingAtom.reportWrite(value, super.isOrderTypesLoading, () {
+      super.isOrderTypesLoading = value;
+    });
+  }
+
+  late final _$orderTypesErrorMessageAtom = Atom(
+    name: 'NewOrderViewModelBase.orderTypesErrorMessage',
+    context: context,
+  );
+
+  @override
+  String? get orderTypesErrorMessage {
+    _$orderTypesErrorMessageAtom.reportRead();
+    return super.orderTypesErrorMessage;
+  }
+
+  @override
+  set orderTypesErrorMessage(String? value) {
+    _$orderTypesErrorMessageAtom.reportWrite(
+      value,
+      super.orderTypesErrorMessage,
+      () {
+        super.orderTypesErrorMessage = value;
+      },
+    );
+  }
+
   late final _$openingCashAtom = Atom(
     name: 'NewOrderViewModelBase.openingCash',
     context: context,
@@ -239,6 +297,72 @@ mixin _$NewOrderViewModel on NewOrderViewModelBase, Store {
     );
   }
 
+  late final _$isCheckingOpeningCashAtom = Atom(
+    name: 'NewOrderViewModelBase.isCheckingOpeningCash',
+    context: context,
+  );
+
+  @override
+  bool get isCheckingOpeningCash {
+    _$isCheckingOpeningCashAtom.reportRead();
+    return super.isCheckingOpeningCash;
+  }
+
+  @override
+  set isCheckingOpeningCash(bool value) {
+    _$isCheckingOpeningCashAtom.reportWrite(
+      value,
+      super.isCheckingOpeningCash,
+      () {
+        super.isCheckingOpeningCash = value;
+      },
+    );
+  }
+
+  late final _$isOpeningCashSubmittingAtom = Atom(
+    name: 'NewOrderViewModelBase.isOpeningCashSubmitting',
+    context: context,
+  );
+
+  @override
+  bool get isOpeningCashSubmitting {
+    _$isOpeningCashSubmittingAtom.reportRead();
+    return super.isOpeningCashSubmitting;
+  }
+
+  @override
+  set isOpeningCashSubmitting(bool value) {
+    _$isOpeningCashSubmittingAtom.reportWrite(
+      value,
+      super.isOpeningCashSubmitting,
+      () {
+        super.isOpeningCashSubmitting = value;
+      },
+    );
+  }
+
+  late final _$openingCashErrorMessageAtom = Atom(
+    name: 'NewOrderViewModelBase.openingCashErrorMessage',
+    context: context,
+  );
+
+  @override
+  String? get openingCashErrorMessage {
+    _$openingCashErrorMessageAtom.reportRead();
+    return super.openingCashErrorMessage;
+  }
+
+  @override
+  set openingCashErrorMessage(String? value) {
+    _$openingCashErrorMessageAtom.reportWrite(
+      value,
+      super.openingCashErrorMessage,
+      () {
+        super.openingCashErrorMessage = value;
+      },
+    );
+  }
+
   late final _$loadProductsAsyncAction = AsyncAction(
     'NewOrderViewModelBase.loadProducts',
     context: context,
@@ -248,6 +372,40 @@ mixin _$NewOrderViewModel on NewOrderViewModelBase, Store {
   Future<void> loadProducts({bool forceRefresh = false}) {
     return _$loadProductsAsyncAction.run(
       () => super.loadProducts(forceRefresh: forceRefresh),
+    );
+  }
+
+  late final _$loadOrderTypesAsyncAction = AsyncAction(
+    'NewOrderViewModelBase.loadOrderTypes',
+    context: context,
+  );
+
+  @override
+  Future<void> loadOrderTypes({bool forceRefresh = false}) {
+    return _$loadOrderTypesAsyncAction.run(
+      () => super.loadOrderTypes(forceRefresh: forceRefresh),
+    );
+  }
+
+  late final _$checkOpeningCashAsyncAction = AsyncAction(
+    'NewOrderViewModelBase.checkOpeningCash',
+    context: context,
+  );
+
+  @override
+  Future<void> checkOpeningCash() {
+    return _$checkOpeningCashAsyncAction.run(() => super.checkOpeningCash());
+  }
+
+  late final _$confirmOpeningCashAsyncAction = AsyncAction(
+    'NewOrderViewModelBase.confirmOpeningCash',
+    context: context,
+  );
+
+  @override
+  Future<bool> confirmOpeningCash(int? amount) {
+    return _$confirmOpeningCashAsyncAction.run(
+      () => super.confirmOpeningCash(amount),
     );
   }
 
@@ -341,18 +499,6 @@ mixin _$NewOrderViewModel on NewOrderViewModelBase, Store {
   }
 
   @override
-  void confirmOpeningCash(int? amount) {
-    final _$actionInfo = _$NewOrderViewModelBaseActionController.startAction(
-      name: 'NewOrderViewModelBase.confirmOpeningCash',
-    );
-    try {
-      return super.confirmOpeningCash(amount);
-    } finally {
-      _$NewOrderViewModelBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   String toString() {
     return '''
 products: ${products},
@@ -363,8 +509,14 @@ selectedCategory: ${selectedCategory},
 searchQuery: ${searchQuery},
 orderItems: ${orderItems},
 orderType: ${orderType},
+orderTypes: ${orderTypes},
+isOrderTypesLoading: ${isOrderTypesLoading},
+orderTypesErrorMessage: ${orderTypesErrorMessage},
 openingCash: ${openingCash},
 isOpeningCashResolved: ${isOpeningCashResolved},
+isCheckingOpeningCash: ${isCheckingOpeningCash},
+isOpeningCashSubmitting: ${isOpeningCashSubmitting},
+openingCashErrorMessage: ${openingCashErrorMessage},
 categories: ${categories},
 visibleProducts: ${visibleProducts},
 hasOrderItems: ${hasOrderItems},

@@ -6,6 +6,7 @@ import 'package:mobile_dikasa/core/themes/text_styles.dart';
 import 'package:mobile_dikasa/core/utils/app_snackbar.dart';
 import 'package:mobile_dikasa/core/utils/formatted_currency.dart';
 import 'package:mobile_dikasa/data/models/order_item.dart';
+import 'package:mobile_dikasa/data/models/order_type.dart';
 import 'package:mobile_dikasa/features/new_order/view_model.dart';
 import 'package:mobile_dikasa/features/new_order/widgets/panel_dropdown.dart';
 
@@ -83,8 +84,12 @@ class _PanelHeader extends StatelessWidget {
             const SizedBox(height: 20),
             Observer(
               builder: (_) => PanelDropdown<OrderType>(
-                label: viewModel.orderType?.label ?? '-- Pilih Jenis Order --',
-                options: OrderType.values,
+                label: viewModel.isOrderTypesLoading
+                    ? 'Memuat jenis order...'
+                    : viewModel.orderTypesErrorMessage != null
+                    ? 'Gagal memuat jenis order'
+                    : viewModel.orderType?.label ?? '-- Pilih Jenis Order --',
+                options: viewModel.orderTypes.toList(growable: false),
                 optionLabel: (OrderType type) => type.label,
                 onSelected: viewModel.selectOrderType,
                 isActive: viewModel.orderType != null,
@@ -116,9 +121,7 @@ class _HeaderButton extends StatelessWidget {
           backgroundColor: AppColors.cFFFFFF,
           foregroundColor: AppColors.c37474F,
           elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: AppTextStyles.button.copyWith(fontWeight: FontWeight.w500),
         ),
         child: Text(label),
@@ -190,11 +193,8 @@ class _OrderItemListState extends State<_OrderItemList> {
         controller: _controller,
         padding: EdgeInsets.zero,
         itemCount: widget.items.length,
-        separatorBuilder: (_, _) => Divider(
-          height: 1,
-          thickness: 1,
-          color: AppColors.cEAEAEA,
-        ),
+        separatorBuilder: (_, _) =>
+            Divider(height: 1, thickness: 1, color: AppColors.cEAEAEA),
         itemBuilder: (BuildContext context, int index) {
           final OrderItem item = widget.items[index];
           return _OrderItemRow(
@@ -330,7 +330,10 @@ class _TotalRow extends StatelessWidget {
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[Text(label, style: style), Text(value, style: style)],
+      children: <Widget>[
+        Text(label, style: style),
+        Text(value, style: style),
+      ],
     );
   }
 }

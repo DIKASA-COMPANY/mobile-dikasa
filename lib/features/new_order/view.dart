@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobile_dikasa/core/constants/colors.dart';
@@ -37,9 +39,18 @@ class _NewOrderViewState extends State<NewOrderView> {
     super.initState();
     _viewModel = context.read<NewOrderViewModel>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _viewModel.loadProducts();
-      _askOpeningCash();
+      unawaited(_viewModel.loadProducts());
+      unawaited(_viewModel.loadOrderTypes());
+      unawaited(_prepareOpeningCash());
     });
+  }
+
+  Future<void> _prepareOpeningCash() async {
+    await _viewModel.checkOpeningCash();
+    if (!mounted || _viewModel.isOpeningCashResolved) {
+      return;
+    }
+    await _askOpeningCash();
   }
 
   /// Menanyakan kas awal sekali saja per sesi kasir.
@@ -49,14 +60,20 @@ class _NewOrderViewState extends State<NewOrderView> {
     }
 
     final int? amount = await OpeningCashDialog.show(context);
-    _viewModel.confirmOpeningCash(amount);
+    final bool isSuccess = await _viewModel.confirmOpeningCash(amount);
+    if (!mounted || isSuccess) {
+      return;
+    }
+    showAppSnackBar(
+      context,
+      _viewModel.openingCashErrorMessage ?? 'Kas awal gagal disimpan.',
+    );
   }
 
   void _onLockPressed() {
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      AppRoutes.login,
-      (Route<dynamic> route) => false,
-    );
+    Navigator.of(
+      context,
+    ).pushNamedAndRemoveUntil(AppRoutes.login, (Route<dynamic> route) => false);
   }
 
   void _onMenuPressed() =>

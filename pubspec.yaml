@@ -46,6 +46,10 @@ dependencies:
   # HTTP client untuk lapisan Service.
   dio: ^5.10.0
 
+  # Seluruh DTO dan service HTTP digenerate dari openapi/dikasa.openapi.yaml.
+  dikasa_api:
+    path: packages/dikasa_api
+
   # Konfigurasi environment (base URL API) agar tidak hard-coded.
   flutter_dotenv: ^6.0.1
 
@@ -83,7 +87,6 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-    - .env
     - assets/icons/
     - assets/images/
     # Dibaca oleh flutter_dotenv saat aplikasi start.

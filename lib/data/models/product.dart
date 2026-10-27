@@ -9,11 +9,12 @@ enum ProductGroup {
   /// Teks yang ditampilkan pada tab.
   final String label;
 
-  static ProductGroup fromJson(String? value) {
-    return ProductGroup.values.firstWhere(
-      (ProductGroup group) => group.name == value,
-      orElse: () => ProductGroup.makanan,
-    );
+  static ProductGroup fromApi(String? value) {
+    return switch (value) {
+      'drink' || 'minuman' => ProductGroup.minuman,
+      'additional' || 'tambahan' => ProductGroup.tambahan,
+      _ => ProductGroup.makanan,
+    };
   }
 }
 
@@ -23,18 +24,23 @@ class Product {
     required this.id,
     required this.name,
     required this.price,
-    required this.imageAsset,
     required this.group,
     required this.category,
     required this.isHighlighted,
+    required this.isAvailable,
+    this.imageUrl,
+    this.imageAsset,
   });
 
   final String id;
   final String name;
   final int price;
 
-  /// Path gambar di `assets/images/`.
-  final String imageAsset;
+  /// URL Firebase/backend untuk data nyata.
+  final String? imageUrl;
+
+  /// Fallback asset lokal untuk data demo dan produk tanpa gambar.
+  final String? imageAsset;
 
   final ProductGroup group;
 
@@ -45,16 +51,5 @@ class Product {
   /// Arti pastinya belum dikonfirmasi ke tim desain - dugaan sementara
   /// adalah penanda stok menipis. Sementara ini hanya memengaruhi warna teks.
   final bool isHighlighted;
-
-  factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
-      id: json['id'].toString(),
-      name: json['name'] as String? ?? '',
-      price: (json['price'] as num?)?.toInt() ?? 0,
-      imageAsset: json['image_asset'] as String? ?? '',
-      group: ProductGroup.fromJson(json['group'] as String?),
-      category: json['category'] as String? ?? '',
-      isHighlighted: json['is_highlighted'] as bool? ?? false,
-    );
-  }
+  final bool isAvailable;
 }

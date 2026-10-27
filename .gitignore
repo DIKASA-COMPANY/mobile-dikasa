@@ -56,6 +56,7 @@ __pycache__/
 .claude/
 .figma_extract/
 .figma_splash_extract/
+packages/dikasa_api/.openapi-generator/
 
 # Environment files
 .env
