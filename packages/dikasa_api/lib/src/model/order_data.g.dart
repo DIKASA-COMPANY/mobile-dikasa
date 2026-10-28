@@ -13,11 +13,19 @@ abstract class _$OrderDataCWProxy {
 
   OrderData id(String id);
 
+  OrderData netAfterRefund(int? netAfterRefund);
+
   OrderData orderType(OrderListTypeData orderType);
 
   OrderData orderedAt(DateTime orderedAt);
 
   OrderData receiptNumber(String receiptNumber);
+
+  OrderData refundRevision(int refundRevision);
+
+  OrderData refundedAmount(int? refundedAmount);
+
+  OrderData refundsSupported(bool refundsSupported);
 
   OrderData restaurantTable(RestaurantTableData? restaurantTable);
 
@@ -37,9 +45,13 @@ abstract class _$OrderDataCWProxy {
     String? customerId,
     String customerName,
     String id,
+    int? netAfterRefund,
     OrderListTypeData orderType,
     DateTime orderedAt,
     String receiptNumber,
+    int refundRevision,
+    int? refundedAmount,
+    bool refundsSupported,
     RestaurantTableData? restaurantTable,
     OrderDataStatusEnum status,
     int totalAmount,
@@ -64,6 +76,10 @@ class _$OrderDataCWProxyImpl implements _$OrderDataCWProxy {
   OrderData id(String id) => this(id: id);
 
   @override
+  OrderData netAfterRefund(int? netAfterRefund) =>
+      this(netAfterRefund: netAfterRefund);
+
+  @override
   OrderData orderType(OrderListTypeData orderType) =>
       this(orderType: orderType);
 
@@ -73,6 +89,18 @@ class _$OrderDataCWProxyImpl implements _$OrderDataCWProxy {
   @override
   OrderData receiptNumber(String receiptNumber) =>
       this(receiptNumber: receiptNumber);
+
+  @override
+  OrderData refundRevision(int refundRevision) =>
+      this(refundRevision: refundRevision);
+
+  @override
+  OrderData refundedAmount(int? refundedAmount) =>
+      this(refundedAmount: refundedAmount);
+
+  @override
+  OrderData refundsSupported(bool refundsSupported) =>
+      this(refundsSupported: refundsSupported);
 
   @override
   OrderData restaurantTable(RestaurantTableData? restaurantTable) =>
@@ -99,9 +127,13 @@ class _$OrderDataCWProxyImpl implements _$OrderDataCWProxy {
     Object? customerId = const $CopyWithPlaceholder(),
     Object? customerName = const $CopyWithPlaceholder(),
     Object? id = const $CopyWithPlaceholder(),
+    Object? netAfterRefund = const $CopyWithPlaceholder(),
     Object? orderType = const $CopyWithPlaceholder(),
     Object? orderedAt = const $CopyWithPlaceholder(),
     Object? receiptNumber = const $CopyWithPlaceholder(),
+    Object? refundRevision = const $CopyWithPlaceholder(),
+    Object? refundedAmount = const $CopyWithPlaceholder(),
+    Object? refundsSupported = const $CopyWithPlaceholder(),
     Object? restaurantTable = const $CopyWithPlaceholder(),
     Object? status = const $CopyWithPlaceholder(),
     Object? totalAmount = const $CopyWithPlaceholder(),
@@ -120,6 +152,10 @@ class _$OrderDataCWProxyImpl implements _$OrderDataCWProxy {
           ? _value.id
           // ignore: cast_nullable_to_non_nullable
           : id as String,
+      netAfterRefund: netAfterRefund == const $CopyWithPlaceholder()
+          ? _value.netAfterRefund
+          // ignore: cast_nullable_to_non_nullable
+          : netAfterRefund as int?,
       orderType: orderType == const $CopyWithPlaceholder()
           ? _value.orderType
           // ignore: cast_nullable_to_non_nullable
@@ -132,6 +168,18 @@ class _$OrderDataCWProxyImpl implements _$OrderDataCWProxy {
           ? _value.receiptNumber
           // ignore: cast_nullable_to_non_nullable
           : receiptNumber as String,
+      refundRevision: refundRevision == const $CopyWithPlaceholder()
+          ? _value.refundRevision
+          // ignore: cast_nullable_to_non_nullable
+          : refundRevision as int,
+      refundedAmount: refundedAmount == const $CopyWithPlaceholder()
+          ? _value.refundedAmount
+          // ignore: cast_nullable_to_non_nullable
+          : refundedAmount as int?,
+      refundsSupported: refundsSupported == const $CopyWithPlaceholder()
+          ? _value.refundsSupported
+          // ignore: cast_nullable_to_non_nullable
+          : refundsSupported as bool,
       restaurantTable: restaurantTable == const $CopyWithPlaceholder()
           ? _value.restaurantTable
           // ignore: cast_nullable_to_non_nullable
@@ -171,9 +219,13 @@ OrderData _$OrderDataFromJson(Map<String, dynamic> json) => $checkedCreate(
       requiredKeys: const [
         'customer_name',
         'id',
+        'net_after_refund',
         'order_type',
         'ordered_at',
         'receipt_number',
+        'refund_revision',
+        'refunded_amount',
+        'refunds_supported',
         'status',
         'total_amount',
         'total_quantity',
@@ -183,6 +235,10 @@ OrderData _$OrderDataFromJson(Map<String, dynamic> json) => $checkedCreate(
       customerId: $checkedConvert('customer_id', (v) => v as String?),
       customerName: $checkedConvert('customer_name', (v) => v as String),
       id: $checkedConvert('id', (v) => v as String),
+      netAfterRefund: $checkedConvert(
+        'net_after_refund',
+        (v) => (v as num?)?.toInt(),
+      ),
       orderType: $checkedConvert(
         'order_type',
         (v) => OrderListTypeData.fromJson(v as Map<String, dynamic>),
@@ -192,6 +248,15 @@ OrderData _$OrderDataFromJson(Map<String, dynamic> json) => $checkedCreate(
         (v) => DateTime.parse(v as String),
       ),
       receiptNumber: $checkedConvert('receipt_number', (v) => v as String),
+      refundRevision: $checkedConvert(
+        'refund_revision',
+        (v) => (v as num).toInt(),
+      ),
+      refundedAmount: $checkedConvert(
+        'refunded_amount',
+        (v) => (v as num?)?.toInt(),
+      ),
+      refundsSupported: $checkedConvert('refunds_supported', (v) => v as bool),
       restaurantTable: $checkedConvert(
         'restaurant_table',
         (v) => v == null
@@ -217,9 +282,13 @@ OrderData _$OrderDataFromJson(Map<String, dynamic> json) => $checkedCreate(
   fieldKeyMap: const {
     'customerId': 'customer_id',
     'customerName': 'customer_name',
+    'netAfterRefund': 'net_after_refund',
     'orderType': 'order_type',
     'orderedAt': 'ordered_at',
     'receiptNumber': 'receipt_number',
+    'refundRevision': 'refund_revision',
+    'refundedAmount': 'refunded_amount',
+    'refundsSupported': 'refunds_supported',
     'restaurantTable': 'restaurant_table',
     'totalAmount': 'total_amount',
     'totalQuantity': 'total_quantity',
@@ -230,9 +299,13 @@ Map<String, dynamic> _$OrderDataToJson(OrderData instance) => <String, dynamic>{
   'customer_id': ?instance.customerId,
   'customer_name': instance.customerName,
   'id': instance.id,
+  'net_after_refund': instance.netAfterRefund,
   'order_type': instance.orderType.toJson(),
   'ordered_at': instance.orderedAt.toIso8601String(),
   'receipt_number': instance.receiptNumber,
+  'refund_revision': instance.refundRevision,
+  'refunded_amount': instance.refundedAmount,
+  'refunds_supported': instance.refundsSupported,
   'restaurant_table': ?instance.restaurantTable?.toJson(),
   'status': _$OrderDataStatusEnumEnumMap[instance.status]!,
   'total_amount': instance.totalAmount,
@@ -241,6 +314,7 @@ Map<String, dynamic> _$OrderDataToJson(OrderData instance) => <String, dynamic>{
 
 const _$OrderDataStatusEnumEnumMap = {
   OrderDataStatusEnum.paid: 'paid',
+  OrderDataStatusEnum.partiallyRefunded: 'partially_refunded',
   OrderDataStatusEnum.refunded: 'refunded',
   OrderDataStatusEnum.cancelled: 'cancelled',
   OrderDataStatusEnum.unknownDefaultOpenApi: 'unknown_default_open_api',

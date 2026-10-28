@@ -1,0 +1,75 @@
+{
+  "file": "jgBLUfP6OXyxmErwgTjfIT",
+  "frames": [
+    "1:5074",
+    "1:5357"
+  ],
+  "assets": {
+    "add": {
+      "path": "assets/icons/catalog_filter.svg",
+      "width": 20.0,
+      "height": 20.0,
+      "sha256": "b5eac500c3271e054a063659ade26eed63c076f6236c2b530e43a18147e0adb9"
+    },
+    "amount": {
+      "path": "assets/icons/cash_movement_amount.svg",
+      "width": 23.4998,
+      "height": 21.6533,
+      "sha256": "3cd8387e09cea4ab1d8a0042847118e1cda7b85784f7dec9a0f8417ba7cfc9ce"
+    },
+    "back": {
+      "path": "assets/icons/catalog_back.svg",
+      "width": 32.0,
+      "height": 25.0,
+      "sha256": "20d30dbce579c774a1c5c5a5f2390dfa79dee8931f7c3d4d3c6e6251243392d0"
+    },
+    "camera": {
+      "path": "assets/icons/catalog_camera.svg",
+      "width": 122.002,
+      "height": 114.0,
+      "sha256": "d76293571ce3a1c330f103674ee5f7a942f745c5b291cc401703fc8e5d948c88"
+    },
+    "close": {
+      "path": "assets/icons/cash_movement_close.svg",
+      "width": 30.0,
+      "height": 30.0,
+      "sha256": "6350384947cbd62e633003c42860dd90bdffecdf83efc17b2878926eeae16b95"
+    },
+    "down": {
+      "path": "assets/icons/cash_movement_down.svg",
+      "width": 21.7061,
+      "height": 10.0653,
+      "sha256": "cc00c05894134c4007249f53f34cbad06228ee7c6515063795334a61d2c2bfa9"
+    },
+    "lock": {
+      "path": "assets/icons/catalog_lock.svg",
+      "width": 46.0,
+      "height": 46.0,
+      "sha256": "e9cbb767bff67fbaa13dca1a326f7a4b293d46ea03461f50122ba8a7aae72b25"
+    },
+    "menu": {
+      "path": "assets/icons/catalog_menu.svg",
+      "width": 34.4,
+      "height": 26.0,
+      "sha256": "0336772ab8955646730fda16804ddb19f85f1142c17dfae71d7bcc7cf468f676"
+    },
+    "name": {
+      "path": "assets/icons/cash_movement_name.svg",
+      "width": 22.0,
+      "height": 22.4913,
+      "sha256": "763918bba66a1233bd2d3acc4a9abc4f261fab53891add1d47f12ee16bc2acec"
+    },
+    "note": {
+      "path": "assets/icons/cash_movement_note.svg",
+      "width": 22.5435,
+      "height": 23.4999,
+      "sha256": "27cc022050c1e043440e6597a999c942a079b88f2a48a488db4683706eceb030"
+    },
+    "type": {
+      "path": "assets/icons/cash_movement_type.svg",
+      "width": 22.0,
+      "height": 18.413,
+      "sha256": "f317a6dcd0156744cc96d7abe9f2a4ef06e6dbf3fe55502345c2ff7ab9213802"
+    }
+  }
+}

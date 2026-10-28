@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_dikasa/core/constants/colors.dart';
 
 class DropdownFieldOption<T> {
@@ -39,10 +40,7 @@ class DropdownField<T> extends StatelessWidget {
     this.borderColor,
     this.focusedBorderColor,
     this.errorBorderColor,
-    this.contentPadding = const EdgeInsets.symmetric(
-      horizontal: 16,
-      vertical: 14,
-    ),
+    this.contentPadding,
     this.borderRadius = 12,
   });
 
@@ -76,7 +74,7 @@ class DropdownField<T> extends StatelessWidget {
   final Color? focusedBorderColor;
   final Color? errorBorderColor;
 
-  final EdgeInsetsGeometry contentPadding;
+  final EdgeInsetsGeometry? contentPadding;
   final double borderRadius;
 
   @override
@@ -90,16 +88,16 @@ class DropdownField<T> extends StatelessWidget {
 
     final TextStyle resolvedTextStyle =
         textStyle ??
-        const TextStyle(
-          fontSize: 14,
+        TextStyle(
+          fontSize: 14.sp,
           fontWeight: FontWeight.w500,
           color: Colors.black87,
         );
 
     final TextStyle resolvedLabelStyle =
         labelStyle ??
-        const TextStyle(
-          fontSize: 14,
+        TextStyle(
+          fontSize: 14.sp,
           fontWeight: FontWeight.w600,
           color: Colors.black87,
         );
@@ -107,7 +105,7 @@ class DropdownField<T> extends StatelessWidget {
     final TextStyle resolvedHintStyle =
         hintStyle ??
         TextStyle(
-          fontSize: 14,
+          fontSize: 14.sp,
           fontWeight: FontWeight.w400,
           color: AppColors.c707070,
         );
@@ -130,7 +128,7 @@ class DropdownField<T> extends StatelessWidget {
                   : const <InlineSpan>[],
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
         ],
         DropdownButtonFormField<T>(
           focusNode: focusNode,
@@ -152,7 +150,9 @@ class DropdownField<T> extends StatelessWidget {
             errorText: errorText,
             filled: true,
             fillColor: resolvedBackgroundColor,
-            contentPadding: contentPadding,
+            contentPadding:
+                contentPadding ??
+                EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
             enabledBorder: _buildBorder(resolvedBorderColor),
             focusedBorder: _buildBorder(resolvedFocusedBorderColor),
             disabledBorder: _buildBorder(resolvedBorderColor),
@@ -176,7 +176,7 @@ class DropdownField<T> extends StatelessWidget {
   OutlineInputBorder _buildBorder(Color color) {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(borderRadius),
-      borderSide: BorderSide(color: color, width: 1),
+      borderSide: BorderSide(color: color, width: 1.w),
     );
   }
 }

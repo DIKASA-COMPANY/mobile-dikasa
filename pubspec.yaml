@@ -46,7 +46,7 @@ dependencies:
   # HTTP client untuk lapisan Service.
   dio: ^5.10.0
 
-  # Seluruh DTO dan service HTTP digenerate dari openapi/dikasa.openapi.yaml.
+  # Services dan transport models yang dihasilkan dari kontrak OpenAPI backend.
   dikasa_api:
     path: packages/dikasa_api
 
@@ -55,6 +55,7 @@ dependencies:
 
   # Render ikon SVG hasil export Figma di assets/icons/.
   flutter_svg: ^2.2.1
+  file_picker: 13.1.0
 
 dev_dependencies:
   flutter_test:
@@ -81,16 +82,29 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Poppins-Italic.ttf
+          style: italic
 
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
+    # Default aman untuk fresh checkout. Nilai produksi diberikan melalui
+    # --dart-define tanpa memasukkan secret ke repository.
+    - .env.example
     - assets/icons/
     - assets/images/
-    # Dibaca oleh flutter_dotenv saat aplikasi start.
-    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -36,11 +36,11 @@ class LoginResponseData {
   @JsonKey(name: r'expires_in', required: true, includeIfNull: false)
   final int expiresIn;
 
-  /// Sama dengan UUID user PostgreSQL
+  /// UUID user PostgreSQL yang dipakai sebagai Firebase UID
   @JsonKey(name: r'firebase_uid', required: true, includeIfNull: false)
   final String firebaseUid;
 
-  /// Firebase refresh token untuk memperbarui sesi
+  /// Firebase refresh token
   @JsonKey(name: r'refresh_token', required: true, includeIfNull: false)
   final String refreshToken;
 

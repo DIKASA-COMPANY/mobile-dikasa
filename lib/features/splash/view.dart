@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_dikasa/core/constants/colors.dart';
 import 'package:mobile_dikasa/core/routing/app_routes.dart';
 
@@ -99,10 +100,7 @@ class SplashFrameMain extends StatelessWidget {
 }
 
 class _SplashScaffold extends StatelessWidget {
-  const _SplashScaffold({
-    required this.variant,
-    this.child,
-  });
+  const _SplashScaffold({required this.variant, this.child});
 
   final _SplashBackgroundVariant variant;
   final Widget? child;
@@ -119,7 +117,7 @@ class _SplashScaffold extends StatelessWidget {
             SafeArea(
               child: Center(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: child,
                 ),
               ),
@@ -158,10 +156,7 @@ class _SplashBackground extends StatelessWidget {
 }
 
 class _IconPatternBand extends StatelessWidget {
-  const _IconPatternBand({
-    required this.alignment,
-    required this.heightFactor,
-  });
+  const _IconPatternBand({required this.alignment, required this.heightFactor});
 
   static const List<IconData> _icons = <IconData>[
     Icons.point_of_sale_outlined,
@@ -177,7 +172,9 @@ class _IconPatternBand extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.sizeOf(context);
     final double bandHeight = screenSize.height * heightFactor;
-    final double cellWidth = (screenSize.width / 5.2).clamp(96.0, 180.0).toDouble();
+    final double cellWidth = (screenSize.width / 5.2)
+        .clamp(96.0, 180.0)
+        .toDouble();
     final double runSpacing = (bandHeight * 0.20).clamp(18.0, 46.0).toDouble();
     final Color iconColor = AppColors.cD9D9D9.withAlpha(110);
 
@@ -199,11 +196,7 @@ class _IconPatternBand extends StatelessWidget {
               return SizedBox(
                 width: cellWidth,
                 child: Center(
-                  child: Icon(
-                    iconData,
-                    size: iconSize,
-                    color: iconColor,
-                  ),
+                  child: Icon(iconData, size: iconSize, color: iconColor),
                 ),
               );
             }),
@@ -223,13 +216,10 @@ class _SplashMainLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.sizeOf(context);
-    final double logoWidth =
-        (screenSize.width * 0.70).clamp(260.0, 760.0).toDouble();
+    final double logoWidth = (screenSize.width * 0.70)
+        .clamp(260.0, 760.0)
+        .toDouble();
 
-    return Image.asset(
-      logoAssetPath,
-      width: logoWidth,
-      fit: BoxFit.contain,
-    );
+    return Image.asset(logoAssetPath, width: logoWidth, fit: BoxFit.contain);
   }
 }

@@ -12,17 +12,22 @@ class ProductRepository {
   final ProductService _productService;
 
   List<Product>? _cachedProducts;
+  int _generation = 0;
 
   Future<List<Product>> getProducts({bool forceRefresh = false}) async {
+    final generation = _generation;
     final List<Product>? cached = _cachedProducts;
     if (cached != null && !forceRefresh) {
       return cached;
     }
 
     final List<Product> products = await _productService.fetchProducts();
-    _cachedProducts = products;
+    if (generation == _generation) _cachedProducts = products;
     return products;
   }
 
-  void clear() => _cachedProducts = null;
+  void clear() {
+    _generation++;
+    _cachedProducts = null;
+  }
 }

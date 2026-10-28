@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_dikasa/core/constants/colors.dart';
 
 typedef DateRangeTextBuilder = String Function(DateTimeRange value);
@@ -29,10 +30,7 @@ class DateRangePickerField extends StatelessWidget {
     this.borderColor,
     this.focusedBorderColor,
     this.errorBorderColor,
-    this.contentPadding = const EdgeInsets.symmetric(
-      horizontal: 16,
-      vertical: 14,
-    ),
+    this.contentPadding,
     this.borderRadius = 12,
     this.rangeTextBuilder,
   });
@@ -66,7 +64,7 @@ class DateRangePickerField extends StatelessWidget {
   final Color? focusedBorderColor;
   final Color? errorBorderColor;
 
-  final EdgeInsetsGeometry contentPadding;
+  final EdgeInsetsGeometry? contentPadding;
   final double borderRadius;
   final DateRangeTextBuilder? rangeTextBuilder;
 
@@ -81,16 +79,16 @@ class DateRangePickerField extends StatelessWidget {
 
     final TextStyle resolvedTextStyle =
         textStyle ??
-        const TextStyle(
-          fontSize: 14,
+        TextStyle(
+          fontSize: 14.sp,
           fontWeight: FontWeight.w500,
           color: Colors.black87,
         );
 
     final TextStyle resolvedLabelStyle =
         labelStyle ??
-        const TextStyle(
-          fontSize: 14,
+        TextStyle(
+          fontSize: 14.sp,
           fontWeight: FontWeight.w600,
           color: Colors.black87,
         );
@@ -98,7 +96,7 @@ class DateRangePickerField extends StatelessWidget {
     final TextStyle resolvedHintStyle =
         hintStyle ??
         TextStyle(
-          fontSize: 14,
+          fontSize: 14.sp,
           fontWeight: FontWeight.w400,
           color: AppColors.c707070,
         );
@@ -182,7 +180,7 @@ class DateRangePickerField extends StatelessWidget {
                       : const <InlineSpan>[],
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
             ],
             InkWell(
               focusNode: focusNode,
@@ -196,7 +194,9 @@ class DateRangePickerField extends StatelessWidget {
                   errorText: effectiveErrorText,
                   filled: true,
                   fillColor: resolvedBackgroundColor,
-                  contentPadding: contentPadding,
+                  contentPadding:
+                      contentPadding ??
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
                   enabledBorder: _buildBorder(resolvedBorderColor),
                   focusedBorder: _buildBorder(resolvedFocusedBorderColor),
                   disabledBorder: _buildBorder(resolvedBorderColor),
@@ -211,7 +211,7 @@ class DateRangePickerField extends StatelessWidget {
                         style: showHint ? resolvedHintStyle : resolvedTextStyle,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12.w),
                     icon ?? Icon(Icons.date_range, color: AppColors.c707070),
                   ],
                 ),
@@ -226,7 +226,7 @@ class DateRangePickerField extends StatelessWidget {
   OutlineInputBorder _buildBorder(Color color) {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(borderRadius),
-      borderSide: BorderSide(color: color, width: 1),
+      borderSide: BorderSide(color: color, width: 1.w),
     );
   }
 

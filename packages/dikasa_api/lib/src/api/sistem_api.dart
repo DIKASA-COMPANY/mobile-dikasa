@@ -18,7 +18,7 @@ class SistemApi {
   const SistemApi(this._dio);
 
   /// Memeriksa kondisi API
-  /// Memastikan API berjalan dan Firebase ID token berhasil diverifikasi.
+  /// Memastikan API berjalan dan Bearer token dari auth provider berhasil diverifikasi.
   ///
   /// Parameters:
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation

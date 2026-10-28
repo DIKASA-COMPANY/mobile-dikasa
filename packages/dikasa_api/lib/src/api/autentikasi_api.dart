@@ -19,7 +19,7 @@ class AutentikasiApi {
   const AutentikasiApi(this._dio);
 
   /// Masuk ke aplikasi
-  /// Memvalidasi username, nomor HP, atau email dan password di PostgreSQL, lalu meminta Firebase menerbitkan token.
+  /// Memvalidasi kredensial PostgreSQL lalu menerbitkan Firebase ID token dan refresh token.
   ///
   /// Parameters:
   /// * [loginRequest]

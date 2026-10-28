@@ -3,13 +3,10 @@ import 'package:mobile_dikasa/core/network/api_client.dart';
 import 'package:mobile_dikasa/core/network/mock_api_interceptor.dart';
 import 'package:mobile_dikasa/data/models/product.dart';
 import 'package:mobile_dikasa/data/repositories/auth_repository.dart';
-import 'package:mobile_dikasa/data/repositories/cash_session_repository.dart';
-import 'package:mobile_dikasa/data/repositories/order_type_repository.dart';
 import 'package:mobile_dikasa/data/repositories/product_repository.dart';
 import 'package:mobile_dikasa/data/services/auth_service.dart';
-import 'package:mobile_dikasa/data/services/cash_session_service.dart';
-import 'package:mobile_dikasa/data/services/order_type_service.dart';
 import 'package:mobile_dikasa/data/services/product_service.dart';
+import 'package:mobile_dikasa/data/services/pos_service.dart';
 import 'package:mobile_dikasa/features/new_order/view_model.dart';
 
 import '../../helpers/test_env.dart';
@@ -31,16 +28,10 @@ void main() {
         productService: ProductService(apiClient),
       ),
       authRepository: authRepository,
-      orderTypeRepository: OrderTypeRepository(
-        orderTypeService: OrderTypeService(apiClient),
-      ),
-      cashSessionRepository: CashSessionRepository(
-        cashSessionService: CashSessionService(apiClient),
-      ),
+      posService: PosService(apiClient),
     );
 
     await viewModel.loadProducts();
-    await viewModel.loadOrderTypes();
   });
 
   test('katalog terisi dan tab Makanan aktif secara awal', () {
@@ -49,6 +40,63 @@ void main() {
     expect(viewModel.selectedGroup, ProductGroup.makanan);
     expect(viewModel.visibleProducts, isNotEmpty);
   });
+
+  test('out of stock products cannot be added to an order', () {
+    final product = Product.fromJson({
+      'id': 'sold-out',
+      'name': 'Habis',
+      'price': 1000,
+      'stock_status': 'out_of_stock',
+      'product_type': 'food',
+    });
+    viewModel.addProduct(product);
+    expect(viewModel.orderItems, isEmpty);
+  });
+
+  test(
+    'variants stay distinct but consume one shared cart stock allowance',
+    () {
+      final product = Product.fromJson({
+        'id': 'stock-p',
+        'name': 'Nasi',
+        'price': 10000,
+        'category': 'Utama',
+        'track_stock': true,
+        'stock_quantity': 3,
+        'stock_status': 'available',
+        'variations': [
+          {
+            'id': 'v1',
+            'name': 'Jumbo',
+            'selling_price': 15000,
+            'stock_status': 'available',
+            'is_active': true,
+          },
+          {
+            'id': 'v2',
+            'name': 'Kecil',
+            'selling_price': 8000,
+            'stock_status': 'available',
+            'is_active': true,
+          },
+        ],
+      });
+      final jumbo = product.selectVariant(product.variations[0]);
+      final kecil = product.selectVariant(product.variations[1]);
+      viewModel.addProduct(jumbo);
+      viewModel.addProduct(kecil);
+      viewModel.addProduct(jumbo);
+      viewModel.addProduct(product);
+      expect(viewModel.orderItems.length, 2);
+      expect(viewModel.orderItems[0].quantity, 2);
+      expect(viewModel.totalPrice, 38000);
+      viewModel.updateItemNote(kecil, 'Tanpa pedas');
+      expect(viewModel.orderItems[1].note, 'Tanpa pedas');
+      expect(viewModel.orderItems[0].note, '');
+      viewModel.decreaseProduct(kecil);
+      expect(viewModel.orderItems.single.product.variantId, 'v1');
+    },
+  );
 
   group('penyaringan katalog', () {
     test('berpindah tab hanya menampilkan produk kelompok tersebut', () {
@@ -147,19 +195,17 @@ void main() {
       expect(viewModel.openingCash, isNull);
     });
 
-    test('nominal tersimpan saat kasir menekan Masuk', () async {
-      final bool isSuccess = await viewModel.confirmOpeningCash(120000);
+    test('nominal tersimpan saat kasir menekan Masuk', () {
+      viewModel.confirmOpeningCash(120000);
 
-      expect(isSuccess, isTrue);
       expect(viewModel.openingCash, 120000);
       expect(viewModel.isOpeningCashResolved, isTrue);
     });
 
-    test('Lewati membuka sesi kas dengan modal nol', () async {
-      final bool isSuccess = await viewModel.confirmOpeningCash(null);
+    test('dianggap terjawab meski kasir memilih Lewati', () {
+      viewModel.confirmOpeningCash(null);
 
-      expect(isSuccess, isTrue);
-      expect(viewModel.openingCash, 0);
+      expect(viewModel.openingCash, isNull);
       expect(viewModel.isOpeningCashResolved, isTrue);
     });
   });
@@ -172,14 +218,6 @@ void main() {
       password: MockApiInterceptor.demoPassword,
     );
 
-    expect(viewModel.currentUser?.outletId, 'warteg-bahari');
-  });
-
-  test('jenis order berasal dari endpoint OpenAPI', () {
-    expect(viewModel.orderTypes.map((type) => type.label), <String>[
-      'Bebas Pilih Meja',
-      'Pesan Meja',
-      'Bawa Pulang',
-    ]);
+    expect(viewModel.currentUser?.outletName, 'Warteg Bahari');
   });
 }

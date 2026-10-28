@@ -71,16 +71,28 @@ Class | Method | HTTP request | Description
 [*JenisOrderApi*](doc/JenisOrderApi.md) | [**deleteOrderType**](doc/JenisOrderApi.md#deleteordertype) | **DELETE** /order-types/{order_type_id} | Menonaktifkan jenis order
 [*JenisOrderApi*](doc/JenisOrderApi.md) | [**listOrderTypes**](doc/JenisOrderApi.md#listordertypes) | **GET** /order-types | Daftar jenis order
 [*JenisOrderApi*](doc/JenisOrderApi.md) | [**updateOrderType**](doc/JenisOrderApi.md#updateordertype) | **PATCH** /order-types/{order_type_id} | Memperbarui jenis order
+[*KasKasirApi*](doc/KasKasirApi.md) | [**cashActivity**](doc/KasKasirApi.md#cashactivity) | **GET** /cash-sessions/{session_id}/activity | Aktivitas tunai satu sesi
+[*KasKasirApi*](doc/KasKasirApi.md) | [**cashMovementDetail**](doc/KasKasirApi.md#cashmovementdetail) | **GET** /cash-sessions/{session_id}/movements/{movement_id} | Rincian entri kas
+[*KasKasirApi*](doc/KasKasirApi.md) | [**cashMovementProof**](doc/KasKasirApi.md#cashmovementproof) | **GET** /cash-sessions/{session_id}/movements/{movement_id}/proof | URL bukti kas
+[*KasKasirApi*](doc/KasKasirApi.md) | [**createCashMovement**](doc/KasKasirApi.md#createcashmovement) | **POST** /cash-sessions/{session_id}/movements | Catat kas masuk/keluar
+[*KasKasirApi*](doc/KasKasirApi.md) | [**recoverCashMovement**](doc/KasKasirApi.md#recovercashmovement) | **GET** /cash-sessions/{session_id}/movements/by-request/{request_id} | Pulihkan permintaan kas sendiri
+[*KasKasirApi*](doc/KasKasirApi.md) | [**reverseCashMovement**](doc/KasKasirApi.md#reversecashmovement) | **POST** /cash-sessions/{session_id}/movements/{movement_id}/reverse | Koreksi entri kas dengan entri lawan
 [*KatalogApi*](doc/KatalogApi.md) | [**createProduct**](doc/KatalogApi.md#createproduct) | **POST** /products | Membuat produk
 [*KatalogApi*](doc/KatalogApi.md) | [**createProductCategory**](doc/KatalogApi.md#createproductcategory) | **POST** /product-types/{product_type}/categories | Membuat kategori
 [*KatalogApi*](doc/KatalogApi.md) | [**deleteProduct**](doc/KatalogApi.md#deleteproduct) | **DELETE** /products/{product_id} | Menonaktifkan produk
 [*KatalogApi*](doc/KatalogApi.md) | [**deleteProductCategory**](doc/KatalogApi.md#deleteproductcategory) | **DELETE** /product-types/{product_type}/categories/{category_id} | Menonaktifkan kategori
+[*KatalogApi*](doc/KatalogApi.md) | [**exportProductsXlsx**](doc/KatalogApi.md#exportproductsxlsx) | **GET** /products/export.xlsx | Unduh workbook Excel produk dan variasi
 [*KatalogApi*](doc/KatalogApi.md) | [**getProduct**](doc/KatalogApi.md#getproduct) | **GET** /products/{product_id} | Detail produk
 [*KatalogApi*](doc/KatalogApi.md) | [**listProductCategories**](doc/KatalogApi.md#listproductcategories) | **GET** /product-types/{product_type}/categories | Daftar kategori sesuai tipe produk
 [*KatalogApi*](doc/KatalogApi.md) | [**listProductTypes**](doc/KatalogApi.md#listproducttypes) | **GET** /product-types | Daftar tipe produk
 [*KatalogApi*](doc/KatalogApi.md) | [**listProducts**](doc/KatalogApi.md#listproducts) | **GET** /products | Daftar produk POS
 [*KatalogApi*](doc/KatalogApi.md) | [**updateProduct**](doc/KatalogApi.md#updateproduct) | **PATCH** /products/{product_id} | Memperbarui produk
 [*KatalogApi*](doc/KatalogApi.md) | [**updateProductCategory**](doc/KatalogApi.md#updateproductcategory) | **PATCH** /product-types/{product_type}/categories/{category_id} | Memperbarui kategori
+[*LaporanApi*](doc/LaporanApi.md) | [**exportReportXlsx**](doc/LaporanApi.md#exportreportxlsx) | **GET** /reports/{report_kind}/export.xlsx | Export Excel laporan
+[*LaporanApi*](doc/LaporanApi.md) | [**reportCategories**](doc/LaporanApi.md#reportcategories) | **GET** /reports/categories | Laporan categories
+[*LaporanApi*](doc/LaporanApi.md) | [**reportMethods**](doc/LaporanApi.md#reportmethods) | **GET** /reports/methods | Laporan methods
+[*LaporanApi*](doc/LaporanApi.md) | [**reportProducts**](doc/LaporanApi.md#reportproducts) | **GET** /reports/products | Laporan products
+[*LaporanApi*](doc/LaporanApi.md) | [**reportSummary**](doc/LaporanApi.md#reportsummary) | **GET** /reports/summary | Laporan summary
 [*PembayaranApi*](doc/PembayaranApi.md) | [**createPaymentWallet**](doc/PembayaranApi.md#createpaymentwallet) | **POST** /wallets | Membuat wallet
 [*PembayaranApi*](doc/PembayaranApi.md) | [**createTransaction**](doc/PembayaranApi.md#createtransaction) | **POST** /transactions | Menyimpan transaksi pembayaran
 [*PembayaranApi*](doc/PembayaranApi.md) | [**deletePaymentWallet**](doc/PembayaranApi.md#deletepaymentwallet) | **DELETE** /wallets/{wallet_id} | Menonaktifkan wallet
@@ -89,6 +101,16 @@ Class | Method | HTTP request | Description
 [*PembayaranApi*](doc/PembayaranApi.md) | [**updatePaymentWallet**](doc/PembayaranApi.md#updatepaymentwallet) | **PATCH** /wallets/{wallet_id} | Memperbarui wallet
 [*PenjualanApi*](doc/PenjualanApi.md) | [**listOrders**](doc/PenjualanApi.md#listorders) | **GET** /orders | Daftar order outlet
 [*PenjualanApi*](doc/PenjualanApi.md) | [**listRegisteredCustomers**](doc/PenjualanApi.md#listregisteredcustomers) | **GET** /customers | Daftar pelanggan terdaftar
+[*PesananTersimpanApi*](doc/PesananTersimpanApi.md) | [**createSavedOrder**](doc/PesananTersimpanApi.md#createsavedorder) | **POST** /saved-orders | Simpan pesanan belum dibayar
+[*PesananTersimpanApi*](doc/PesananTersimpanApi.md) | [**deleteSavedOrder**](doc/PesananTersimpanApi.md#deletesavedorder) | **DELETE** /saved-orders/{saved_order_id} | Hapus pesanan belum dibayar
+[*PesananTersimpanApi*](doc/PesananTersimpanApi.md) | [**getSavedOrder**](doc/PesananTersimpanApi.md#getsavedorder) | **GET** /saved-orders/{saved_order_id} | Detail dan status pesanan tersimpan
+[*PesananTersimpanApi*](doc/PesananTersimpanApi.md) | [**listSavedOrders**](doc/PesananTersimpanApi.md#listsavedorders) | **GET** /saved-orders | Daftar pesanan tersimpan outlet
+[*PesananTersimpanApi*](doc/PesananTersimpanApi.md) | [**updateSavedOrder**](doc/PesananTersimpanApi.md#updatesavedorder) | **PUT** /saved-orders/{saved_order_id} | Ubah pesanan pada revisi yang diharapkan
+[*RefundApi*](doc/RefundApi.md) | [**confirmRefund**](doc/RefundApi.md#confirmrefund) | **POST** /transactions/{transaction_id}/refunds | Catat uang yang sudah dikembalikan secara manual
+[*RefundApi*](doc/RefundApi.md) | [**getTransactionDetail**](doc/RefundApi.md#gettransactiondetail) | **GET** /transactions/{transaction_id} | Detail transaksi dan sisa refund
+[*RefundApi*](doc/RefundApi.md) | [**listTransactionRefunds**](doc/RefundApi.md#listtransactionrefunds) | **GET** /transactions/{transaction_id}/refunds | Riwayat refund transaksi
+[*RefundApi*](doc/RefundApi.md) | [**previewRefund**](doc/RefundApi.md#previewrefund) | **POST** /transactions/{transaction_id}/refunds/preview | Pratinjau refund tanpa mengubah uang atau stok
+[*RefundApi*](doc/RefundApi.md) | [**refundByRequest**](doc/RefundApi.md#refundbyrequest) | **GET** /refunds/by-request/{request_id} | Periksa hasil permintaan refund
 [*RegistrasiApi*](doc/RegistrasiApi.md) | [**confirmRegistrationOtp**](doc/RegistrasiApi.md#confirmregistrationotp) | **POST** /register/otp/confirm | Mengonfirmasi OTP registrasi
 [*RegistrasiApi*](doc/RegistrasiApi.md) | [**register**](doc/RegistrasiApi.md#register) | **POST** /register | Mendaftarkan usaha dan akun pemilik
 [*RegistrasiApi*](doc/RegistrasiApi.md) | [**resendRegistrationOtp**](doc/RegistrasiApi.md#resendregistrationotp) | **POST** /register/otp/resend | Mengirim ulang OTP registrasi
@@ -102,38 +124,79 @@ Class | Method | HTTP request | Description
 [*ReservasiApi*](doc/ReservasiApi.md) | [**listRestaurantTables**](doc/ReservasiApi.md#listrestauranttables) | **GET** /restaurant-tables | Daftar meja restoran
 [*ReservasiApi*](doc/ReservasiApi.md) | [**updateReservation**](doc/ReservasiApi.md#updatereservation) | **PATCH** /reservations/{reservation_id} | Memperbarui reservasi
 [*ReservasiApi*](doc/ReservasiApi.md) | [**updateRestaurantTable**](doc/ReservasiApi.md#updaterestauranttable) | **PATCH** /restaurant-tables/{table_id} | Memperbarui meja restoran
+[*SesiKasApi*](doc/SesiKasApi.md) | [**closeCashSession**](doc/SesiKasApi.md#closecashsession) | **POST** /cash-sessions/{session_id}/close | Tutup sesi kas
+[*SesiKasApi*](doc/SesiKasApi.md) | [**getCashSession**](doc/SesiKasApi.md#getcashsession) | **GET** /cash-sessions/{session_id} | Ringkasan sesi kas
 [*SesiKasApi*](doc/SesiKasApi.md) | [**getCurrentCashSession**](doc/SesiKasApi.md#getcurrentcashsession) | **GET** /cash-sessions/current | Mengambil sesi kas aktif
+[*SesiKasApi*](doc/SesiKasApi.md) | [**listCashSessions**](doc/SesiKasApi.md#listcashsessions) | **GET** /cash-sessions | Riwayat sesi kas outlet
 [*SesiKasApi*](doc/SesiKasApi.md) | [**openCashSession**](doc/SesiKasApi.md#opencashsession) | **POST** /cash-sessions | Membuka sesi kas
+[*SesiKasApi*](doc/SesiKasApi.md) | [**previewCloseCashSession**](doc/SesiKasApi.md#previewclosecashsession) | **POST** /cash-sessions/{session_id}/close/preview | Pratinjau hitungan kas
 [*SistemApi*](doc/SistemApi.md) | [**getHealth**](doc/SistemApi.md#gethealth) | **GET** /health | Memeriksa kondisi API
+[*StokApi*](doc/StokApi.md) | [**adjustProductStock**](doc/StokApi.md#adjustproductstock) | **POST** /products/{product_id}/stock-adjustments | Menyesuaikan stok dengan alasan dan request_id
+[*StokApi*](doc/StokApi.md) | [**configureProductStock**](doc/StokApi.md#configureproductstock) | **POST** /products/{product_id}/stock | Mengatur pelacakan stok bersama
+[*StokApi*](doc/StokApi.md) | [**listStockMovements**](doc/StokApi.md#liststockmovements) | **GET** /products/{product_id}/stock-movements | Riwayat perubahan stok outlet
 [*UserApi*](doc/UserApi.md) | [**changeCurrentUserPassword**](doc/UserApi.md#changecurrentuserpassword) | **PATCH** /users/me/password | Mengubah password akun
 [*UserApi*](doc/UserApi.md) | [**changeCurrentUserPin**](doc/UserApi.md#changecurrentuserpin) | **PATCH** /users/me/pin | Mengubah PIN akun
 [*UserApi*](doc/UserApi.md) | [**getCurrentUser**](doc/UserApi.md#getcurrentuser) | **GET** /users/me | Mengambil profil user aktif
+[*UserApi*](doc/UserApi.md) | [**listProfileGenders**](doc/UserApi.md#listprofilegenders) | **GET** /users/me/genders | Pilihan gender profil
 [*UserApi*](doc/UserApi.md) | [**updateCurrentUser**](doc/UserApi.md#updatecurrentuser) | **PATCH** /users/me | Memperbarui profil sendiri
 
 
 ## Documentation For Models
 
+ - [ActivityData](doc/ActivityData.md)
+ - [ActivityMeta](doc/ActivityMeta.md)
+ - [ActivityPage](doc/ActivityPage.md)
  - [Body](doc/Body.md)
+ - [CashActivityEvent](doc/CashActivityEvent.md)
+ - [CashCloseOutputBody](doc/CashCloseOutputBody.md)
+ - [CashDetailOutputBody](doc/CashDetailOutputBody.md)
+ - [CashFlowTotals](doc/CashFlowTotals.md)
+ - [CashPreviewOutputBody](doc/CashPreviewOutputBody.md)
+ - [CashSessionsOutputBody](doc/CashSessionsOutputBody.md)
  - [CategoriesOutputBody](doc/CategoriesOutputBody.md)
  - [CategoryData](doc/CategoryData.md)
  - [CategoryOutputBody](doc/CategoryOutputBody.md)
  - [CategoryRequest](doc/CategoryRequest.md)
  - [ChangePINRequest](doc/ChangePINRequest.md)
  - [ChangePasswordRequest](doc/ChangePasswordRequest.md)
+ - [CloseCommand](doc/CloseCommand.md)
+ - [ClosePreview](doc/ClosePreview.md)
+ - [CloseSelection](doc/CloseSelection.md)
+ - [ClosedReconciliation](doc/ClosedReconciliation.md)
+ - [Command](doc/Command.md)
  - [ConfirmOTPRequest](doc/ConfirmOTPRequest.md)
  - [ConfirmOTPResponse](doc/ConfirmOTPResponse.md)
  - [ConfirmOTPResponseData](doc/ConfirmOTPResponseData.md)
  - [CustomerData](doc/CustomerData.md)
  - [CustomersOutputBody](doc/CustomersOutputBody.md)
+ - [DailyPoint](doc/DailyPoint.md)
+ - [DetailOutputBody](doc/DetailOutputBody.md)
+ - [GenderChoice](doc/GenderChoice.md)
  - [GenderData](doc/GenderData.md)
+ - [GenderOutputBody](doc/GenderOutputBody.md)
+ - [GroupRow](doc/GroupRow.md)
  - [HealthOutputBody](doc/HealthOutputBody.md)
+ - [HistoryOutputBody](doc/HistoryOutputBody.md)
+ - [Item](doc/Item.md)
+ - [ListOutputBody](doc/ListOutputBody.md)
  - [LoginRequest](doc/LoginRequest.md)
  - [LoginResponse](doc/LoginResponse.md)
  - [LoginResponseData](doc/LoginResponseData.md)
+ - [Meta](doc/Meta.md)
  - [MetaStruct](doc/MetaStruct.md)
+ - [MethodRow](doc/MethodRow.md)
+ - [MethodSummary](doc/MethodSummary.md)
+ - [MovementCapabilities](doc/MovementCapabilities.md)
+ - [MovementDetail](doc/MovementDetail.md)
+ - [MovementDetailOutputBody](doc/MovementDetailOutputBody.md)
+ - [MovementOutputBody](doc/MovementOutputBody.md)
+ - [MovementProofOutputBody](doc/MovementProofOutputBody.md)
+ - [MovementRecord](doc/MovementRecord.md)
+ - [Mutation](doc/Mutation.md)
  - [OTPResponse](doc/OTPResponse.md)
  - [OTPResponseData](doc/OTPResponseData.md)
  - [OpenRequest](doc/OpenRequest.md)
+ - [Order](doc/Order.md)
  - [OrderData](doc/OrderData.md)
  - [OrderListTypeData](doc/OrderListTypeData.md)
  - [OrderTypeData](doc/OrderTypeData.md)
@@ -141,7 +204,10 @@ Class | Method | HTTP request | Description
  - [OrderTypeRequest](doc/OrderTypeRequest.md)
  - [OrderTypesOutputBody](doc/OrderTypesOutputBody.md)
  - [OrdersOutputBody](doc/OrdersOutputBody.md)
+ - [OutputBody](doc/OutputBody.md)
  - [PaginationMeta](doc/PaginationMeta.md)
+ - [Preview](doc/Preview.md)
+ - [PreviewOutputBody](doc/PreviewOutputBody.md)
  - [ProductData](doc/ProductData.md)
  - [ProductOutputBody](doc/ProductOutputBody.md)
  - [ProductTypeData](doc/ProductTypeData.md)
@@ -151,7 +217,15 @@ Class | Method | HTTP request | Description
  - [ProductsOutputBody](doc/ProductsOutputBody.md)
  - [Profile](doc/Profile.md)
  - [ProfileResponse](doc/ProfileResponse.md)
+ - [ProofLink](doc/ProofLink.md)
+ - [ReceiptItem](doc/ReceiptItem.md)
+ - [ReceiptSnapshot](doc/ReceiptSnapshot.md)
+ - [ReconciliationSummary](doc/ReconciliationSummary.md)
+ - [Refund](doc/Refund.md)
+ - [RefundItem](doc/RefundItem.md)
+ - [RefundOutputBody](doc/RefundOutputBody.md)
  - [RegisterRequest](doc/RegisterRequest.md)
+ - [Report](doc/Report.md)
  - [ResendOTPRequest](doc/ResendOTPRequest.md)
  - [ReservationData](doc/ReservationData.md)
  - [ReservationOutputBody](doc/ReservationOutputBody.md)
@@ -159,14 +233,24 @@ Class | Method | HTTP request | Description
  - [ReservationRequest](doc/ReservationRequest.md)
  - [ReservationsOutputBody](doc/ReservationsOutputBody.md)
  - [RestaurantTableData](doc/RestaurantTableData.md)
+ - [Result](doc/Result.md)
+ - [ReversalCommand](doc/ReversalCommand.md)
+ - [SelectedItem](doc/SelectedItem.md)
+ - [Selection](doc/Selection.md)
  - [SessionData](doc/SessionData.md)
+ - [SessionRecord](doc/SessionRecord.md)
  - [SessionResponse](doc/SessionResponse.md)
  - [StatusError](doc/StatusError.md)
+ - [StockCommand](doc/StockCommand.md)
+ - [StockHistoryOutputBody](doc/StockHistoryOutputBody.md)
+ - [StockMovement](doc/StockMovement.md)
+ - [StockWriteOutputBody](doc/StockWriteOutputBody.md)
  - [TableData](doc/TableData.md)
  - [TableOutputBody](doc/TableOutputBody.md)
  - [TableRequest](doc/TableRequest.md)
  - [TablesOutputBody](doc/TablesOutputBody.md)
  - [TaxPercentageResponse](doc/TaxPercentageResponse.md)
+ - [Totals](doc/Totals.md)
  - [TransactionData](doc/TransactionData.md)
  - [TransactionItemData](doc/TransactionItemData.md)
  - [TransactionItemRequest](doc/TransactionItemRequest.md)
@@ -186,7 +270,7 @@ Class | Method | HTTP request | Description
 Authentication schemes defined for the API:
 ### firebaseBearer
 
-- **Type**: HTTP Bearer Token authentication (Firebase ID token)
+- **Type**: HTTP Bearer Token authentication (JWT)
 
 
 ## Author

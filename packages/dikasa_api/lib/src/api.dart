@@ -9,13 +9,18 @@ import 'package:dikasa_api/src/auth/bearer_auth.dart';
 import 'package:dikasa_api/src/auth/oauth.dart';
 import 'package:dikasa_api/src/api/autentikasi_api.dart';
 import 'package:dikasa_api/src/api/jenis_order_api.dart';
+import 'package:dikasa_api/src/api/kas_kasir_api.dart';
 import 'package:dikasa_api/src/api/katalog_api.dart';
+import 'package:dikasa_api/src/api/laporan_api.dart';
 import 'package:dikasa_api/src/api/pembayaran_api.dart';
 import 'package:dikasa_api/src/api/penjualan_api.dart';
+import 'package:dikasa_api/src/api/pesanan_tersimpan_api.dart';
+import 'package:dikasa_api/src/api/refund_api.dart';
 import 'package:dikasa_api/src/api/registrasi_api.dart';
 import 'package:dikasa_api/src/api/reservasi_api.dart';
 import 'package:dikasa_api/src/api/sesi_kas_api.dart';
 import 'package:dikasa_api/src/api/sistem_api.dart';
+import 'package:dikasa_api/src/api/stok_api.dart';
 import 'package:dikasa_api/src/api/user_api.dart';
 
 class DikasaApi {
@@ -153,10 +158,22 @@ class DikasaApi {
     return JenisOrderApi(dio);
   }
 
+  /// Get KasKasirApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  KasKasirApi getKasKasirApi() {
+    return KasKasirApi(dio);
+  }
+
   /// Get KatalogApi instance, base route and serializer can be overridden by a given but be careful,
   /// by doing that all interceptors will not be executed
   KatalogApi getKatalogApi() {
     return KatalogApi(dio);
+  }
+
+  /// Get LaporanApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  LaporanApi getLaporanApi() {
+    return LaporanApi(dio);
   }
 
   /// Get PembayaranApi instance, base route and serializer can be overridden by a given but be careful,
@@ -169,6 +186,18 @@ class DikasaApi {
   /// by doing that all interceptors will not be executed
   PenjualanApi getPenjualanApi() {
     return PenjualanApi(dio);
+  }
+
+  /// Get PesananTersimpanApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  PesananTersimpanApi getPesananTersimpanApi() {
+    return PesananTersimpanApi(dio);
+  }
+
+  /// Get RefundApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  RefundApi getRefundApi() {
+    return RefundApi(dio);
   }
 
   /// Get RegistrasiApi instance, base route and serializer can be overridden by a given but be careful,
@@ -193,6 +222,12 @@ class DikasaApi {
   /// by doing that all interceptors will not be executed
   SistemApi getSistemApi() {
     return SistemApi(dio);
+  }
+
+  /// Get StokApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  StokApi getStokApi() {
+    return StokApi(dio);
   }
 
   /// Get UserApi instance, base route and serializer can be overridden by a given but be careful,

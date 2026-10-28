@@ -26,6 +26,8 @@ class ProductData {
 
     required this.description,
 
+    required this.effectiveStockStatus,
+
     required this.id,
 
     this.imageUrl,
@@ -33,6 +35,8 @@ class ProductData {
     required this.isActive,
 
     required this.isHighlighted,
+
+    required this.lowStockThreshold,
 
     required this.name,
 
@@ -48,7 +52,11 @@ class ProductData {
 
     required this.sortOrder,
 
+    required this.stockQuantity,
+
     required this.stockStatus,
+
+    required this.trackStock,
 
     required this.variations,
   });
@@ -63,9 +71,18 @@ class ProductData {
   @JsonKey(name: r'description', required: true, includeIfNull: false)
   final String description;
 
+  @JsonKey(
+    name: r'effective_stock_status',
+    required: true,
+    includeIfNull: false,
+    unknownEnumValue: ProductDataEffectiveStockStatusEnum.unknownDefaultOpenApi,
+  )
+  final ProductDataEffectiveStockStatusEnum effectiveStockStatus;
+
   @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
+  /// Firebase Storage download URL; render directly and do not proxy through the API
   @JsonKey(name: r'image_url', required: false, includeIfNull: false)
   final String? imageUrl;
 
@@ -74,6 +91,10 @@ class ProductData {
 
   @JsonKey(name: r'is_highlighted', required: true, includeIfNull: false)
   final bool isHighlighted;
+
+  // minimum: 0
+  @JsonKey(name: r'low_stock_threshold', required: true, includeIfNull: false)
+  final int lowStockThreshold;
 
   @JsonKey(name: r'name', required: true, includeIfNull: false)
   final String name;
@@ -105,6 +126,10 @@ class ProductData {
   @JsonKey(name: r'sort_order', required: true, includeIfNull: false)
   final int sortOrder;
 
+  // minimum: 0
+  @JsonKey(name: r'stock_quantity', required: true, includeIfNull: false)
+  final int stockQuantity;
+
   @JsonKey(
     name: r'stock_status',
     required: true,
@@ -112,6 +137,9 @@ class ProductData {
     unknownEnumValue: ProductDataStockStatusEnum.unknownDefaultOpenApi,
   )
   final ProductDataStockStatusEnum stockStatus;
+
+  @JsonKey(name: r'track_stock', required: true, includeIfNull: false)
+  final bool trackStock;
 
   @JsonKey(name: r'variations', required: true, includeIfNull: true)
   final List<ProductVariantData>? variations;
@@ -123,10 +151,12 @@ class ProductData {
           other.category == category &&
           other.costPrice == costPrice &&
           other.description == description &&
+          other.effectiveStockStatus == effectiveStockStatus &&
           other.id == id &&
           other.imageUrl == imageUrl &&
           other.isActive == isActive &&
           other.isHighlighted == isHighlighted &&
+          other.lowStockThreshold == lowStockThreshold &&
           other.name == name &&
           other.onlineCostPrice == onlineCostPrice &&
           other.onlineSellingPrice == onlineSellingPrice &&
@@ -134,7 +164,9 @@ class ProductData {
           other.productType == productType &&
           other.sellingPrice == sellingPrice &&
           other.sortOrder == sortOrder &&
+          other.stockQuantity == stockQuantity &&
           other.stockStatus == stockStatus &&
+          other.trackStock == trackStock &&
           other.variations == variations;
 
   @override
@@ -142,10 +174,12 @@ class ProductData {
       category.hashCode +
       costPrice.hashCode +
       description.hashCode +
+      effectiveStockStatus.hashCode +
       id.hashCode +
       imageUrl.hashCode +
       isActive.hashCode +
       isHighlighted.hashCode +
+      lowStockThreshold.hashCode +
       name.hashCode +
       onlineCostPrice.hashCode +
       onlineSellingPrice.hashCode +
@@ -153,7 +187,9 @@ class ProductData {
       productType.hashCode +
       sellingPrice.hashCode +
       sortOrder.hashCode +
+      stockQuantity.hashCode +
       stockStatus.hashCode +
+      trackStock.hashCode +
       (variations == null ? 0 : variations.hashCode);
 
   factory ProductData.fromJson(Map<String, dynamic> json) =>
@@ -165,6 +201,24 @@ class ProductData {
   String toString() {
     return toJson().toString();
   }
+}
+
+enum ProductDataEffectiveStockStatusEnum {
+  @JsonValue(r'available')
+  available(r'available'),
+  @JsonValue(r'low_stock')
+  lowStock(r'low_stock'),
+  @JsonValue(r'out_of_stock')
+  outOfStock(r'out_of_stock'),
+  @JsonValue(r'unknown_default_open_api')
+  unknownDefaultOpenApi(r'unknown_default_open_api');
+
+  const ProductDataEffectiveStockStatusEnum(this.value);
+
+  final String value;
+
+  @override
+  String toString() => value;
 }
 
 enum ProductDataProductTypeEnum {

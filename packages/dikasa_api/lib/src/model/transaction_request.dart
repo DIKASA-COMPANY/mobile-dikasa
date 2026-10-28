@@ -35,6 +35,10 @@ class TransactionRequest {
 
     required this.roundingAmount,
 
+    this.savedOrderId,
+
+    this.savedOrderRevision,
+
     required this.subtotal,
 
     required this.taxAmount,
@@ -85,6 +89,13 @@ class TransactionRequest {
   @JsonKey(name: r'rounding_amount', required: true, includeIfNull: false)
   final int roundingAmount;
 
+  @JsonKey(name: r'saved_order_id', required: false, includeIfNull: false)
+  final String? savedOrderId;
+
+  // minimum: 1
+  @JsonKey(name: r'saved_order_revision', required: false, includeIfNull: false)
+  final int? savedOrderRevision;
+
   // minimum: 0
   // maximum: 9007199254740991
   @JsonKey(name: r'subtotal', required: true, includeIfNull: false)
@@ -125,6 +136,8 @@ class TransactionRequest {
           other.paymentMethod == paymentMethod &&
           other.restaurantTableId == restaurantTableId &&
           other.roundingAmount == roundingAmount &&
+          other.savedOrderId == savedOrderId &&
+          other.savedOrderRevision == savedOrderRevision &&
           other.subtotal == subtotal &&
           other.taxAmount == taxAmount &&
           other.taxPercentage == taxPercentage &&
@@ -142,6 +155,8 @@ class TransactionRequest {
       paymentMethod.hashCode +
       restaurantTableId.hashCode +
       roundingAmount.hashCode +
+      savedOrderId.hashCode +
+      savedOrderRevision.hashCode +
       subtotal.hashCode +
       taxAmount.hashCode +
       taxPercentage.hashCode +

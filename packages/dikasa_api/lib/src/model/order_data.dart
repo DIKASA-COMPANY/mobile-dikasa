@@ -26,11 +26,19 @@ class OrderData {
 
     required this.id,
 
+    required this.netAfterRefund,
+
     required this.orderType,
 
     required this.orderedAt,
 
     required this.receiptNumber,
+
+    required this.refundRevision,
+
+    required this.refundedAmount,
+
+    required this.refundsSupported,
 
     this.restaurantTable,
 
@@ -50,6 +58,9 @@ class OrderData {
   @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
+  @JsonKey(name: r'net_after_refund', required: true, includeIfNull: true)
+  final int? netAfterRefund;
+
   @JsonKey(name: r'order_type', required: true, includeIfNull: false)
   final OrderListTypeData orderType;
 
@@ -58,6 +69,15 @@ class OrderData {
 
   @JsonKey(name: r'receipt_number', required: true, includeIfNull: false)
   final String receiptNumber;
+
+  @JsonKey(name: r'refund_revision', required: true, includeIfNull: false)
+  final int refundRevision;
+
+  @JsonKey(name: r'refunded_amount', required: true, includeIfNull: true)
+  final int? refundedAmount;
+
+  @JsonKey(name: r'refunds_supported', required: true, includeIfNull: false)
+  final bool refundsSupported;
 
   @JsonKey(name: r'restaurant_table', required: false, includeIfNull: false)
   final RestaurantTableData? restaurantTable;
@@ -85,9 +105,13 @@ class OrderData {
           other.customerId == customerId &&
           other.customerName == customerName &&
           other.id == id &&
+          other.netAfterRefund == netAfterRefund &&
           other.orderType == orderType &&
           other.orderedAt == orderedAt &&
           other.receiptNumber == receiptNumber &&
+          other.refundRevision == refundRevision &&
+          other.refundedAmount == refundedAmount &&
+          other.refundsSupported == refundsSupported &&
           other.restaurantTable == restaurantTable &&
           other.status == status &&
           other.totalAmount == totalAmount &&
@@ -98,9 +122,13 @@ class OrderData {
       customerId.hashCode +
       customerName.hashCode +
       id.hashCode +
+      (netAfterRefund == null ? 0 : netAfterRefund.hashCode) +
       orderType.hashCode +
       orderedAt.hashCode +
       receiptNumber.hashCode +
+      refundRevision.hashCode +
+      (refundedAmount == null ? 0 : refundedAmount.hashCode) +
+      refundsSupported.hashCode +
       restaurantTable.hashCode +
       status.hashCode +
       totalAmount.hashCode +
@@ -120,6 +148,8 @@ class OrderData {
 enum OrderDataStatusEnum {
   @JsonValue(r'paid')
   paid(r'paid'),
+  @JsonValue(r'partially_refunded')
+  partiallyRefunded(r'partially_refunded'),
   @JsonValue(r'refunded')
   refunded(r'refunded'),
   @JsonValue(r'cancelled')

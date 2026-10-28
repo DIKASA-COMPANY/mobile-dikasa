@@ -372,6 +372,100 @@ class KatalogApi {
     return _response;
   }
 
+  /// Unduh workbook Excel produk dan variasi
+  /// Manager. Seluruh halaman yang cocok dengan filter outlet; stok bersama ditulis satu kali per produk.
+  ///
+  /// Parameters:
+  /// * [productId]
+  /// * [productType]
+  /// * [categoryId]
+  /// * [searchByProductName]
+  /// * [availability]
+  /// * [includeInactive]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [String] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<String>> exportProductsXlsx({
+    String? productId,
+    String? productType,
+    String? categoryId,
+    String? searchByProductName,
+    String? availability,
+    bool? includeInactive,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/products/export.xlsx';
+    final _options = Options(
+      method: r'GET',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _queryParameters = <String, dynamic>{
+      if (productId != null) r'product_id': productId,
+      if (productType != null) r'product_type': productType,
+      if (categoryId != null) r'category_id': categoryId,
+      if (searchByProductName != null)
+        r'searchByProductName': searchByProductName,
+      if (availability != null) r'availability': availability,
+      if (includeInactive != null) r'include_inactive': includeInactive,
+    };
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      queryParameters: _queryParameters,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    String? _responseData;
+
+    try {
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<String, String>(rawData, 'String', growable: true);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<String>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
   /// Detail produk
   ///
   ///

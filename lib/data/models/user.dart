@@ -7,24 +7,30 @@ class User {
     required this.id,
     required this.name,
     required this.username,
-    required this.roleId,
-    required this.phoneNumber,
-    this.outletId,
-    this.email,
+    required this.role,
+    required this.outletName,
     this.avatarUrl,
   });
 
   final String id;
   final String name;
   final String username;
-  final String roleId;
-  final String phoneNumber;
-  final String? outletId;
-  final String? email;
+  final String role;
+  final String outletName;
   final String? avatarUrl;
 
-  /// Kontrak backend saat ini hanya mengirim ID outlet, bukan nama outlet.
-  String get outletLabel => outletId == null ? '-' : 'Outlet aktif';
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'].toString(),
+      avatarUrl: json['avatar_url'] as String?,
+      name:
+          json['name'] as String? ??
+          '${json['first_name'] ?? ''} ${json['last_name'] ?? ''}'.trim(),
+      username: json['username'] as String? ?? '',
+      role: json['role'] as String? ?? '',
+      outletName: json['outlet_name'] as String? ?? '',
+    );
+  }
 
   /// Inisial nama untuk ditampilkan pada avatar dashboard.
   String get initials {

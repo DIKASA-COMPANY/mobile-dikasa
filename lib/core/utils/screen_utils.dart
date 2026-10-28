@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 abstract final class ScreenConfig {
-  // Samsung Galaxy Tab A7 Lite portrait resolution.
-  static const Size designSize = Size(800, 1340);
+  // Figma tablet landscape reference used by the main POS screens.
+  static const Size designSize = Size(1340, 800);
 }
 
 enum ScreenType { mobile, tablet, desktop }
