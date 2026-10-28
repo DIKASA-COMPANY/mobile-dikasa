@@ -69,6 +69,9 @@ abstract class LoginViewModelBase with Store {
     if (value == null || value.trim().isEmpty) {
       return 'Password wajib diisi';
     }
+    if (value.length < 8) {
+      return 'Password minimal 8 karakter';
+    }
     return null;
   }
 

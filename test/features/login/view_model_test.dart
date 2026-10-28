@@ -33,6 +33,7 @@ void main() {
 
     test('menolak password kosong', () {
       expect(viewModel.validatePassword(''), isNotNull);
+      expect(viewModel.validatePassword('pendek'), isNotNull);
       expect(viewModel.validatePassword('dikasa123'), isNull);
     });
   });

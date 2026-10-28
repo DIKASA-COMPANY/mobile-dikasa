@@ -56,6 +56,14 @@ class _NewOrderViewState extends State<NewOrderView> {
     });
   }
 
+  Future<void> _prepareOpeningCash() async {
+    await _viewModel.checkOpeningCash();
+    if (!mounted || _viewModel.isOpeningCashResolved) {
+      return;
+    }
+    await _askOpeningCash();
+  }
+
   /// Menanyakan kas awal sekali saja per sesi kasir.
   Future<void> _askOpeningCash({bool force = false}) async {
     if (!force && _viewModel.isOpeningCashResolved) {

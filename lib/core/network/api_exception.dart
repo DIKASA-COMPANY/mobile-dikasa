@@ -37,7 +37,18 @@ class ApiException implements Exception {
         );
 
       case DioExceptionType.connectionError:
+        return const ApiException(
+          type: ApiErrorType.network,
+          message: 'Tidak dapat terhubung ke server. Periksa koneksi internet.',
+        );
+
       case DioExceptionType.unknown:
+        if (error.response != null) {
+          return const ApiException(
+            type: ApiErrorType.parsing,
+            message: 'Format data dari server tidak sesuai.',
+          );
+        }
         return const ApiException(
           type: ApiErrorType.network,
           message: 'Tidak dapat terhubung ke server. Periksa koneksi internet.',
@@ -92,6 +103,24 @@ class ApiException implements Exception {
       type: ApiErrorType.server,
       message: serverMessage ?? 'Permintaan gagal diproses ($statusCode).',
     );
+  }
+
+  static String? _serverMessage(Object? body) {
+    if (body is! Map) {
+      return null;
+    }
+
+    final Object? message = body['message'];
+    if (message is String && message.trim().isNotEmpty) {
+      return message.trim();
+    }
+
+    final Object? error = body['error'];
+    if (error is Map) {
+      return _serverMessage(error);
+    }
+
+    return null;
   }
 
   @override

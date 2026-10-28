@@ -1,6 +1,6 @@
+import 'package:dikasa_api/dikasa_api.dart' as generated;
 import 'package:dio/dio.dart';
 import 'package:mobile_dikasa/core/network/api_client.dart';
-import 'package:mobile_dikasa/core/network/api_endpoints.dart';
 import 'package:mobile_dikasa/core/network/api_exception.dart';
 import 'package:mobile_dikasa/data/models/auth_session.dart';
 import 'package:mobile_dikasa/data/models/user.dart';
@@ -45,7 +45,7 @@ class AuthService {
       );
     } on DioException catch (error) {
       throw ApiException.fromDio(error);
-    } on TypeError {
+    } on TypeError catch (_) {
       throw const ApiException(
         type: ApiErrorType.parsing,
         message: 'Format data dari server tidak sesuai.',

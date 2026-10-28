@@ -50,7 +50,6 @@ class Product {
     required this.id,
     required this.name,
     required this.price,
-    required this.imageAsset,
     required this.group,
     required this.category,
     required this.isHighlighted,

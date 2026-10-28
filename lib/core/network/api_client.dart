@@ -1,3 +1,4 @@
+import 'package:dikasa_api/dikasa_api.dart';
 import 'package:dio/dio.dart';
 import 'package:dikasa_api/dikasa_api.dart';
 import 'package:flutter/foundation.dart';
@@ -7,6 +8,7 @@ import 'package:mobile_dikasa/core/network/mock_api_interceptor.dart';
 /// Pembungkus tunggal Dio; base URL, timeout, header auth, dan logging diatur sekali di sini.
 class ApiClient {
   ApiClient({Dio? dio}) : dio = dio ?? Dio() {
+    api = DikasaApi(dio: this.dio);
     _configure();
     generated = DikasaApi(dio: this.dio, interceptors: const <Interceptor>[]);
   }
@@ -60,6 +62,13 @@ class ApiClient {
     }
   }
 
-  /// Dipanggil AuthRepository setelah login berhasil / saat logout.
-  void updateAuthToken(String? token) => _authToken = token;
+  /// Mengisi interceptor bearer generated setelah login / menghapusnya saat logout.
+  void updateAuthToken(String? token) {
+    if (token == null || token.isEmpty) {
+      api.removeBearerAuth('firebaseBearer');
+      return;
+    }
+
+    api.setBearerAuth('firebaseBearer', token);
+  }
 }

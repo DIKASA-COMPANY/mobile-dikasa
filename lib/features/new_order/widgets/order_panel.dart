@@ -9,6 +9,7 @@ import 'package:mobile_dikasa/core/themes/text_styles.dart';
 import 'package:mobile_dikasa/core/utils/app_snackbar.dart';
 import 'package:mobile_dikasa/core/utils/formatted_currency.dart';
 import 'package:mobile_dikasa/data/models/order_item.dart';
+import 'package:mobile_dikasa/data/models/order_type.dart';
 import 'package:mobile_dikasa/features/new_order/view_model.dart';
 import 'package:mobile_dikasa/features/new_order/widgets/panel_dropdown.dart';
 import 'package:mobile_dikasa/data/models/pos.dart';

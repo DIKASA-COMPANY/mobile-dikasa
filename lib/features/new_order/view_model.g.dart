@@ -563,6 +563,72 @@ mixin _$NewOrderViewModel on NewOrderViewModelBase, Store {
     );
   }
 
+  late final _$isCheckingOpeningCashAtom = Atom(
+    name: 'NewOrderViewModelBase.isCheckingOpeningCash',
+    context: context,
+  );
+
+  @override
+  bool get isCheckingOpeningCash {
+    _$isCheckingOpeningCashAtom.reportRead();
+    return super.isCheckingOpeningCash;
+  }
+
+  @override
+  set isCheckingOpeningCash(bool value) {
+    _$isCheckingOpeningCashAtom.reportWrite(
+      value,
+      super.isCheckingOpeningCash,
+      () {
+        super.isCheckingOpeningCash = value;
+      },
+    );
+  }
+
+  late final _$isOpeningCashSubmittingAtom = Atom(
+    name: 'NewOrderViewModelBase.isOpeningCashSubmitting',
+    context: context,
+  );
+
+  @override
+  bool get isOpeningCashSubmitting {
+    _$isOpeningCashSubmittingAtom.reportRead();
+    return super.isOpeningCashSubmitting;
+  }
+
+  @override
+  set isOpeningCashSubmitting(bool value) {
+    _$isOpeningCashSubmittingAtom.reportWrite(
+      value,
+      super.isOpeningCashSubmitting,
+      () {
+        super.isOpeningCashSubmitting = value;
+      },
+    );
+  }
+
+  late final _$openingCashErrorMessageAtom = Atom(
+    name: 'NewOrderViewModelBase.openingCashErrorMessage',
+    context: context,
+  );
+
+  @override
+  String? get openingCashErrorMessage {
+    _$openingCashErrorMessageAtom.reportRead();
+    return super.openingCashErrorMessage;
+  }
+
+  @override
+  set openingCashErrorMessage(String? value) {
+    _$openingCashErrorMessageAtom.reportWrite(
+      value,
+      super.openingCashErrorMessage,
+      () {
+        super.openingCashErrorMessage = value;
+      },
+    );
+  }
+
   late final _$loadProductsAsyncAction = AsyncAction(
     'NewOrderViewModelBase.loadProducts',
     context: context,
@@ -770,6 +836,9 @@ wallets: ${wallets},
 tables: ${tables},
 openingCash: ${openingCash},
 isOpeningCashResolved: ${isOpeningCashResolved},
+isCheckingOpeningCash: ${isCheckingOpeningCash},
+isOpeningCashSubmitting: ${isOpeningCashSubmitting},
+openingCashErrorMessage: ${openingCashErrorMessage},
 categories: ${categories},
 visibleProducts: ${visibleProducts},
 hasOrderItems: ${hasOrderItems},

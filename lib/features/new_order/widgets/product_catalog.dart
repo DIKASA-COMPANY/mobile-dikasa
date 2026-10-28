@@ -138,7 +138,6 @@ class ProductCard extends StatelessWidget {
                       style: AppTextStyles.body.copyWith(
                         color: AppColors.c546168,
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -146,6 +145,57 @@ class ProductCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ProductImage extends StatelessWidget {
+  const _ProductImage({required this.product});
+
+  final Product product;
+
+  @override
+  Widget build(BuildContext context) {
+    final String? imageUrl = product.imageUrl;
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      return Image.network(
+        imageUrl,
+        width: 108,
+        height: 110,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => _assetOrPlaceholder(),
+      );
+    }
+
+    return _assetOrPlaceholder();
+  }
+
+  Widget _assetOrPlaceholder() {
+    final String? imageAsset = product.imageAsset;
+    if (imageAsset != null && imageAsset.isNotEmpty) {
+      return Image.asset(
+        imageAsset,
+        width: 108,
+        height: 110,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => const _ImagePlaceholder(),
+      );
+    }
+
+    return const _ImagePlaceholder();
+  }
+}
+
+class _ImagePlaceholder extends StatelessWidget {
+  const _ImagePlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 108,
+      height: 110,
+      color: AppColors.cD9D9D9,
+      child: Icon(Icons.restaurant_menu, color: AppColors.c8F8F8F, size: 28),
     );
   }
 }
