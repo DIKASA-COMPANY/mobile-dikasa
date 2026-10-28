@@ -3,12 +3,8 @@ import 'package:mobile_dikasa/core/network/api_client.dart';
 import 'package:mobile_dikasa/core/network/mock_api_interceptor.dart';
 import 'package:mobile_dikasa/data/models/product.dart';
 import 'package:mobile_dikasa/data/repositories/auth_repository.dart';
-import 'package:mobile_dikasa/data/repositories/cash_session_repository.dart';
-import 'package:mobile_dikasa/data/repositories/order_type_repository.dart';
 import 'package:mobile_dikasa/data/repositories/product_repository.dart';
 import 'package:mobile_dikasa/data/services/auth_service.dart';
-import 'package:mobile_dikasa/data/services/cash_session_service.dart';
-import 'package:mobile_dikasa/data/services/order_type_service.dart';
 import 'package:mobile_dikasa/data/services/product_service.dart';
 import 'package:mobile_dikasa/data/services/pos_service.dart';
 import 'package:mobile_dikasa/features/new_order/view_model.dart';
@@ -36,7 +32,6 @@ void main() {
     );
 
     await viewModel.loadProducts();
-    await viewModel.loadOrderTypes();
   });
 
   test('katalog terisi dan tab Makanan aktif secara awal', () {
@@ -200,19 +195,17 @@ void main() {
       expect(viewModel.openingCash, isNull);
     });
 
-    test('nominal tersimpan saat kasir menekan Masuk', () async {
-      final bool isSuccess = await viewModel.confirmOpeningCash(120000);
+    test('nominal tersimpan saat kasir menekan Masuk', () {
+      viewModel.confirmOpeningCash(120000);
 
-      expect(isSuccess, isTrue);
       expect(viewModel.openingCash, 120000);
       expect(viewModel.isOpeningCashResolved, isTrue);
     });
 
-    test('Lewati membuka sesi kas dengan modal nol', () async {
-      final bool isSuccess = await viewModel.confirmOpeningCash(null);
+    test('dianggap terjawab meski kasir memilih Lewati', () {
+      viewModel.confirmOpeningCash(null);
 
-      expect(isSuccess, isTrue);
-      expect(viewModel.openingCash, 0);
+      expect(viewModel.openingCash, isNull);
       expect(viewModel.isOpeningCashResolved, isTrue);
     });
   });
@@ -225,14 +218,6 @@ void main() {
       password: MockApiInterceptor.demoPassword,
     );
 
-    expect(viewModel.currentUser?.outletId, 'warteg-bahari');
-  });
-
-  test('jenis order berasal dari endpoint OpenAPI', () {
-    expect(viewModel.orderTypes.map((type) => type.label), <String>[
-      'Bebas Pilih Meja',
-      'Pesan Meja',
-      'Bawa Pulang',
-    ]);
+    expect(viewModel.currentUser?.outletName, 'Warteg Bahari');
   });
 }

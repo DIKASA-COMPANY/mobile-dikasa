@@ -4,8 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_dikasa/core/network/api_client.dart';
 import 'package:mobile_dikasa/core/network/mock_api_interceptor.dart';
 import 'package:mobile_dikasa/data/repositories/auth_repository.dart';
-import 'package:mobile_dikasa/data/repositories/cash_session_repository.dart';
-import 'package:mobile_dikasa/data/repositories/order_type_repository.dart';
 import 'package:mobile_dikasa/data/repositories/product_repository.dart';
 import 'package:mobile_dikasa/data/services/auth_service.dart';
 import 'package:mobile_dikasa/data/services/account_service.dart';
@@ -162,10 +160,11 @@ void main() {
     final NewOrderViewModel viewModel = await pumpOrderPage(tester);
     await settleCatalog(tester);
 
-    await skipOpeningCash(tester);
+    await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
+    await tester.pumpAndSettle();
 
     expect(find.byType(OpeningCashDialog), findsNothing);
-    expect(viewModel.openingCash, 0);
+    expect(viewModel.openingCash, isNull);
     expect(viewModel.isOpeningCashResolved, isTrue);
   });
 
@@ -175,11 +174,12 @@ void main() {
     await pumpOrderPage(tester);
     await settleCatalog(tester);
 
-    await skipOpeningCash(tester);
+    await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
+    await tester.pumpAndSettle();
 
     // Identitas outlet pada baris teratas.
-    expect(find.text('Outlet aktif'), findsOneWidget);
-    expect(find.text('Jane Doe'), findsOneWidget);
+    expect(find.text('Warteg Bahari'), findsOneWidget);
+    expect(find.text('Kasir Jane Doe'), findsOneWidget);
 
     // Tab kelompok produk.
     expect(find.text('Makanan'), findsOneWidget);
@@ -199,7 +199,8 @@ void main() {
     await pumpOrderPage(tester);
     await settleCatalog(tester);
 
-    await skipOpeningCash(tester);
+    await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Cumi Goreng Asam Manis'));
     await tester.pump();
@@ -216,7 +217,8 @@ void main() {
       await pumpOrderPage(tester);
       await settleCatalog(tester);
 
-      await skipOpeningCash(tester);
+      await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
+      await tester.pumpAndSettle();
 
       // Satu Cumi Goreng Asam Manis, dua Cumi Goreng Mentega.
       // `.first` menargetkan kartu di katalog (kiri), bukan baris di panel

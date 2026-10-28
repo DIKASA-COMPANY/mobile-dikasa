@@ -41,7 +41,11 @@ try {
         "sdk: '>=3.5.0 <4.0.0'",
         "sdk: '>=3.8.0 <4.0.0'"
     )
-    Set-Content -LiteralPath $generatedPubspec -Value $generatedPubspecContent -Encoding utf8NoBOM
+    [System.IO.File]::WriteAllText(
+        $generatedPubspec,
+        $generatedPubspecContent,
+        [System.Text.UTF8Encoding]::new($false)
+    )
 
     $generatedAnalysisOptions = Join-Path $projectRoot "packages\dikasa_api\analysis_options.yaml"
     $analysisOptionsContent = Get-Content -LiteralPath $generatedAnalysisOptions -Raw
@@ -49,7 +53,11 @@ try {
         "deprecated_member_use_from_same_package: ignore",
         "deprecated_member_use_from_same_package: ignore`n    unused_import: ignore"
     )
-    Set-Content -LiteralPath $generatedAnalysisOptions -Value $analysisOptionsContent -Encoding utf8NoBOM
+    [System.IO.File]::WriteAllText(
+        $generatedAnalysisOptions,
+        $analysisOptionsContent,
+        [System.Text.UTF8Encoding]::new($false)
+    )
 
     Push-Location (Join-Path $projectRoot "packages\dikasa_api")
     try {

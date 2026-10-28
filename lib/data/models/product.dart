@@ -23,6 +23,8 @@ enum ProductGroup {
       orElse: () => ProductGroup.makanan,
     );
   }
+
+  static ProductGroup fromApi(String? value) => fromJson(value);
 }
 
 /// One sellable variant; its quantity comes from the parent product's balance.
@@ -50,6 +52,7 @@ class Product {
     required this.id,
     required this.name,
     required this.price,
+    required this.imageAsset,
     required this.group,
     required this.category,
     required this.isHighlighted,

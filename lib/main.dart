@@ -6,8 +6,6 @@ import 'package:mobile_dikasa/core/network/api_client.dart';
 import 'package:mobile_dikasa/core/routing/app_routes.dart';
 import 'package:mobile_dikasa/core/utils/screen_utils.dart';
 import 'package:mobile_dikasa/data/repositories/auth_repository.dart';
-import 'package:mobile_dikasa/data/repositories/cash_session_repository.dart';
-import 'package:mobile_dikasa/data/repositories/order_type_repository.dart';
 import 'package:mobile_dikasa/data/repositories/product_repository.dart';
 import 'package:mobile_dikasa/data/services/auth_service.dart';
 import 'package:mobile_dikasa/data/services/account_service.dart';

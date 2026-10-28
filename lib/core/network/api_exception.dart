@@ -76,12 +76,7 @@ class ApiException implements Exception {
     final int statusCode = response?.statusCode ?? 0;
 
     // Backend boleh mengirim {"message": "..."}; kalau ada, itu yang dipakai.
-    final dynamic body = response?.data;
-    final String? serverMessage = body is Map<String, dynamic>
-        ? (body['error'] is Map<String, dynamic>
-              ? (body['error'] as Map<String, dynamic>)['message'] as String?
-              : body['message'] as String?)
-        : null;
+    final String? serverMessage = _serverMessage(response?.data);
 
     if (statusCode == 401 || statusCode == 403) {
       return ApiException(

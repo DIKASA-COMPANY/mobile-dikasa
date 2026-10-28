@@ -35,8 +35,6 @@ class MockApiInterceptor extends Interceptor {
   /// Jeda buatan supaya indikator loading benar-benar terlihat saat dicoba.
   static const Duration _latency = Duration(milliseconds: 700);
 
-  Map<String, dynamic>? _currentCashSession;
-
   @override
   Future<void> onRequest(
     RequestOptions options,
@@ -425,12 +423,9 @@ class MockApiInterceptor extends Interceptor {
         DioException(
           requestOptions: options,
           type: DioExceptionType.badResponse,
-          response: _errorResponse(
-            options,
-            401,
-            'AUTH_INVALID_CREDENTIALS',
-            'Username atau password salah.',
-          ),
+          response: _response(options, 401, <String, dynamic>{
+            'message': 'Username atau password salah.',
+          }),
         ),
       );
     }
@@ -444,10 +439,8 @@ class MockApiInterceptor extends Interceptor {
               '${_account.profile['first_name'] ?? ''} ${_account.profile['last_name'] ?? ''}'
                   .trim(),
           'username': demoUsername,
-          'phone_number': '081234567890',
-          'first_name': 'Jane',
-          'last_name': 'Doe',
-          'is_active': true,
+          'role': 'Kasir',
+          'outlet_name': 'Warteg Bahari',
         },
       }),
     );
@@ -463,21 +456,6 @@ class MockApiInterceptor extends Interceptor {
       statusCode: statusCode,
       data: data,
     );
-  }
-
-  Response<dynamic> _errorResponse(
-    RequestOptions options,
-    int statusCode,
-    String code,
-    String message,
-  ) {
-    return _response(options, statusCode, <String, dynamic>{
-      'error': <String, dynamic>{
-        'code': code,
-        'message': message,
-        'details': <String, String>{},
-      },
-    });
   }
 
   /// Katalog contoh. Nama, harga, dan gambar mengikuti desain Figma
