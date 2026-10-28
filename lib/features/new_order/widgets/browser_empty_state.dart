@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'browser_design.dart';
 
 class BrowserEmptyState extends StatelessWidget {
@@ -39,7 +40,7 @@ class BrowserEmptyState extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
             Text(
               searching
                   ? 'Coba kata kunci atau filter lain.'
@@ -58,15 +59,23 @@ class BrowserEmptyState extends StatelessWidget {
       );
       return Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20.r),
           child: wide
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [picture, const SizedBox(width: 72), message],
+                  children: [
+                    picture,
+                    SizedBox(width: 72.w),
+                    message,
+                  ],
                 )
               : Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: [picture, const SizedBox(height: 20), message],
+                  children: [
+                    picture,
+                    SizedBox(height: 20.h),
+                    message,
+                  ],
                 ),
         ),
       );

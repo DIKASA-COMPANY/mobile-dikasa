@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_remote_image.dart';
 import 'package:mobile_dikasa/core/constants/colors.dart';
 import 'package:mobile_dikasa/core/themes/text_styles.dart';
 import 'package:mobile_dikasa/core/utils/formatted_currency.dart';
@@ -36,7 +38,7 @@ class ProductCatalog extends StatelessWidget {
             .clamp(1, 4);
 
         return GridView.builder(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+          padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 24.h),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: columnCount,
             crossAxisSpacing: 20,
@@ -71,7 +73,7 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: AppColors.cEDEDED,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(8.r),
       clipBehavior: Clip.antiAlias,
       elevation: 1,
       shadowColor: AppColors.c4D0F0F0F,
@@ -80,38 +82,38 @@ class ProductCard extends StatelessWidget {
         child: Row(
           children: <Widget>[
             product.imageUrl != null
-                ? Image.network(
-                    product.imageUrl!,
-                    width: 108,
-                    height: 110,
+                ? AppRemoteImage(
+                    url: product.imageUrl!,
+                    width: 108.w,
+                    height: 110.h,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => const SizedBox(
-                      width: 108,
-                      height: 110,
+                    fallback: SizedBox(
+                      width: 108.w,
+                      height: 110.h,
                       child: Icon(Icons.image_not_supported_outlined),
                     ),
                   )
                 : Image.asset(
                     product.imageAsset,
-                    width: 108,
-                    height: 110,
+                    width: 108.w,
+                    height: 110.h,
                     fit: BoxFit.cover,
                     // Katalog nanti diisi dari backend; gambar yang hilang tidak
                     // boleh membuat seluruh grid gagal digambar.
                     errorBuilder: (_, _, _) => Container(
-                      width: 108,
-                      height: 110,
+                      width: 108.w,
+                      height: 110.h,
                       color: AppColors.cD9D9D9,
                       child: Icon(
                         Icons.restaurant_menu,
                         color: AppColors.c8F8F8F,
-                        size: 28,
+                        size: 28.r,
                       ),
                     ),
                   ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
+                padding: EdgeInsets.fromLTRB(14.w, 12.h, 10.w, 12.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -121,7 +123,7 @@ class ProductCard extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.sectionTitle.copyWith(
-                          fontSize: 15,
+                          fontSize: 15.sp,
                           height: 1.3,
                           color: product.isHighlighted
                               ? AppColors.c9D1414

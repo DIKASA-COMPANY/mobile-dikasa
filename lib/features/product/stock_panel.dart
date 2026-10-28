@@ -1,5 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
 import 'package:mobile_dikasa/components/text_field/main.dart';
 import 'package:mobile_dikasa/core/network/api_exception.dart';
 import 'package:mobile_dikasa/data/models/catalog_product.dart';
@@ -55,12 +57,12 @@ class StockPanel extends StatelessWidget {
                 : 'Stok tidak dilacak',
             style: catalogText(26, weight: FontWeight.w600),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             'Semua variasi memakai satu saldo produk. Batas menipis: ${product!.lowStockThreshold} unit.',
             style: catalogText(14),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
           Wrap(
             spacing: 16,
             runSpacing: 12,
@@ -198,7 +200,7 @@ class _StockDialogState extends State<_StockDialog> {
     child: AlertDialog(
       title: Text(widget.adjust ? 'Sesuaikan Stok' : 'Atur Pelacakan Stok'),
       content: SizedBox(
-        width: 500,
+        width: 500.w,
         child: SingleChildScrollView(
           child: Form(
             key: form,
@@ -232,7 +234,7 @@ class _StockDialogState extends State<_StockDialog> {
                     validator: (v) => number(v, signed: widget.adjust),
                   ),
                 if (!widget.adjust) ...[
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   AppTextField(
                     controller: threshold,
                     label: 'Batas stok menipis',
@@ -241,7 +243,7 @@ class _StockDialogState extends State<_StockDialog> {
                     validator: number,
                   ),
                 ],
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 AppTextField(
                   controller: reason,
                   label: 'Alasan perubahan',
@@ -327,12 +329,12 @@ class _StockHistoryState extends State<_StockHistory> {
   Widget build(BuildContext context) => AlertDialog(
     title: const Text('Riwayat Stok'),
     content: SizedBox(
-      width: 600,
+      width: 600.w,
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (loading) const LinearProgressIndicator(),
+            if (loading) const AppLinearLoadingIndicator(),
             if (error != null) catalogError(error!, retry: load),
             if (!loading && rows.isEmpty && error == null)
               const Text('Belum ada perubahan stok.'),

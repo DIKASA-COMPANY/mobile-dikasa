@@ -1,22 +1,15 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import '../../data/services/account_files.dart';
-import '../../data/services/account_service.dart';
-import '../../data/repositories/auth_repository.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
 import 'view_model.dart';
 import 'credential_forms.dart';
 import 'profile_photo.dart';
 import 'design.dart';
 
 class AccountSettingsView extends StatefulWidget {
-  const AccountSettingsView({
-    super.key,
-    required this.service,
-    required this.auth,
-    this.onLock,
-  });
-  final AccountService service;
-  final AuthRepository auth;
+  const AccountSettingsView({super.key, required this.viewModel, this.onLock});
+  final AccountSettingsViewModel viewModel;
   final VoidCallback? onLock;
   @override
   State<AccountSettingsView> createState() => _AccountSettingsViewState();
@@ -43,7 +36,7 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
   @override
   void initState() {
     super.initState();
-    m = AccountSettingsViewModel(widget.service, widget.auth);
+    m = widget.viewModel;
     m.addListener(changed);
     m.load();
   }
@@ -117,13 +110,9 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
   }
 
   Future<void> upload() async {
-    final generation = m.generation;
     try {
-      final f = await const AccountFiles().pickImage();
-      if (!mounted ||
-          !m.active ||
-          generation != widget.auth.sessionGeneration ||
-          f == null) {
+      final f = await m.pickProfileImage();
+      if (!mounted || !m.active || f == null) {
         return;
       }
       setState(() {
@@ -145,27 +134,27 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       Container(
-        height: 73,
+        height: 73.h,
         alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        decoration: const BoxDecoration(
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
+        decoration: BoxDecoration(
           color: Color(0xff529dc8),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(10.r)),
         ),
         child: Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white,
-            fontSize: 21,
+            fontSize: 21.sp,
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
       Container(
-        padding: const EdgeInsets.all(32),
-        decoration: const BoxDecoration(
+        padding: EdgeInsets.all(32.r),
+        decoration: BoxDecoration(
           color: Color(0xfff8f8f8),
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(10.r)),
         ),
         child: content,
       ),
@@ -210,7 +199,7 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
             )
           : null,
       prefixIcon: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12.r),
         child: AccountIcon(
           key == 'phone_number'
               ? 'phone'
@@ -223,9 +212,9 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
               : 'profile',
         ),
       ),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.r)),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(10.r),
         borderSide: const BorderSide(color: Color(0xffd6d6d6)),
       ),
       filled: true,
@@ -270,20 +259,20 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
     children: [
       Text(
         label,
-        style: const TextStyle(color: Color(0xff999999), fontSize: 16),
+        style: TextStyle(color: Color(0xff999999), fontSize: 16.sp),
       ),
-      const SizedBox(height: 8),
+      SizedBox(height: 8.h),
       Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(15),
+        padding: EdgeInsets.all(15.r),
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(color: const Color(0xffd6d6d6)),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10.r),
         ),
         child: Text(value.isEmpty ? 'Belum diisi' : value),
       ),
-      const SizedBox(height: 16),
+      SizedBox(height: 16.h),
     ],
   );
   Widget profileForm() {
@@ -298,13 +287,13 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
             DropdownButtonFormField<String>(
               initialValue: m.genders.any((g) => g.id == gender) ? gender : '',
               isExpanded: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Gender',
                 prefixIcon: Padding(
-                  padding: EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12.r),
                   child: SizedBox(
-                    width: 22,
-                    height: 22,
+                    width: 22.w,
+                    height: 22.h,
                     child: AccountIcon('gender'),
                   ),
                 ),
@@ -363,7 +352,7 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
               );
             },
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24.h),
           Wrap(
             alignment: WrapAlignment.end,
             spacing: 16,
@@ -387,9 +376,9 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
               FilledButton(
                 style: FilledButton.styleFrom(
                   backgroundColor: const Color(0xffff8227),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 36,
-                    vertical: 22,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 36.w,
+                    vertical: 22.h,
                   ),
                 ),
                 onPressed: m.busy
@@ -442,20 +431,20 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
           filledButtonTheme: FilledButtonThemeData(
             style: FilledButton.styleFrom(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10.r),
               ),
-              textStyle: const TextStyle(fontFamily: 'Poppins', fontSize: 18),
+              textStyle: TextStyle(fontFamily: 'Poppins', fontSize: 18.sp),
             ),
           ),
           outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
               foregroundColor: const Color(0xff077cd3),
-              side: const BorderSide(color: Color(0xff077cd3), width: 2),
+              side: BorderSide(color: Color(0xff077cd3), width: 2.w),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10.r),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-              textStyle: const TextStyle(fontFamily: 'Poppins', fontSize: 18),
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 18.h),
+              textStyle: TextStyle(fontFamily: 'Poppins', fontSize: 18.sp),
             ),
           ),
           textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Poppins'),
@@ -466,23 +455,23 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
             child: Column(
               children: [
                 Container(
-                  height: 88,
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  height: 88.h,
+                  padding: EdgeInsets.symmetric(horizontal: 30.w),
                   child: Row(
                     children: [
                       IconButton(
                         onPressed: back,
                         icon: const AccountIcon('menu'),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16.w),
                       if (MediaQuery.sizeOf(context).width >= 600)
-                        const Expanded(
+                        Expanded(
                           flex: 3,
                           child: Text(
                             'Akun',
                             style: TextStyle(
                               color: Color(0xff077cd3),
-                              fontSize: 20,
+                              fontSize: 20.sp,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -504,7 +493,7 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 220),
+                              constraints: BoxConstraints(maxWidth: 220.w),
                               child: Text(
                                 '${p.user.outletName}\n${p.user.name}',
                                 textAlign: TextAlign.right,
@@ -518,22 +507,22 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
                   ),
                 ),
                 Container(
-                  height: 88,
+                  height: 88.h,
                   color: const Color(0xff367aa0),
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  padding: EdgeInsets.symmetric(horizontal: 32.w),
                   child: Row(
                     children: [
                       IconButton(
                         onPressed: back,
                         icon: const AccountIcon('back'),
                       ),
-                      const SizedBox(width: 32),
-                      const Expanded(
+                      SizedBox(width: 32.w),
+                      Expanded(
                         child: Text(
                           'Pengaturan Akun',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 22,
+                            fontSize: 22.sp,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -541,7 +530,7 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
                     ],
                   ),
                 ),
-                if (m.busy) const LinearProgressIndicator(),
+                if (m.busy) const AppLinearLoadingIndicator(),
                 Expanded(
                   child: !m.active
                       ? const Center(
@@ -552,7 +541,7 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
                       : p == null
                       ? Center(
                           child: m.busy
-                              ? const CircularProgressIndicator()
+                              ? const AppLoadingIndicator()
                               : Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -566,18 +555,18 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
                         )
                       : SingleChildScrollView(
                           padding: MediaQuery.sizeOf(context).width < 600
-                              ? const EdgeInsets.all(16)
-                              : const EdgeInsets.symmetric(
-                                  horizontal: 48,
-                                  vertical: 32,
+                              ? EdgeInsets.all(16.r)
+                              : EdgeInsets.symmetric(
+                                  horizontal: 48.w,
+                                  vertical: 32.h,
                                 ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               if (m.message != null)
                                 Container(
-                                  padding: const EdgeInsets.all(16),
-                                  margin: const EdgeInsets.only(bottom: 20),
+                                  padding: EdgeInsets.all(16.r),
+                                  margin: EdgeInsets.only(bottom: 20.h),
                                   color: const Color(0xffe9f3fa),
                                   child: Text(
                                     m.message!,
@@ -607,20 +596,26 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Expanded(child: profile),
-                                            const SizedBox(width: 28),
-                                            SizedBox(width: 304, child: avatar),
+                                            SizedBox(width: 28.w),
+                                            SizedBox(
+                                              width: 304.w,
+                                              child: avatar,
+                                            ),
                                           ],
                                         )
                                       : Column(
                                           children: [
                                             profile,
-                                            const SizedBox(height: 24),
-                                            SizedBox(width: 304, child: avatar),
+                                            SizedBox(height: 24.h),
+                                            SizedBox(
+                                              width: 304.w,
+                                              child: avatar,
+                                            ),
                                           ],
                                         );
                                 },
                               ),
-                              const SizedBox(height: 32),
+                              SizedBox(height: 32.h),
                               card(
                                 'Informasi Akun',
                                 Column(
@@ -634,15 +629,15 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
                                   ],
                                 ),
                               ),
-                              const SizedBox(height: 32),
+                              SizedBox(height: 32.h),
                               CredentialForm(
                                 key: ValueKey('pin-${p.hasPIN}'),
                                 model: m,
                                 pin: true,
                               ),
-                              const SizedBox(height: 32),
+                              SizedBox(height: 32.h),
                               CredentialForm(model: m, pin: false),
-                              const SizedBox(height: 32),
+                              SizedBox(height: 32.h),
                               const Center(
                                 child: Text(
                                   'Powered By Dikasa',

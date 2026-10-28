@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobile_dikasa/core/utils/formatted_currency.dart';
@@ -129,14 +131,14 @@ class _PaymentDialogState extends State<PaymentDialog> {
       child: AlertDialog(
         title: const Text('Pembayaran'),
         content: SizedBox(
-          width: 520,
+          width: 520.w,
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (_loading)
-                  const Center(child: CircularProgressIndicator())
+                  const Center(child: AppLoadingIndicator())
                 else ...[
                   Text(
                     'Subtotal: ${formatRupiah(vm.totalPrice, prefix: 'Rp ')}',
@@ -144,12 +146,12 @@ class _PaymentDialogState extends State<PaymentDialog> {
                   Text(
                     'Pajak ${vm.taxPercentage}%: ${formatRupiah(vm.taxAmount, prefix: 'Rp ')}',
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Text(
                     'Total: ${formatRupiah(vm.paymentTotal, prefix: 'Rp ')}',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.h),
                   DropdownButtonFormField<String>(
                     isExpanded: true,
                     initialValue: _method,
@@ -230,19 +232,19 @@ class _PaymentDialogState extends State<PaymentDialog> {
                       ),
                       onChanged: (_) => setState(() {}),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8.h),
                     Text(
                       'Kembalian: ${formatRupiah((_paidAmount - vm.paymentTotal).clamp(0, 9007199254740991), prefix: 'Rp ')}',
                     ),
                   ],
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   const Text(
                     'Pastikan uang atau pembayaran sudah diterima. Aplikasi hanya mencatat pembayaran.',
                   ),
                 ],
                 if (vm.checkoutError != null || vm.paymentUncertain)
                   Padding(
-                    padding: const EdgeInsets.only(top: 16),
+                    padding: EdgeInsets.only(top: 16.h),
                     child: Text(
                       vm.paymentUncertain
                           ? 'Status pembayaran belum pasti. Jangan bayar ulang; periksa Daftar Order.'

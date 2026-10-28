@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_dikasa/core/constants/colors.dart';
 
 class SearchableSelectOption<T> {
@@ -42,10 +43,7 @@ class SearchableSelectField<T> extends StatelessWidget {
     this.borderColor,
     this.focusedBorderColor,
     this.errorBorderColor,
-    this.contentPadding = const EdgeInsets.symmetric(
-      horizontal: 16,
-      vertical: 14,
-    ),
+    this.contentPadding,
     this.borderRadius = 12,
   });
 
@@ -81,7 +79,7 @@ class SearchableSelectField<T> extends StatelessWidget {
   final Color? focusedBorderColor;
   final Color? errorBorderColor;
 
-  final EdgeInsetsGeometry contentPadding;
+  final EdgeInsetsGeometry? contentPadding;
   final double borderRadius;
 
   @override
@@ -95,16 +93,16 @@ class SearchableSelectField<T> extends StatelessWidget {
 
     final TextStyle resolvedTextStyle =
         textStyle ??
-        const TextStyle(
-          fontSize: 14,
+        TextStyle(
+          fontSize: 14.sp,
           fontWeight: FontWeight.w500,
           color: Colors.black87,
         );
 
     final TextStyle resolvedLabelStyle =
         labelStyle ??
-        const TextStyle(
-          fontSize: 14,
+        TextStyle(
+          fontSize: 14.sp,
           fontWeight: FontWeight.w600,
           color: Colors.black87,
         );
@@ -112,7 +110,7 @@ class SearchableSelectField<T> extends StatelessWidget {
     final TextStyle resolvedHintStyle =
         hintStyle ??
         TextStyle(
-          fontSize: 14,
+          fontSize: 14.sp,
           fontWeight: FontWeight.w400,
           color: AppColors.c707070,
         );
@@ -165,7 +163,7 @@ class SearchableSelectField<T> extends StatelessWidget {
                       : const <InlineSpan>[],
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
             ],
             InkWell(
               focusNode: focusNode,
@@ -179,7 +177,9 @@ class SearchableSelectField<T> extends StatelessWidget {
                   errorText: effectiveErrorText,
                   filled: true,
                   fillColor: resolvedBackgroundColor,
-                  contentPadding: contentPadding,
+                  contentPadding:
+                      contentPadding ??
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
                   enabledBorder: _buildBorder(resolvedBorderColor),
                   focusedBorder: _buildBorder(resolvedFocusedBorderColor),
                   disabledBorder: _buildBorder(resolvedBorderColor),
@@ -194,7 +194,7 @@ class SearchableSelectField<T> extends StatelessWidget {
                         style: showHint ? resolvedHintStyle : resolvedTextStyle,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12.w),
                     icon ?? Icon(Icons.search, color: AppColors.c707070),
                   ],
                 ),
@@ -218,7 +218,7 @@ class SearchableSelectField<T> extends StatelessWidget {
   OutlineInputBorder _buildBorder(Color color) {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(borderRadius),
-      borderSide: BorderSide(color: color, width: 1),
+      borderSide: BorderSide(color: color, width: 1.w),
     );
   }
 
@@ -229,8 +229,8 @@ class SearchableSelectField<T> extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: AppColors.cFFFFFF,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
       builder: (BuildContext sheetContext) {
         String query = '';
@@ -260,7 +260,7 @@ class SearchableSelectField<T> extends StatelessWidget {
                       16 + MediaQuery.viewInsetsOf(context).bottom,
                     ),
                     child: SizedBox(
-                      height: 420,
+                      height: 420.h,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
@@ -268,12 +268,12 @@ class SearchableSelectField<T> extends StatelessWidget {
                               sheetTitle!.trim().isNotEmpty) ...<Widget>[
                             Text(
                               sheetTitle!,
-                              style: const TextStyle(
-                                fontSize: 16,
+                              style: TextStyle(
+                                fontSize: 16.sp,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12.h),
                           ],
                           TextField(
                             autofocus: true,
@@ -281,9 +281,9 @@ class SearchableSelectField<T> extends StatelessWidget {
                               hintText: searchHintText,
                               filled: true,
                               fillColor: AppColors.cF8F8F8,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 12,
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 14.w,
+                                vertical: 12.h,
                               ),
                               enabledBorder: _buildBorder(AppColors.cD9D9D9),
                               focusedBorder: _buildBorder(AppColors.c097BC2),
@@ -298,14 +298,14 @@ class SearchableSelectField<T> extends StatelessWidget {
                               });
                             },
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12.h),
                           Expanded(
                             child: filteredOptions.isEmpty
                                 ? Center(
                                     child: Text(
                                       emptySearchText,
                                       style: TextStyle(
-                                        fontSize: 13,
+                                        fontSize: 13.sp,
                                         fontWeight: FontWeight.w500,
                                         color: AppColors.c707070,
                                       ),
@@ -314,7 +314,7 @@ class SearchableSelectField<T> extends StatelessWidget {
                                 : ListView.separated(
                                     itemCount: filteredOptions.length,
                                     separatorBuilder: (_, _) => Divider(
-                                      height: 1,
+                                      height: 1.h,
                                       color: AppColors.cEDEDED,
                                     ),
                                     itemBuilder:
@@ -325,14 +325,14 @@ class SearchableSelectField<T> extends StatelessWidget {
                                           return ListTile(
                                             enabled: option.enabled,
                                             contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                  horizontal: 4,
-                                                  vertical: 2,
+                                                EdgeInsets.symmetric(
+                                                  horizontal: 4.w,
+                                                  vertical: 2.h,
                                                 ),
                                             title: Text(
                                               option.label,
-                                              style: const TextStyle(
-                                                fontSize: 14,
+                                              style: TextStyle(
+                                                fontSize: 14.sp,
                                                 fontWeight: FontWeight.w600,
                                               ),
                                             ),
@@ -341,7 +341,7 @@ class SearchableSelectField<T> extends StatelessWidget {
                                                 : Text(
                                                     option.subtitle!,
                                                     style: TextStyle(
-                                                      fontSize: 12,
+                                                      fontSize: 12.sp,
                                                       fontWeight:
                                                           FontWeight.w400,
                                                       color: AppColors.c707070,

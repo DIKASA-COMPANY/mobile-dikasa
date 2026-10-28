@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_dikasa/data/models/product.dart';
 import 'package:mobile_dikasa/core/utils/formatted_currency.dart';
 
@@ -13,7 +14,7 @@ Future<Product?> chooseProductVariation(
     builder: (c) => AlertDialog(
       title: Text(product.name),
       content: SizedBox(
-        width: 500,
+        width: 500.w,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,

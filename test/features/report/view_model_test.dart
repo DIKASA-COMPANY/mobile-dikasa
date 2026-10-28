@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile_dikasa/core/network/api_client.dart';
 import 'package:mobile_dikasa/data/models/sales_report.dart';
 import 'package:mobile_dikasa/data/services/report_service.dart';
+import 'package:mobile_dikasa/data/services/report_files.dart';
 import 'package:mobile_dikasa/features/report/view_model.dart';
 
 Map<String, dynamic> reportJson({String kind = 'summary', int net = 270}) => {
@@ -76,6 +77,16 @@ class FakeReportService extends ReportService {
       : await delayedExport!.future;
 }
 
+class FakeReportFiles extends ReportFiles {
+  int saved = 0;
+
+  @override
+  Future<bool> saveWorkbook(Uint8List bytes, {required String filename}) async {
+    saved++;
+    return true;
+  }
+}
+
 void main() {
   setUp(
     () => dotenv.loadFromString(
@@ -104,7 +115,12 @@ void main() {
   test('account switch blocks late data and export handoff', () async {
     var account = 'a';
     final s = FakeReportService()..delay = true;
-    final vm = ReportViewModel(service: s, accountId: () => account);
+    final files = FakeReportFiles();
+    final vm = ReportViewModel(
+      service: s,
+      accountId: () => account,
+      files: files,
+    );
     final pending = vm.reload();
     account = 'b';
     s.pending.single.complete(ReportData.fromJson(reportJson()));
@@ -112,14 +128,10 @@ void main() {
     expect(vm.report, isNull);
     account = 'a';
     s.delayedExport = Completer<Uint8List>();
-    var saved = 0;
-    final exporting = vm.export((b, n) async {
-      saved++;
-      return true;
-    });
+    final exporting = vm.export();
     account = 'b';
     s.delayedExport!.complete(Uint8List(1));
     expect(await exporting, false);
-    expect(saved, 0);
+    expect(files.saved, 0);
   });
 }

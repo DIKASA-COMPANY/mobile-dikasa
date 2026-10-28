@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_dikasa/components/table/main.dart';
 import 'package:mobile_dikasa/data/models/sales_report.dart';
 import 'package:mobile_dikasa/core/utils/formatted_currency.dart';
@@ -35,7 +36,7 @@ class ReportTables extends StatelessWidget {
       return _table<Map<String, dynamic>>([
         TableFieldColumn(
           title: 'Metode Pembayaran',
-          width: 170,
+          width: 170.w,
           valueBuilder: (m) => methodLabel(m['method'] as String),
         ),
         for (final c in [
@@ -57,19 +58,19 @@ class ReportTables extends StatelessWidget {
         title: report.kind == ReportKind.products
             ? 'Produk / Variasi'
             : 'Kategori',
-        width: 190,
+        width: 190.w,
         valueBuilder: (r) => r.name,
       ),
       if (report.kind == ReportKind.products) ...[
         TableFieldColumn(
           title: 'Kategori historis',
-          width: 165,
+          width: 165.w,
           valueBuilder: (r) =>
               r.category.isEmpty ? 'Tidak tercatat' : r.category,
         ),
         TableFieldColumn(
           title: 'Harga saat terjual',
-          width: 160,
+          width: 160.w,
           valueBuilder: (r) => r.minPrice == null
               ? '—'
               : r.minPrice == r.maxPrice
@@ -106,11 +107,11 @@ class ReportTables extends StatelessWidget {
         headingRowHeight: 73,
         rowHeight: 73,
         borderRadius: 10,
-        headerTextStyle: const TextStyle(
-          fontSize: 14,
+        headerTextStyle: TextStyle(
+          fontSize: 14.sp,
           fontWeight: FontWeight.w600,
           color: Colors.white,
         ),
-        cellTextStyle: const TextStyle(fontSize: 13, color: Color(0xff656565)),
+        cellTextStyle: TextStyle(fontSize: 13.sp, color: Color(0xff656565)),
       );
 }

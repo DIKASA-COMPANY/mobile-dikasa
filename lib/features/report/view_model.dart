@@ -2,18 +2,22 @@ import 'package:flutter/foundation.dart';
 import 'package:mobile_dikasa/core/network/api_exception.dart';
 import 'package:mobile_dikasa/data/models/sales_report.dart';
 import 'package:mobile_dikasa/data/services/report_service.dart';
+import 'package:mobile_dikasa/data/services/report_files.dart';
 
 /// Read-only account/request-scoped reports; no POS cart or till mutation.
 class ReportViewModel extends ChangeNotifier {
   ReportViewModel({
     required this.service,
     required this.accountId,
+    ReportFiles files = const ReportFiles(),
     DateTime Function()? clock,
-  }) : _account = accountId() {
+  }) : _files = files,
+       _account = accountId() {
     final today = reportDate(reportWib((clock ?? DateTime.now)()));
     filter = ReportFilter(startDate: today, endDate: today);
   }
   final ReportService service;
+  final ReportFiles _files;
   final String? Function() accountId;
   final String? _account;
   late ReportFilter filter;
@@ -90,7 +94,7 @@ class ReportViewModel extends ChangeNotifier {
     await reload();
   }
 
-  Future<bool> export(Future<bool> Function(Uint8List, String) save) async {
+  Future<bool> export() async {
     if (!current || exporting) return false;
     final k = kind, f = filter;
     exporting = true;
@@ -99,9 +103,9 @@ class ReportViewModel extends ChangeNotifier {
     try {
       final b = await service.export(k, f);
       if (!current) return false;
-      final ok = await save(
+      final ok = await _files.saveWorkbook(
         b,
-        'dikasa-${k.name}-${f.startDate}-${f.endDate}.xlsx',
+        filename: 'dikasa-${k.name}-${f.startDate}-${f.endDate}.xlsx',
       );
       return current && ok;
     } on ApiException catch (e) {

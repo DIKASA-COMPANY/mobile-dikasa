@@ -20,10 +20,14 @@ class CashSummary {
   int get opening => cashNumber(json['opening_cash']);
   int get sales => cashNumber(json['cash_sales']);
   int get refunds => cashNumber(json['cash_refunds']);
-  int get cashIn=>json.containsKey('cash_in')?cashNumber(json['cash_in']):0;
- int get cashOut=>json.containsKey('cash_out')?cashNumber(json['cash_out']):0;
- int get movementCount=>json.containsKey('movement_count')?cashNumber(json['movement_count']):0;
- int get expected => cashNumber(json['expected_cash']);
+  int get cashIn =>
+      json.containsKey('cash_in') ? cashNumber(json['cash_in']) : 0;
+  int get cashOut =>
+      json.containsKey('cash_out') ? cashNumber(json['cash_out']) : 0;
+  int get movementCount => json.containsKey('movement_count')
+      ? cashNumber(json['movement_count'])
+      : 0;
+  int get expected => cashNumber(json['expected_cash']);
   int get saleCount => cashNumber(json['sale_count']);
   int get refundCount => cashNumber(json['refund_count']);
   List<Map<String, dynamic>> get methods =>

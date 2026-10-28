@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_dikasa/core/utils/formatted_currency.dart';
 import 'package:mobile_dikasa/data/models/pos.dart';
 import 'browser_design.dart';
@@ -27,7 +28,7 @@ class PaidOrdersTable extends StatelessWidget {
       '',
     ],
     fractions: const [.1715, .18, .1843, .1627, .1026, .132, .0669],
-    fontSize: 18,
+    fontSize: 18.sp,
     leftPadding: const [37, 22, 22, 22, 22, 22, 6],
     rows: page.items.map((i) {
       final status = i['status']?.toString() ?? '';
@@ -50,7 +51,7 @@ class PaidOrdersTable extends StatelessWidget {
             if (statusLabel != null)
               Text(
                 statusLabel,
-                style: const TextStyle(fontSize: 12, color: Color(0xff9d1414)),
+                style: TextStyle(fontSize: 12.sp, color: Color(0xff9d1414)),
               ),
           ],
         ),
@@ -71,7 +72,7 @@ class PaidOrdersTable extends StatelessWidget {
         ),
         IconButton(
           padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(minWidth: 30, minHeight: 40),
+          constraints: BoxConstraints(minWidth: 30.w, minHeight: 40.h),
           tooltip: 'Detail transaksi',
           onPressed: actionsBlocked ? null : () => onDetail(i['id'] as String),
           icon: const BrowserDesignIcon('edit'),

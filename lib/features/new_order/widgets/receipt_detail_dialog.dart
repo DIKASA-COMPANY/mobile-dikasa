@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
 import 'package:mobile_dikasa/core/network/api_exception.dart';
 import 'package:mobile_dikasa/core/utils/formatted_currency.dart';
 import 'package:mobile_dikasa/data/models/refund.dart';
@@ -87,7 +89,7 @@ class _ReceiptDetailDialogState extends State<ReceiptDetailDialog> {
     return AlertDialog(
       title: Text(d == null ? 'Detail Transaksi' : d.number),
       content: SizedBox(
-        width: 700,
+        width: 700.w,
         child: ConstrainedBox(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.sizeOf(context).height * .7,
@@ -97,7 +99,7 @@ class _ReceiptDetailDialogState extends State<ReceiptDetailDialog> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (_loading) const LinearProgressIndicator(),
+                if (_loading) const AppLinearLoadingIndicator(),
                 if (_error != null) Text(_error!),
                 if (d != null) ...[
                   Text('Status: ${d.status} • metode asli: ${d.method}'),
@@ -128,7 +130,7 @@ class _ReceiptDetailDialogState extends State<ReceiptDetailDialog> {
                   for (final r in _history?.items ?? <RefundRecord>[])
                     Card(
                       child: Padding(
-                        padding: const EdgeInsets.all(10),
+                        padding: EdgeInsets.all(10.r),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

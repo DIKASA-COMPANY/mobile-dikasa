@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_dikasa/core/utils/formatted_currency.dart';
 import 'package:mobile_dikasa/data/models/pos.dart';
 import 'package:mobile_dikasa/data/models/user.dart';
@@ -87,7 +88,7 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
             return SingleChildScrollView(
               child: Column(
                 children: [
-                  SizedBox(height: 620, child: _summary()),
+                  SizedBox(height: 620.h, child: _summary()),
                   _result(narrow: true),
                 ],
               ),
@@ -98,11 +99,11 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SizedBox(width: 446, child: _summary()),
+                  SizedBox(width: 446.w, child: _summary()),
                   Expanded(
                     child: Center(
                       child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 714),
+                        constraints: BoxConstraints(maxWidth: 714.w),
                         child: Container(
                           color: Colors.white,
                           height: s.maxHeight,
@@ -120,9 +121,9 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
                   ),
                 ],
               ),
-              const Positioned(
-                left: 445,
-                top: 88,
+              Positioned(
+                left: 445.w,
+                top: 88.h,
                 child: RotatedBox(
                   quarterTurns: 1,
                   child: BrowserDesignIcon('panel-line'),
@@ -142,13 +143,13 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
       child: Column(
         children: [
           Container(
-            height: 88,
+            height: 88.h,
             color: const Color(0xff2c5e7a),
             alignment: Alignment.center,
-            child: const Text(
+            child: Text(
               'Rincian Pesanan',
               style: TextStyle(
-                fontSize: 22,
+                fontSize: 22.sp,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),
@@ -159,12 +160,12 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
                 ? const Center(child: Text('Rincian tersedia di Daftar Order.'))
                 : ListView.separated(
                     itemCount: p.items.length,
-                    separatorBuilder: (_, i) => const SizedBox(
-                      height: 1,
+                    separatorBuilder: (_, i) => SizedBox(
+                      height: 1.h,
                       child: ClipRect(
                         child: OverflowBox(
-                          minWidth: 450.01,
-                          maxWidth: 450.01,
+                          minWidth: 450.01.w,
+                          maxWidth: 450.01.w,
                           alignment: Alignment.centerLeft,
                           child: BrowserDesignIcon('summary-line'),
                         ),
@@ -173,15 +174,15 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
                     itemBuilder: (c, i) {
                       final line = p.items[i];
                       return Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                          vertical: 23,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 30.w,
+                          vertical: 23.h,
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(
-                              width: 44,
+                              width: 44.w,
                               child: Text(
                                 '${line.quantity}x',
                                 style: const TextStyle(
@@ -196,8 +197,8 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
                                 children: [
                                   Text(
                                     line.label,
-                                    style: const TextStyle(
-                                      fontSize: 16,
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
                                       fontWeight: FontWeight.w600,
                                       color: browserInk,
                                     ),
@@ -205,8 +206,8 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
                                   if (line.note.isNotEmpty)
                                     Text(
                                       'Notes : ${line.note}',
-                                      style: const TextStyle(
-                                        fontSize: 14,
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
                                         fontStyle: FontStyle.italic,
                                         color: browserInk,
                                       ),
@@ -214,7 +215,7 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12.w),
                             Text(
                               money(line.total),
                               style: const TextStyle(
@@ -233,7 +234,7 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
             _summaryRow('Jumlah Pesanan', '${p.quantity} Produk'),
             Container(
               color: const Color(0xffdbdada),
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
+              padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 14.h),
               child: Column(
                 children: [
                   _pair('Total Harga', money(p.subtotal)),
@@ -246,9 +247,9 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
             ),
           ],
           Container(
-            height: 62,
+            height: 62.h,
             color: const Color(0xffe6e6e6),
-            padding: const EdgeInsets.symmetric(horizontal: 30),
+            padding: EdgeInsets.symmetric(horizontal: 30.w),
             child: _pair(
               'TOTAL',
               money(widget.receipt.total),
@@ -257,13 +258,13 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
             ),
           ),
           Container(
-            height: 100,
+            height: 100.h,
             alignment: Alignment.center,
             color: const Color(0xfff8f8f8),
-            child: const Text(
+            child: Text(
               'LUNAS',
               style: TextStyle(
-                fontSize: 62,
+                fontSize: 62.sp,
                 color: Color(0xff218831),
                 fontWeight: FontWeight.w600,
               ),
@@ -276,12 +277,12 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
 
   Widget _summaryRow(String a, String b) => Container(
     color: const Color(0xffededed),
-    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+    padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.h),
     child: _pair(a, b),
   );
   Widget _pair(String a, String b, {bool strong = false, Color? color}) =>
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+        padding: EdgeInsets.symmetric(vertical: 4.h),
         child: Row(
           children: [
             Expanded(
@@ -294,7 +295,7 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
                 ),
               ),
             ),
-            const SizedBox(width: 10),
+            SizedBox(width: 10.w),
             Flexible(
               child: Text(
                 b,
@@ -309,14 +310,14 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
           ],
         ),
       );
-  Widget _line() => const Padding(
-    padding: EdgeInsets.symmetric(vertical: 14),
+  Widget _line() => Padding(
+    padding: EdgeInsets.symmetric(vertical: 14.h),
     child: SizedBox(
-      height: 2,
+      height: 2.h,
       child: ClipRect(
         child: OverflowBox(
-          minWidth: 446,
-          maxWidth: 446,
+          minWidth: 446.w,
+          maxWidth: 446.w,
           alignment: Alignment.centerLeft,
           child: BrowserDesignIcon('success-line'),
         ),
@@ -327,8 +328,11 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
     final p = widget.receipt.snapshot;
     return Container(
       color: Colors.white,
-      width: 714,
-      padding: EdgeInsets.symmetric(horizontal: narrow ? 20 : 54, vertical: 24),
+      width: 714.w,
+      padding: EdgeInsets.symmetric(
+        horizontal: narrow ? 20 : 54,
+        vertical: 24.h,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -336,7 +340,7 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const BrowserDesignIcon('check'),
-              const SizedBox(width: 18),
+              SizedBox(width: 18.w),
               Flexible(
                 child: Text(
                   'Transaksi Berhasil',
@@ -349,15 +353,15 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
               ),
             ],
           ),
-          const SizedBox(height: 18),
+          SizedBox(height: 18.h),
           Text(
             'No Transaksi : ${widget.receipt.number}',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Color(0xff8e8e8e), fontSize: 18),
+            style: TextStyle(color: Color(0xff8e8e8e), fontSize: 18.sp),
           ),
-          const SizedBox(height: 28),
+          SizedBox(height: 28.h),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: narrow ? 0 : 40),
+            padding: EdgeInsets.symmetric(horizontal: narrow ? 0 : 40.w),
             child: Column(
               children: [
                 _pair('Tagihan', money(widget.receipt.total)),
@@ -370,18 +374,18 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
                   _pair('Sisa Pembulatan', money(0)),
                   _line(),
                   _pair('Tips', money(p.tips), color: const Color(0xff218831)),
-                  const SizedBox(height: 14),
+                  SizedBox(height: 14.h),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 10,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 24.w,
+                      vertical: 10.h,
                     ),
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: const Color(0xffc6c6c6),
-                        width: 3,
+                        width: 3.w,
                       ),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.r),
                     ),
                     child: _pair(
                       'Kembalian',
@@ -394,7 +398,7 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
               ],
             ),
           ),
-          const SizedBox(height: 38),
+          SizedBox(height: 38.h),
           Wrap(
             alignment: WrapAlignment.center,
             spacing: 18,
@@ -404,16 +408,16 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
               _disabled('Cetak Struk', 'Pencetakan struk belum tersedia.'),
               SizedBox(
                 width: narrow ? 160 : 174,
-                height: 57,
+                height: 57.h,
                 child: FilledButton(
                   style: FilledButton.styleFrom(
                     backgroundColor: const Color(0xffff8227),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10.r),
                     ),
                   ),
                   onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Selesai', style: TextStyle(fontSize: 20)),
+                  child: Text('Selesai', style: TextStyle(fontSize: 20.sp)),
                 ),
               ),
             ],
@@ -434,18 +438,18 @@ class _PaymentSuccessViewState extends State<PaymentSuccessView> {
     child: Semantics(
       label: '$title. $hint',
       child: SizedBox(
-        width: 174,
-        height: 57,
+        width: 174.w,
+        height: 57.h,
         child: FilledButton(
           style: FilledButton.styleFrom(
             disabledBackgroundColor: browserAction.withValues(alpha: .5),
             disabledForegroundColor: Colors.white,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.r),
             ),
           ),
           onPressed: null,
-          child: Text(title, style: const TextStyle(fontSize: 18)),
+          child: Text(title, style: TextStyle(fontSize: 18.sp)),
         ),
       ),
     ),

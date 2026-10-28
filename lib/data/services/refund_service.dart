@@ -101,7 +101,8 @@ class RefundService {
             ),
           );
         } on DioException catch (e) {
-          if (e.response?.statusCode == null || e.response!.statusCode! >= 500) {
+          if (e.response?.statusCode == null ||
+              e.response!.statusCode! >= 500) {
             throw const RefundUncertainException();
           }
           rethrow;

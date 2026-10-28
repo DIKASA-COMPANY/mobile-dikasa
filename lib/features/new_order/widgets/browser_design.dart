@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 const browserBlue = Color(0xff529dc8),
@@ -84,9 +85,9 @@ class BrowserToolbar extends StatelessWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 22,
+                fontSize: 22.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -95,7 +96,10 @@ class BrowserToolbar extends StatelessWidget {
       );
       return Container(
         color: browserSide,
-        padding: EdgeInsets.symmetric(horizontal: wide ? 46 : 12, vertical: 20),
+        padding: EdgeInsets.symmetric(
+          horizontal: wide ? 46 : 12,
+          vertical: 20.h,
+        ),
         child: wide
             ? Row(
                 children: [
@@ -104,17 +108,17 @@ class BrowserToolbar extends StatelessWidget {
                     child: heading,
                   ),
                   Expanded(child: search),
-                  const SizedBox(width: 24),
-                  ...actions.expand((w) => [w, const SizedBox(width: 24)]),
+                  SizedBox(width: 24.w),
+                  ...actions.expand((w) => [w, SizedBox(width: 24.w)]),
                 ],
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   heading,
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.h),
                   search,
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.h),
                   Wrap(spacing: 12, runSpacing: 8, children: actions),
                 ],
               ),
@@ -135,7 +139,7 @@ class BrowserSearch extends StatelessWidget {
   final VoidCallback? onSearch;
   @override
   Widget build(BuildContext c) => SizedBox(
-    height: 46,
+    height: 46.h,
     child: TextField(
       controller: controller,
       enabled: onSearch != null,
@@ -145,24 +149,21 @@ class BrowserSearch extends StatelessWidget {
       decoration: InputDecoration(
         counterText: '',
         hintText: hint,
-        hintStyle: const TextStyle(
-          fontSize: 18,
+        hintStyle: TextStyle(
+          fontSize: 18.sp,
           fontStyle: FontStyle.italic,
           color: Color(0xff9b9b9b),
         ),
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 10,
-        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
         prefixIcon: IconButton(
           tooltip: 'Cari',
           onPressed: onSearch,
           icon: const BrowserDesignIcon('search'),
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide.none,
         ),
       ),
@@ -193,12 +194,12 @@ class BrowserTable extends StatelessWidget {
         child: SizedBox(
           width: math.max(1248, s.maxWidth),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(10.r),
             child: Column(
               children: [
                 Container(
                   color: browserBlue,
-                  constraints: const BoxConstraints(minHeight: 73),
+                  constraints: BoxConstraints(minHeight: 73.h),
                   child: Row(
                     children: [
                       for (var i = 0; i < headers.length; i++)
@@ -213,9 +214,9 @@ class BrowserTable extends StatelessWidget {
                             ),
                             child: Text(
                               headers[i],
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 19,
+                                fontSize: 19.sp,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -230,7 +231,7 @@ class BrowserTable extends StatelessWidget {
                     child: Column(
                       children: [
                         ConstrainedBox(
-                          constraints: const BoxConstraints(minHeight: 73),
+                          constraints: BoxConstraints(minHeight: 73.h),
                           child: DefaultTextStyle(
                             style: TextStyle(
                               fontFamily: 'Poppins',
@@ -294,7 +295,7 @@ class BrowserFooter extends StatelessWidget {
   final VoidCallback? onPrevious, onNext;
   @override
   Widget build(BuildContext c) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8),
+    padding: EdgeInsets.symmetric(vertical: 8.h),
     child: Column(
       children: [
         Wrap(
@@ -310,10 +311,10 @@ class BrowserFooter extends StatelessWidget {
             TextButton(onPressed: onNext, child: const Text('Berikutnya')),
           ],
         ),
-        const Text(
+        Text(
           'Powered By Dikasa',
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 15.sp,
             fontStyle: FontStyle.italic,
             color: Color(0xffb5b5b5),
           ),

@@ -9,7 +9,12 @@ class _DraftCommand {
 
 /// Saved-order operations share the POS account guard and never discard uncertain work.
 extension SavedOrderActions on NewOrderViewModelBase {
-  bool get draftLocked => isSavingOrder || savedCommandUncertain || refundActive || cashClosingActive || cashMovementActive;
+  bool get draftLocked =>
+      isSavingOrder ||
+      savedCommandUncertain ||
+      refundActive ||
+      cashClosingActive ||
+      cashMovementActive;
   String _requestId() {
     final bytes = List<int>.generate(16, (_) => Random.secure().nextInt(256));
     bytes[6] = (bytes[6] & 15) | 64;
@@ -45,7 +50,13 @@ extension SavedOrderActions on NewOrderViewModelBase {
       .toList();
   Future<bool> saveOrder({String? label, bool clearOnSuccess = true}) async {
     _syncUser();
-    if (isPaying || paymentUncertain || isSavingOrder || refundActive || cashClosingActive) return false;
+    if (isPaying ||
+        paymentUncertain ||
+        isSavingOrder ||
+        refundActive ||
+        cashClosingActive) {
+      return false;
+    }
     if (_pendingDraft != null) return retrySavedCommand();
     if (orderItems.isEmpty || orderType == null) {
       runInAction(
@@ -71,7 +82,9 @@ extension SavedOrderActions on NewOrderViewModelBase {
 
   Future<bool> retrySavedCommand() async {
     _syncUser();
-    if (isSavingOrder || refundActive || cashClosingActive ||
+    if (isSavingOrder ||
+        refundActive ||
+        cashClosingActive ||
         isPaying ||
         paymentUncertain ||
         _pendingDraft == null) {

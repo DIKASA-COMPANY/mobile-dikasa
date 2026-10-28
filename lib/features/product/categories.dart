@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
 import 'package:mobile_dikasa/components/text_field/main.dart';
 import 'package:mobile_dikasa/core/network/api_exception.dart';
 import 'package:mobile_dikasa/data/models/catalog_product.dart';
@@ -124,7 +126,7 @@ class _CategoriesState extends State<_Categories> {
     child: AlertDialog(
       title: const Text('Kelola Kategori'),
       content: SizedBox(
-        width: 560,
+        width: 560.w,
         child: SingleChildScrollView(
           child: Form(
             key: form,
@@ -160,8 +162,8 @@ class _CategoriesState extends State<_Categories> {
                           load();
                         },
                 ),
-                const SizedBox(height: 16),
-                if (loading) const LinearProgressIndicator(),
+                SizedBox(height: 16.h),
+                if (loading) const AppLinearLoadingIndicator(),
                 if (!loading && categories.isEmpty)
                   const Text('Belum ada kategori. Tambahkan kategori pertama.'),
                 ...categories.map(
@@ -180,7 +182,7 @@ class _CategoriesState extends State<_Categories> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 AppTextField(
                   controller: name,
                   label: editing == null

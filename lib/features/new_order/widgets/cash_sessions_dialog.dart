@@ -1,5 +1,7 @@
 import '../../cash_movement/view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
 import 'package:mobile_dikasa/core/network/api_exception.dart';
 import 'package:mobile_dikasa/data/models/cash_reconciliation.dart';
 import 'package:mobile_dikasa/features/new_order/view_model.dart';
@@ -53,7 +55,7 @@ class _CashSessionsState extends State<CashSessionsDialog> {
     builder: (ctx) => AlertDialog(
       title: const Text('Sesi Kas Ditutup'),
       content: SizedBox(
-        width: 640,
+        width: 640.w,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -94,7 +96,7 @@ class _CashSessionsState extends State<CashSessionsDialog> {
             d.status == 'open' ? 'Sesi Kas Aktif' : 'Ringkasan Sesi Kas',
           ),
           content: SizedBox(
-            width: 640,
+            width: 640.w,
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -169,7 +171,7 @@ class _CashSessionsState extends State<CashSessionsDialog> {
   Widget build(BuildContext context) => AlertDialog(
     title: const Text('Sesi Kas'),
     content: SizedBox(
-      width: 720,
+      width: 720.w,
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.sizeOf(context).height * .7,
@@ -179,7 +181,7 @@ class _CashSessionsState extends State<CashSessionsDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (_busy) const LinearProgressIndicator(),
+              if (_busy) const AppLinearLoadingIndicator(),
               if (_error != null) Text(_error!),
               if (_data?.items.isEmpty == true)
                 const Text('Belum ada sesi kas.'),

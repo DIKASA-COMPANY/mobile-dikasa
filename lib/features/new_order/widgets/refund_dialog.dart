@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
 import 'package:mobile_dikasa/core/utils/formatted_currency.dart';
 import 'package:mobile_dikasa/features/new_order/refund_controller.dart';
 import 'package:mobile_dikasa/features/new_order/view_model.dart';
@@ -66,7 +68,7 @@ class RefundDialog extends StatelessWidget {
         child: AlertDialog(
           title: Text(c.mode == 'full' ? 'Refund Seluruh Sisa' : 'Refund Item'),
           content: SizedBox(
-            width: 640,
+            width: 640.w,
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 maxHeight: MediaQuery.sizeOf(context).height * .65,
@@ -79,13 +81,13 @@ class RefundDialog extends StatelessWidget {
                     const Text(
                       'Mencatat uang yang sudah dikembalikan; tidak mengirim dana otomatis.',
                     ),
-                    if (c.busy) const LinearProgressIndicator(),
+                    if (c.busy) const AppLinearLoadingIndicator(),
                     if (d != null) ...[
                       Text('Struk ${d.number} • pembayaran asli: ${d.method}'),
                       for (final i in d.items.where((i) => i.remaining > 0))
                         Card(
                           child: Padding(
-                            padding: const EdgeInsets.all(12),
+                            padding: EdgeInsets.all(12.r),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
@@ -121,7 +123,7 @@ class RefundDialog extends StatelessWidget {
                             ),
                           ),
                         ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       TextFormField(
                         key: const Key('refund-reason'),
                         initialValue: c.reason,
@@ -167,7 +169,7 @@ class RefundDialog extends StatelessWidget {
                     ],
                     if (c.error != null)
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
                         child: Text(
                           c.error!,
                           style: TextStyle(

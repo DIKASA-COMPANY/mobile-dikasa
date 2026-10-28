@@ -1,13 +1,12 @@
 import 'widgets/payment_success_view.dart';
 import '../cash_movement/view.dart';
 import '../account/view.dart';
-import '../../data/services/account_service.dart';
-import '../../data/repositories/auth_repository.dart';
-import '../../core/network/api_client.dart';
 import 'package:mobile_dikasa/features/report/main.dart';
 import 'widgets/cash_sessions_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
 import 'package:mobile_dikasa/core/constants/colors.dart';
 import 'package:mobile_dikasa/core/routing/app_routes.dart';
 import 'package:mobile_dikasa/core/themes/text_styles.dart';
@@ -22,7 +21,6 @@ import 'package:mobile_dikasa/features/new_order/widgets/payment_dialog.dart';
 import 'package:mobile_dikasa/features/new_order/widgets/sales_browser.dart';
 import 'package:provider/provider.dart';
 import 'widgets/variation_picker.dart';
-import 'package:mobile_dikasa/data/services/catalog_service.dart';
 import 'package:mobile_dikasa/features/product/view.dart';
 
 /// Halaman Order — layar utama kasir setelah login.
@@ -180,8 +178,7 @@ class _NewOrderViewState extends State<NewOrderView> {
                   context,
                   MaterialPageRoute(
                     builder: (_) => AccountSettingsView(
-                      service: AccountService(context.read<ApiClient>()),
-                      auth: context.read<AuthRepository>(),
+                      viewModel: _viewModel.createAccountSettingsViewModel(),
                       onLock: _onLockPressed,
                     ),
                   ),
@@ -207,9 +204,8 @@ class _NewOrderViewState extends State<NewOrderView> {
                   context,
                   MaterialPageRoute(
                     builder: (_) => SalesReportsView(
-                      service: _viewModel.posService.reports,
+                      viewModel: _viewModel.createReportViewModel(),
                       user: _viewModel.currentUser,
-                      accountId: () => _viewModel.currentUser?.id,
                       onLock: _onLockPressed,
                       onCashDrawer: _showCashDrawer,
                     ),
@@ -278,7 +274,7 @@ class _NewOrderViewState extends State<NewOrderView> {
       context,
       MaterialPageRoute(
         builder: (_) => CatalogView(
-          service: context.read<CatalogService>(),
+          viewModel: _viewModel.createCatalogViewModel(),
           user: _viewModel.currentUser,
         ),
       ),
@@ -342,7 +338,7 @@ class _CatalogColumn extends StatelessWidget {
           child: Observer(
             builder: (_) {
               if (viewModel.isLoading && viewModel.products.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: AppLoadingIndicator());
               }
 
               final String? error = viewModel.errorMessage;
@@ -386,30 +382,27 @@ class _CatalogError extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24.r),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Icon(Icons.cloud_off, size: 48, color: AppColors.cA4A4A4),
-            const SizedBox(height: 16),
+            Icon(Icons.cloud_off, size: 48.r, color: AppColors.cA4A4A4),
+            SizedBox(height: 16.h),
             Text(
               message,
               textAlign: TextAlign.center,
               style: AppTextStyles.body,
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             ElevatedButton(
               onPressed: onRetry,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.cFF8227,
                 foregroundColor: AppColors.cFFFFFF,
                 elevation: 0,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 14,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
                 textStyle: AppTextStyles.button,
               ),

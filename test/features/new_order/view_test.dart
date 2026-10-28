@@ -6,6 +6,7 @@ import 'package:mobile_dikasa/core/network/mock_api_interceptor.dart';
 import 'package:mobile_dikasa/data/repositories/auth_repository.dart';
 import 'package:mobile_dikasa/data/repositories/product_repository.dart';
 import 'package:mobile_dikasa/data/services/auth_service.dart';
+import 'package:mobile_dikasa/data/services/account_service.dart';
 import 'package:mobile_dikasa/data/services/product_service.dart';
 import 'package:mobile_dikasa/data/services/pos_service.dart';
 import 'package:mobile_dikasa/data/services/catalog_service.dart';
@@ -57,6 +58,8 @@ void main() {
       ),
       authRepository: authRepository,
       posService: PosService(apiClient),
+      accountService: AccountService(apiClient),
+      catalogService: CatalogService(apiClient),
     );
 
     await tester.pumpWidget(

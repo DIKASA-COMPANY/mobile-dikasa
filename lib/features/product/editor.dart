@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
+import 'package:mobile_dikasa/components/app_remote_image.dart';
 import 'package:mobile_dikasa/data/services/catalog_files.dart';
 import 'package:mobile_dikasa/components/text_field/main.dart';
 import 'package:mobile_dikasa/core/network/api_exception.dart';
@@ -267,12 +270,12 @@ class _ProductEditorState extends State<ProductEditor> {
     borderRadius: 10,
     keyboardType: price ? TextInputType.number : TextInputType.text,
     prefixIcon: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: catalogIcon(icon),
     ),
     textStyle: catalogText(17),
     hintStyle: catalogText(17, color: const Color(0xFFAAAAAA)),
-    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
     validator: (v) {
       final text = v?.trim() ?? '';
       if (text.isEmpty) {
@@ -309,18 +312,18 @@ class _ProductEditorState extends State<ProductEditor> {
       filled: true,
       fillColor: const Color(0xFFEAEAEA),
       prefixIcon: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: catalogIcon(icon),
       ),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(10.r),
         borderSide: const BorderSide(color: Color(0xFFD6D6D6)),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(10.r),
         borderSide: const BorderSide(color: Color(0xFFD6D6D6)),
       ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
     ),
     items: items,
     onChanged: _saving || _uncertain || _loading ? null : onChanged,
@@ -340,7 +343,7 @@ class _ProductEditorState extends State<ProductEditor> {
       canLeave: _canLeave,
       actions: [
         SizedBox(
-          width: 205,
+          width: 205.w,
           child: Tooltip(
             message: _original == null
                 ? 'Simpan produk dahulu untuk mengekspor.'
@@ -354,7 +357,7 @@ class _ProductEditorState extends State<ProductEditor> {
           ),
         ),
         SizedBox(
-          width: 253,
+          width: 253.w,
           child: CatalogButton(
             'Simpan & Buat Lagi',
             onPressed: _saving || _uncertain || _loading
@@ -363,7 +366,7 @@ class _ProductEditorState extends State<ProductEditor> {
           ),
         ),
         SizedBox(
-          width: 160,
+          width: 160.w,
           child: CatalogButton(
             _saving ? 'Menyimpan…' : 'Simpan',
             key: const Key('save-product'),
@@ -396,23 +399,23 @@ class _ProductEditorState extends State<ProductEditor> {
                         _error!,
                         retry: _uncertain || _saving ? null : _load,
                       ),
-                    if (_loading) const LinearProgressIndicator(),
+                    if (_loading) const AppLinearLoadingIndicator(),
                     if (small) ...[
                       _info(),
-                      const SizedBox(height: 28),
+                      SizedBox(height: 28.h),
                       _photo(),
                     ] else
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(flex: 3, child: _info()),
-                          const SizedBox(width: 29),
+                          SizedBox(width: 29.w),
                           Expanded(child: _photo()),
                         ],
                       ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32.h),
                     _pricing(small),
-                    const SizedBox(height: 28),
+                    SizedBox(height: 28.h),
                     StockPanel(
                       service: widget.service,
                       product: _original,
@@ -434,7 +437,7 @@ class _ProductEditorState extends State<ProductEditor> {
                         }
                       },
                     ),
-                    const SizedBox(height: 28),
+                    SizedBox(height: 28.h),
                     if (_original != null)
                       CheckboxListTile(
                         contentPadding: EdgeInsets.zero,
@@ -457,7 +460,7 @@ class _ProductEditorState extends State<ProductEditor> {
                       'Harga dalam Rupiah utuh, tanpa titik atau koma. Harga opsional yang sudah tersimpan harus tetap berupa angka saat diubah.',
                       style: catalogText(13, italic: true),
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32.h),
                     Text(
                       'Powered By Dikasa',
                       textAlign: TextAlign.center,
@@ -482,7 +485,7 @@ class _ProductEditorState extends State<ProductEditor> {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: 0),
+        SizedBox(height: 0.h),
         _input(
           _name,
           'Nama Produk',
@@ -490,7 +493,7 @@ class _ProductEditorState extends State<ProductEditor> {
           required: true,
           key: const Key('product-name'),
         ),
-        const SizedBox(height: 28),
+        SizedBox(height: 28.h),
         _dropdown(
           label: 'Kategori Produk',
           icon: 'category',
@@ -509,7 +512,7 @@ class _ProductEditorState extends State<ProductEditor> {
             _dirty = true;
           }),
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: 6.h),
         Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
@@ -523,7 +526,7 @@ class _ProductEditorState extends State<ProductEditor> {
             ),
             TextButton(
               style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
@@ -548,7 +551,7 @@ class _ProductEditorState extends State<ProductEditor> {
             ),
           ],
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20.h),
         LayoutBuilder(
           builder: (context, c) {
             final type = _dropdown(
@@ -588,17 +591,23 @@ class _ProductEditorState extends State<ProductEditor> {
               }),
             );
             return c.maxWidth < 500
-                ? Column(children: [type, const SizedBox(height: 20), stock])
+                ? Column(
+                    children: [
+                      type,
+                      SizedBox(height: 20.h),
+                      stock,
+                    ],
+                  )
                 : Row(
                     children: [
                       Expanded(child: type),
-                      const SizedBox(width: 26),
+                      SizedBox(width: 26.w),
                       Expanded(child: stock),
                     ],
                   );
           },
         ),
-        const SizedBox(height: 28),
+        SizedBox(height: 28.h),
         _input(_note, 'Catatan Tambahan', 'note'),
       ],
     ),
@@ -606,7 +615,7 @@ class _ProductEditorState extends State<ProductEditor> {
 
   Widget _photo() => CatalogSection(
     title: 'Foto Produk',
-    padding: const EdgeInsets.fromLTRB(27, 22, 27, 26),
+    padding: EdgeInsets.fromLTRB(27.w, 22.h, 27.w, 26.h),
     child: Column(
       children: [
         AspectRatio(
@@ -616,22 +625,21 @@ class _ProductEditorState extends State<ProductEditor> {
             child: Container(
               decoration: BoxDecoration(
                 color: const Color(0xFFE6E6E6),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10.r),
               ),
               child: _image != null
                   ? Image.memory(_image!.bytes, fit: BoxFit.cover)
                   : !_removeImage && _original?.imageUrl != null
-                  ? Image.network(
-                      _original!.imageUrl!,
+                  ? AppRemoteImage(
+                      url: _original!.imageUrl!,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) =>
-                          Center(child: catalogIcon('camera')),
+                      fallback: Center(child: catalogIcon('camera')),
                     )
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         catalogIcon('camera'),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                         Text(
                           'Foto Produk',
                           style: catalogText(
@@ -645,18 +653,18 @@ class _ProductEditorState extends State<ProductEditor> {
             ),
           ),
         ),
-        const SizedBox(height: 26),
+        SizedBox(height: 26.h),
         Tooltip(
           message: 'PNG/JPEG maksimal 3 MiB.',
           child: SizedBox(
-            height: 63,
+            height: 63.h,
             width: double.infinity,
             child: OutlinedButton(
               onPressed: _saving || _uncertain || _picking ? null : _pickImage,
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: catalogAccent, width: 2),
+                side: BorderSide(color: catalogAccent, width: 2.w),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
               ),
               child: Text(
@@ -706,7 +714,7 @@ class _ProductEditorState extends State<ProductEditor> {
           ),
           small,
         ),
-        const SizedBox(height: 28),
+        SizedBox(height: 28.h),
         _pair(
           _input(
             _cost,
@@ -733,30 +741,30 @@ class _ProductEditorState extends State<ProductEditor> {
         children: [
           if (small) ...[
             fields,
-            const SizedBox(height: 24),
+            SizedBox(height: 24.h),
             CatalogButton(
               'Tambah Variasi',
               color: catalogAccent,
               onPressed: _saving || _uncertain ? null : _variant,
-              height: 63,
+              height: 63.h,
             ),
           ] else
             Row(
               children: [
                 Expanded(flex: 4, child: fields),
-                const SizedBox(width: 70),
+                SizedBox(width: 70.w),
                 Expanded(
                   child: CatalogButton(
                     'Tambah Variasi',
                     color: catalogAccent,
                     onPressed: _saving || _uncertain ? null : _variant,
-                    height: 63,
+                    height: 63.h,
                   ),
                 ),
               ],
             ),
           if (_variants.isNotEmpty) ...[
-            const SizedBox(height: 24),
+            SizedBox(height: 24.h),
             Text(
               'Variasi Produk',
               style: catalogText(18, weight: FontWeight.w600),
@@ -800,12 +808,18 @@ class _ProductEditorState extends State<ProductEditor> {
   }
 
   Widget _pair(Widget a, Widget b, bool small) => small
-      ? Column(children: [a, const SizedBox(height: 28), b])
+      ? Column(
+          children: [
+            a,
+            SizedBox(height: 28.h),
+            b,
+          ],
+        )
       : Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(child: a),
-            const SizedBox(width: 35),
+            SizedBox(width: 35.w),
             Expanded(child: b),
           ],
         );

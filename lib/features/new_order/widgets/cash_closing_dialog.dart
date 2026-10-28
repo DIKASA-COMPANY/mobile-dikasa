@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_dikasa/core/utils/formatted_currency.dart';
 import 'package:mobile_dikasa/data/models/cash_reconciliation.dart';
@@ -80,7 +82,7 @@ class CashClosingDialog extends StatelessWidget {
         child: AlertDialog(
           title: const Text('Tutup Kas'),
           content: SizedBox(
-            width: 640,
+            width: 640.w,
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 maxHeight: MediaQuery.sizeOf(context).height * .65,
@@ -90,13 +92,13 @@ class CashClosingDialog extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (c.busy) const LinearProgressIndicator(),
+                    if (c.busy) const AppLinearLoadingIndicator(),
                     if (d?.summary != null)
                       CashSummaryView(summary: d!.summary!),
                     if (d != null && d.summary == null)
                       Text(d.unsupportedReason),
                     if (d?.canClose == true) ...[
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16.h),
                       TextFormField(
                         key: const Key('cash-count'),
                         initialValue: c.countedText,
@@ -125,7 +127,7 @@ class CashClosingDialog extends StatelessWidget {
                     ],
                     if (c.error != null)
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
                         child: Text(
                           c.error!,
                           style: TextStyle(

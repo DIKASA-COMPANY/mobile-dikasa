@@ -1,12 +1,18 @@
 import 'package:flutter/foundation.dart';
 import '../../data/models/account_profile.dart';
+import '../../data/models/catalog_product.dart';
 import '../../data/services/account_service.dart';
+import '../../data/services/account_files.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../../core/network/api_exception.dart';
 
 class AccountSettingsViewModel extends ChangeNotifier {
-  AccountSettingsViewModel(this.service, this.auth)
-    : generation = auth.sessionGeneration {
+  AccountSettingsViewModel(
+    this.service,
+    this.auth, {
+    AccountFiles files = const AccountFiles(),
+  }) : _files = files,
+       generation = auth.sessionGeneration {
     auth.addListener(accountChanged);
   }
   void accountChanged() {
@@ -19,6 +25,7 @@ class AccountSettingsViewModel extends ChangeNotifier {
 
   final AccountService service;
   final AuthRepository auth;
+  final AccountFiles _files;
   final int generation;
   AccountProfile? profile;
   List<GenderOption> genders = [];
@@ -29,6 +36,8 @@ class AccountSettingsViewModel extends ChangeNotifier {
   String error(Object e) => e is ApiException
       ? e.message
       : 'Data akun gagal diproses. Silakan muat ulang.';
+
+  Future<CatalogImage?> pickProfileImage() => _files.pickImage();
   Future<void> load() async {
     if (!active) return;
     busy = true;

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobile_dikasa/core/network/api_exception.dart';
 import 'package:mobile_dikasa/data/models/pos.dart';
@@ -101,7 +103,7 @@ class _SalesBrowserState extends State<SalesBrowser> {
         builder: (c, update) => AlertDialog(
           title: const Text('Filter List Order'),
           content: SizedBox(
-            width: 400,
+            width: 400.w,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -171,33 +173,30 @@ class _SalesBrowserState extends State<SalesBrowser> {
         ? 'Penambahan pelanggan ditunda.'
         : 'Pemilihan pelanggan untuk pesanan ditunda.',
     child: SizedBox(
-      height: 46,
+      height: 46.h,
       child: OutlinedButton(
         style: OutlinedButton.styleFrom(
           backgroundColor: add ? Colors.white : Colors.transparent,
           disabledForegroundColor: add ? browserInk : Colors.white,
-          side: const BorderSide(color: Colors.white, width: 2),
+          side: BorderSide(color: Colors.white, width: 2.w),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(10.r),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 8.h),
         ),
         onPressed: null,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (add) ...[
-              const BrowserDesignIcon('add'),
-              const SizedBox(width: 16),
-            ],
-            Text(title, style: const TextStyle(fontSize: 18)),
+            if (add) ...[const BrowserDesignIcon('add'), SizedBox(width: 16.w)],
+            Text(title, style: TextStyle(fontSize: 18.sp)),
           ],
         ),
       ),
     ),
   );
   Widget _tabs() => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+    padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
     child: Row(
       children: [
         SegmentedButton<bool>(
@@ -276,14 +275,14 @@ class _SalesBrowserState extends State<SalesBrowser> {
                         ]
                       : [
                           SizedBox(
-                            width: 270,
-                            height: 46,
+                            width: 270.w,
+                            height: 46.h,
                             child: OutlinedButton(
                               style: OutlinedButton.styleFrom(
                                 backgroundColor: Colors.white,
                                 foregroundColor: browserInk,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: BorderRadius.circular(10.r),
                                 ),
                               ),
                               onPressed: locked ? null : _filters,
@@ -294,7 +293,7 @@ class _SalesBrowserState extends State<SalesBrowser> {
                                       _status == null && _type == null
                                           ? 'Filter List Order'
                                           : 'Filter aktif',
-                                      style: const TextStyle(fontSize: 18),
+                                      style: TextStyle(fontSize: 18.sp),
                                     ),
                                   ),
                                   const BrowserDesignIcon('down'),
@@ -317,9 +316,7 @@ class _SalesBrowserState extends State<SalesBrowser> {
                         builder: (c, s) {
                           if (!current) return const SizedBox.shrink();
                           if (s.connectionState != ConnectionState.done) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
+                            return const Center(child: AppLoadingIndicator());
                           }
                           if (s.hasError) {
                             return Center(

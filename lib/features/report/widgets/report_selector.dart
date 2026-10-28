@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_dikasa/data/models/sales_report.dart';
 import 'report_header.dart';
 
@@ -21,7 +22,7 @@ class ReportSelector extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12.r),
             child: DropdownButtonFormField<ReportKind>(
               key: ValueKey(kind),
               initialValue: kind,
@@ -50,28 +51,28 @@ class ReportSelector extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            height: 88,
+            height: 88.h,
             color: reportSide,
             alignment: Alignment.center,
-            child: const Text(
+            child: Text(
               'Pilih Jenis Laporan',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 22,
+                fontSize: 22.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(30, 24, 30, 24),
+            padding: EdgeInsets.fromLTRB(30.w, 24.h, 30.w, 24.h),
             child: Column(
               children: [
                 for (final k in ReportKind.values)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 17),
+                    padding: EdgeInsets.only(bottom: 17.h),
                     child: SizedBox(
                       width: double.infinity,
-                      height: 58,
+                      height: 58.h,
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
                           backgroundColor: k == kind
@@ -84,17 +85,17 @@ class ReportSelector extends StatelessWidget {
                             color: k == kind
                                 ? reportSelected
                                 : const Color(0xffc0c0c0),
-                            width: 2,
+                            width: 2.w,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(10.r),
                           ),
                         ),
                         onPressed: () => onChanged(k),
                         child: Text(
                           k.label,
-                          style: const TextStyle(
-                            fontSize: 18,
+                          style: TextStyle(
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -104,7 +105,7 @@ class ReportSelector extends StatelessWidget {
                 if (onCashDrawer != null)
                   SizedBox(
                     width: double.infinity,
-                    height: 58,
+                    height: 58.h,
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         backgroundColor: kind == null ? reportSelected : null,
@@ -112,13 +113,13 @@ class ReportSelector extends StatelessWidget {
                             ? Colors.white
                             : const Color(0xff656565),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(10.r),
                         ),
                       ),
                       onPressed: onCashDrawer,
-                      child: const Text(
+                      child: Text(
                         'Kas Kasir',
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(fontSize: 18.sp),
                       ),
                     ),
                   ),

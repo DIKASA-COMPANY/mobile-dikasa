@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_dikasa/core/constants/colors.dart';
 
 class TableFieldColumn<T> {
@@ -73,24 +74,24 @@ class TableField<T> extends StatelessWidget {
 
     final TextStyle resolvedHeaderTextStyle =
         headerTextStyle ??
-        const TextStyle(
-          fontSize: 13,
+        TextStyle(
+          fontSize: 13.sp,
           fontWeight: FontWeight.w700,
           color: Colors.black87,
         );
 
     final TextStyle resolvedCellTextStyle =
         cellTextStyle ??
-        const TextStyle(
-          fontSize: 13,
+        TextStyle(
+          fontSize: 13.sp,
           fontWeight: FontWeight.w500,
           color: Colors.black87,
         );
 
     final TextStyle resolvedLabelStyle =
         labelStyle ??
-        const TextStyle(
-          fontSize: 14,
+        TextStyle(
+          fontSize: 14.sp,
           fontWeight: FontWeight.w600,
           color: Colors.black87,
         );
@@ -107,7 +108,7 @@ class TableField<T> extends StatelessWidget {
       children: <Widget>[
         if (label != null && label!.trim().isNotEmpty) ...<Widget>[
           Text(label!, style: resolvedLabelStyle),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
         ],
         Container(
           decoration: BoxDecoration(
@@ -119,12 +120,12 @@ class TableField<T> extends StatelessWidget {
             borderRadius: BorderRadius.circular(borderRadius),
             child: rows.isEmpty
                 ? Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    padding: EdgeInsets.symmetric(vertical: 24.h),
                     child: Center(
                       child: Text(
                         emptyText,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 13.sp,
                           color: AppColors.c707070,
                           fontWeight: FontWeight.w500,
                         ),

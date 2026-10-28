@@ -12,10 +12,11 @@ import 'package:mobile_dikasa/data/models/pos.dart';
 class PosService {
   const PosService(this._client);
   final ApiClient _client;
- CashMovementService get cashMovements=>CashMovementService(_client);
- ReportService get reports=>ReportService(_client);
-  RefundService get refunds=>RefundService(_client);
- CashReconciliationService get cashReconciliation=>CashReconciliationService(_client);
+  CashMovementService get cashMovements => CashMovementService(_client);
+  ReportService get reports => ReportService(_client);
+  RefundService get refunds => RefundService(_client);
+  CashReconciliationService get cashReconciliation =>
+      CashReconciliationService(_client);
 
   // Validate envelopes before indexing; null/malformed payment replies may follow a commit.
   Map<String, dynamic> _body(Response<dynamic> response) =>

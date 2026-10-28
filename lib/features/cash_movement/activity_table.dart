@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'design.dart';
 
 class CashActivityTable extends StatelessWidget {
@@ -40,10 +41,10 @@ class CashActivityTable extends StatelessWidget {
                 cells: [
                   DataCell(
                     SizedBox(
-                      width: 170,
+                      width: 170.w,
                       child: Text(
                         '${e['kind'] == 'reversal' ? 'Koreksi: ' : ''}${e['name']}\n${cashWIB(e['occurred_at'] as String?)}',
-                        style: const TextStyle(fontSize: 12),
+                        style: TextStyle(fontSize: 12.sp),
                       ),
                     ),
                   ),
@@ -63,7 +64,7 @@ class CashActivityTable extends StatelessWidget {
                   ),
                   DataCell(
                     SizedBox(
-                      width: 170,
+                      width: 170.w,
                       child: Text(
                         e['reason'] as String? ?? '',
                         maxLines: 3,

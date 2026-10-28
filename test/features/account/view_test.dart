@@ -8,6 +8,7 @@ import 'package:mobile_dikasa/data/repositories/auth_repository.dart';
 import 'package:mobile_dikasa/data/services/auth_service.dart';
 import 'package:mobile_dikasa/data/services/account_service.dart';
 import 'package:mobile_dikasa/features/account/view.dart';
+import 'package:mobile_dikasa/features/account/view_model.dart';
 
 class DeferredCredentialService extends AccountService {
   DeferredCredentialService(super.c);
@@ -45,7 +46,9 @@ void main() {
     addTearDown(t.view.resetDevicePixelRatio);
     await t.pumpWidget(
       MaterialApp(
-        home: AccountSettingsView(service: AccountService(client), auth: auth),
+        home: AccountSettingsView(
+          viewModel: AccountSettingsViewModel(AccountService(client), auth),
+        ),
       ),
     );
     await t.pumpAndSettle();
@@ -80,7 +83,9 @@ void main() {
       addTearDown(t.view.resetDevicePixelRatio);
       await t.pumpWidget(
         MaterialApp(
-          home: AccountSettingsView(service: AccountService(c), auth: a),
+          home: AccountSettingsView(
+            viewModel: AccountSettingsViewModel(AccountService(c), a),
+          ),
         ),
       );
       await t.pumpAndSettle();
@@ -128,7 +133,9 @@ void main() {
     addTearDown(t.view.resetDevicePixelRatio);
     await t.pumpWidget(
       MaterialApp(
-        home: AccountSettingsView(service: service, auth: a),
+        home: AccountSettingsView(
+          viewModel: AccountSettingsViewModel(service, a),
+        ),
       ),
     );
     await t.pumpAndSettle();

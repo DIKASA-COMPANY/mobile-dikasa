@@ -1,5 +1,7 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
+import '../../components/app_remote_image.dart';
 import '../../data/models/cash_movement.dart';
 import 'controller.dart';
 import 'design.dart';
@@ -65,7 +67,7 @@ class _DetailState extends State<_MovementDetail> {
     if (mounted && !widget.controller.current) setState(() => proof = null);
   }
 
-  Uint8List? proof;
+  String? proof;
   String? error;
   bool busy = false;
   final reason = TextEditingController();
@@ -94,7 +96,7 @@ class _DetailState extends State<_MovementDetail> {
     return AlertDialog(
       title: Text(m.json['name'] as String),
       content: SizedBox(
-        width: 560,
+        width: 560.w,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -112,9 +114,9 @@ class _DetailState extends State<_MovementDetail> {
                 Text('Dikoreksi oleh entri: ${d.reversedById}'),
               if (error != null)
                 Text(error!, style: const TextStyle(color: Colors.red)),
-              if (busy) const LinearProgressIndicator(),
+              if (busy) const AppLinearLoadingIndicator(),
               if (proof != null)
-                Image.memory(proof!, height: 240, fit: BoxFit.contain),
+                AppRemoteImage(url: proof!, height: 240.h, fit: BoxFit.contain),
               if (m.hasProof && proof == null)
                 TextButton(
                   onPressed: busy
@@ -137,7 +139,7 @@ class _DetailState extends State<_MovementDetail> {
                   child: const Text('Lihat Foto Bukti'),
                 ),
               if (d.canReverse) ...[
-                const SizedBox(height: 18),
+                SizedBox(height: 18.h),
                 TextField(
                   controller: reason,
                   maxLength: 500,

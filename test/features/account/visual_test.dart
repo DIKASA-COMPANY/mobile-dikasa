@@ -12,6 +12,7 @@ import 'package:mobile_dikasa/data/services/account_service.dart';
 import 'package:mobile_dikasa/data/services/auth_service.dart';
 import 'package:mobile_dikasa/data/repositories/auth_repository.dart';
 import 'package:mobile_dikasa/features/account/view.dart';
+import 'package:mobile_dikasa/features/account/view_model.dart';
 
 class VisualAccount extends AccountService {
   VisualAccount(super.c, {this.fail = false});
@@ -58,80 +59,89 @@ void main() {
       ..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'));
     await l.load();
   });
-  testWidgets('capture profile, credentials, responsive and error states', (
-    t,
-  ) async {
-    dotenv.loadFromString(
-      envString: 'API_BASE_URL=http://localhost/dikasa/v1\nUSE_MOCK_API=true',
-    );
-    final c = ApiClient();
-    final a = AuthRepository(authService: AuthService(c), apiClient: c);
-    await t.runAsync(() => a.login(username: 'admin', password: 'dikasa123'));
-    t.view.devicePixelRatio = 1;
-    addTearDown(t.view.resetDevicePixelRatio);
-    addTearDown(t.view.resetPhysicalSize);
-    Future<void> shot(
-      String name,
-      Size size, {
-      bool edit = false,
-      bool credentials = false,
-      bool fail = false,
-    }) async {
-      t.view.physicalSize = size;
-      final key = GlobalKey();
-      await t.pumpWidget(
-        RepaintBoundary(
-          key: key,
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: AccountSettingsView(
-              key: UniqueKey(),
-              service: VisualAccount(c, fail: fail),
-              auth: a,
+  testWidgets(
+    'capture profile, credentials, responsive and error states',
+    (t) async {
+      dotenv.loadFromString(
+        envString: 'API_BASE_URL=http://localhost/dikasa/v1\nUSE_MOCK_API=true',
+      );
+      final c = ApiClient();
+      final a = AuthRepository(authService: AuthService(c), apiClient: c);
+      await t.runAsync(() => a.login(username: 'admin', password: 'dikasa123'));
+      t.view.devicePixelRatio = 1;
+      addTearDown(t.view.resetDevicePixelRatio);
+      addTearDown(t.view.resetPhysicalSize);
+      Future<void> shot(
+        String name,
+        Size size, {
+        bool edit = false,
+        bool credentials = false,
+        bool fail = false,
+      }) async {
+        t.view.physicalSize = size;
+        final key = GlobalKey();
+        await t.pumpWidget(
+          RepaintBoundary(
+            key: key,
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: AccountSettingsView(
+                key: UniqueKey(),
+                viewModel: AccountSettingsViewModel(
+                  VisualAccount(c, fail: fail),
+                  a,
+                ),
+              ),
             ),
           ),
-        ),
-      );
-      await t.pumpAndSettle();
-      if (edit) {
-        await t.ensureVisible(find.text('Ubah Profil'));
-        await t.tap(find.text('Ubah Profil'));
-        await t.pumpAndSettle();
-        await t.drag(
-          find.byType(SingleChildScrollView).first,
-          const Offset(0, 2000),
         );
         await t.pumpAndSettle();
-      }
-      if (credentials) {
-        await t.ensureVisible(find.text('PIN Akun'));
+        if (edit) {
+          await t.ensureVisible(find.text('Ubah Profil'));
+          await t.tap(find.text('Ubah Profil'));
+          await t.pumpAndSettle();
+          await t.drag(
+            find.byType(SingleChildScrollView).first,
+            const Offset(0, 2000),
+          );
+          await t.pumpAndSettle();
+        }
+        if (credentials) {
+          await t.ensureVisible(find.text('PIN Akun'));
+          await t.pumpAndSettle();
+        }
+        await t.runAsync(
+          () => precacheImage(
+            const AssetImage('assets/icons/account_design_gender.png'),
+            key.currentContext!,
+          ),
+        );
         await t.pumpAndSettle();
+        expect(t.takeException(), isNull);
+        await t.runAsync(() async {
+          final boundary =
+              key.currentContext!.findRenderObject() as RenderRepaintBoundary;
+          final image = await boundary.toImage();
+          final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+          final dir = Directory('build/account-qa')
+            ..createSync(recursive: true);
+          File(
+            '${dir.path}/$name.png',
+          ).writeAsBytesSync(bytes!.buffer.asUint8List());
+          image.dispose();
+        });
       }
-      await t.runAsync(
-        () => precacheImage(
-          const AssetImage('assets/icons/account_design_gender.png'),
-          key.currentContext!,
-        ),
-      );
-      await t.pumpAndSettle();
-      expect(t.takeException(), isNull);
-      await t.runAsync(() async {
-        final boundary =
-            key.currentContext!.findRenderObject() as RenderRepaintBoundary;
-        final image = await boundary.toImage();
-        final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-        final dir = Directory('build/account-qa')..createSync(recursive: true);
-        File(
-          '${dir.path}/$name.png',
-        ).writeAsBytesSync(bytes!.buffer.asUint8List());
-        image.dispose();
-      });
-    }
 
-    await shot('desktop-profile', const Size(1340, 800));
-    await shot('desktop-edit', const Size(1340, 800), edit: true);
-    await shot('desktop-credentials', const Size(1340, 800), credentials: true);
-    await shot('narrow-edit', const Size(390, 844), edit: true);
-    await shot('profile-error', const Size(1340, 800), fail: true);
-  }, skip: !const bool.fromEnvironment('CAPTURE_ACCOUNT'));
+      await shot('desktop-profile', const Size(1340, 800));
+      await shot('desktop-edit', const Size(1340, 800), edit: true);
+      await shot(
+        'desktop-credentials',
+        const Size(1340, 800),
+        credentials: true,
+      );
+      await shot('narrow-edit', const Size(390, 844), edit: true);
+      await shot('profile-error', const Size(1340, 800), fail: true);
+    },
+    skip: !const bool.fromEnvironment('CAPTURE_ACCOUNT'),
+  );
 }

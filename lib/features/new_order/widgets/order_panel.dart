@@ -1,6 +1,7 @@
 import 'package:provider/provider.dart';
 import 'save_order_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_dikasa/core/constants/colors.dart';
@@ -50,7 +51,7 @@ class OrderPanel extends StatelessWidget {
             builder: (_) => viewModel.savedOrderId == null
                 ? const SizedBox.shrink()
                 : Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(8.r),
                     child: Text(
                       'Tersimpan: ${viewModel.savedOrderLabel} • revisi ${viewModel.savedOrderRevision}',
                     ),
@@ -74,7 +75,7 @@ class _PanelHeader extends StatelessWidget {
     return ColoredBox(
       color: AppColors.c367AA0,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 26, 24, 26),
+        padding: EdgeInsets.fromLTRB(24.w, 26.h, 24.w, 26.h),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -86,7 +87,7 @@ class _PanelHeader extends StatelessWidget {
                     onPressed: () => SalesBrowser.show(context, viewModel),
                   ),
                 ),
-                const SizedBox(width: 18),
+                SizedBox(width: 18.w),
                 Expanded(
                   child: _HeaderButton(
                     label: 'Pelanggan',
@@ -96,7 +97,7 @@ class _PanelHeader extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             Observer(
               builder: (_) => PanelDropdown<PosOrderType>(
                 label: viewModel.isLoadingPos
@@ -139,14 +140,16 @@ class _HeaderButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 44,
+      height: 44.h,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.cFFFFFF,
           foregroundColor: AppColors.c37474F,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.r),
+          ),
           textStyle: AppTextStyles.button.copyWith(fontWeight: FontWeight.w500),
         ),
         child: Text(label),
@@ -166,16 +169,16 @@ class _EmptyOrder extends StatelessWidget {
         children: <Widget>[
           SvgPicture.asset(
             'assets/icons/empty_order_book_icon.svg',
-            width: 150,
-            height: 150,
+            width: 150.w,
+            height: 150.h,
             colorFilter: ColorFilter.mode(AppColors.cD1D1D1, BlendMode.srcIn),
           ),
-          const SizedBox(height: 28),
+          SizedBox(height: 28.h),
           Text(
             'Belum ada menu yang dipilih',
             style: AppTextStyles.body.copyWith(
               color: AppColors.cB5B5B5,
-              fontSize: 17,
+              fontSize: 17.sp,
               fontStyle: FontStyle.italic,
             ),
           ),
@@ -219,7 +222,7 @@ class _OrderItemListState extends State<_OrderItemList> {
         padding: EdgeInsets.zero,
         itemCount: widget.items.length,
         separatorBuilder: (_, _) =>
-            Divider(height: 1, thickness: 1, color: AppColors.cEAEAEA),
+            Divider(height: 1.h, thickness: 1, color: AppColors.cEAEAEA),
         itemBuilder: (BuildContext context, int index) {
           final OrderItem item = widget.items[index];
           return _OrderItemRow(
@@ -251,17 +254,17 @@ class _OrderItemRow extends StatelessWidget {
       child: InkWell(
         onTap: onRemove,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 18.h),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               SizedBox(
-                width: 46,
+                width: 46.w,
                 child: Text(
                   '${item.quantity}x',
                   style: AppTextStyles.body.copyWith(
                     color: AppColors.c37474F,
-                    fontSize: 15,
+                    fontSize: 15.sp,
                   ),
                 ),
               ),
@@ -272,13 +275,13 @@ class _OrderItemRow extends StatelessWidget {
                     Text(
                       item.product.displayName,
                       style: AppTextStyles.sectionTitle.copyWith(
-                        fontSize: 15,
+                        fontSize: 15.sp,
                         height: 1.3,
                         color: AppColors.c37474F,
                       ),
                     ),
                     if (item.note.isNotEmpty) ...<Widget>[
-                      const SizedBox(height: 6),
+                      SizedBox(height: 6.h),
                       Text(
                         'Notes : ${item.note}',
                         style: AppTextStyles.caption.copyWith(
@@ -326,12 +329,12 @@ class _OrderItemRow extends StatelessWidget {
                   controller.dispose();
                 },
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12.w),
               Text(
                 formatRupiah(item.subtotal, showCents: true),
                 style: AppTextStyles.body.copyWith(
                   color: AppColors.c37474F,
-                  fontSize: 15,
+                  fontSize: 15.sp,
                 ),
               ),
             ],
@@ -352,7 +355,7 @@ class _TotalsBand extends StatelessWidget {
     return ColoredBox(
       color: AppColors.cD6D6D6,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 18.h),
         child: Observer(
           builder: (_) => Column(
             children: <Widget>[
@@ -360,7 +363,7 @@ class _TotalsBand extends StatelessWidget {
                 label: 'Total Pesanan',
                 value: '${viewModel.totalQuantity} Produk',
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               _TotalRow(
                 label: 'Total Harga',
                 value: formatRupiah(
@@ -386,7 +389,7 @@ class _TotalRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextStyle style = AppTextStyles.sectionTitle.copyWith(
-      fontSize: 15,
+      fontSize: 15.sp,
       color: AppColors.c37474F,
     );
 
@@ -412,7 +415,7 @@ class _PanelActions extends StatelessWidget {
     // kosong ditangani lewat pesan, bukan dengan menonaktifkan tombol.
     return Observer(
       builder: (_) => Padding(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+        padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 24.h),
         child: Column(
           children: <Widget>[
             Row(
@@ -431,7 +434,7 @@ class _PanelActions extends StatelessWidget {
                         : () => _requireItems(context, viewModel.clearOrder),
                   ),
                 ),
-                const SizedBox(width: 18),
+                SizedBox(width: 18.w),
                 Expanded(
                   child: _ActionButton(
                     label: 'Simpan',
@@ -449,7 +452,7 @@ class _PanelActions extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 18),
+            SizedBox(height: 18.h),
             SizedBox(
               width: double.infinity,
               child: _ActionButton(
@@ -498,7 +501,7 @@ class _ActionButton extends StatelessWidget {
     final Color? border = borderColor;
 
     return SizedBox(
-      height: 55,
+      height: 55.h,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
@@ -508,13 +511,13 @@ class _ActionButton extends StatelessWidget {
           disabledForegroundColor: foreground.withAlpha(140),
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(8.r),
             side: border == null
                 ? BorderSide.none
-                : BorderSide(color: border, width: 2),
+                : BorderSide(color: border, width: 2.w),
           ),
           textStyle: AppTextStyles.button.copyWith(
-            fontSize: 19,
+            fontSize: 19.sp,
             fontWeight: FontWeight.w600,
           ),
         ),

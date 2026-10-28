@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_dikasa/core/constants/colors.dart';
 import 'package:mobile_dikasa/core/themes/text_styles.dart';
@@ -40,7 +41,7 @@ class PanelDropdown<T> extends StatelessWidget {
       tooltip: label,
       position: PopupMenuPosition.under,
       offset: const Offset(0, 6),
-      constraints: const BoxConstraints(minWidth: 220),
+      constraints: BoxConstraints(minWidth: 220.w),
       itemBuilder: (BuildContext context) => options
           .map(
             (T option) => PopupMenuItem<T>(
@@ -50,11 +51,11 @@ class PanelDropdown<T> extends StatelessWidget {
           )
           .toList(),
       child: Container(
-        height: 44,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        height: 44.h,
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
         decoration: BoxDecoration(
           color: background,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
         ),
         child: Row(
           children: <Widget>[
@@ -65,15 +66,15 @@ class PanelDropdown<T> extends StatelessWidget {
                 style: AppTextStyles.body.copyWith(
                   color: foreground,
                   fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                  fontSize: 15,
+                  fontSize: 15.sp,
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8.w),
             SvgPicture.asset(
               'assets/icons/arrow_down_icon.svg',
-              width: 15,
-              height: 15,
+              width: 15.w,
+              height: 15.h,
               colorFilter: ColorFilter.mode(foreground, BlendMode.srcIn),
             ),
           ],

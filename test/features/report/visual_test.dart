@@ -12,6 +12,7 @@ import 'package:mobile_dikasa/data/models/sales_report.dart';
 import 'package:mobile_dikasa/data/models/user.dart';
 import 'package:mobile_dikasa/data/services/report_service.dart';
 import 'package:mobile_dikasa/features/report/main.dart';
+import 'package:mobile_dikasa/features/report/view_model.dart';
 
 class VisualReports extends ReportService {
   VisualReports({this.empty = false, this.fail = false}) : super(ApiClient());
@@ -99,84 +100,90 @@ void main() {
       ..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'));
     await icons.load();
   });
-  testWidgets('capture four Figma reports and responsive states', (t) async {
-    dotenv.loadFromString(
-      envString:
-          'API_BASE_URL=http://localhost:8081/dikasa/v1\nUSE_MOCK_API=false',
-    );
-    t.view.devicePixelRatio = 1;
-    addTearDown(t.view.resetDevicePixelRatio);
-    addTearDown(t.view.resetPhysicalSize);
-    Future<void> capture(
-      String name,
-      ReportKind kind,
-      Size size, {
-      bool empty = false,
-      bool fail = false,
-    }) async {
-      t.view.physicalSize = size;
-      final key = GlobalKey();
-      await t.pumpWidget(
-        RepaintBoundary(
-          key: key,
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              fontFamily: 'Poppins',
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color(0xff077cd3),
+  testWidgets(
+    'capture four Figma reports and responsive states',
+    (t) async {
+      dotenv.loadFromString(
+        envString:
+            'API_BASE_URL=http://localhost:8081/dikasa/v1\nUSE_MOCK_API=false',
+      );
+      t.view.devicePixelRatio = 1;
+      addTearDown(t.view.resetDevicePixelRatio);
+      addTearDown(t.view.resetPhysicalSize);
+      Future<void> capture(
+        String name,
+        ReportKind kind,
+        Size size, {
+        bool empty = false,
+        bool fail = false,
+      }) async {
+        t.view.physicalSize = size;
+        final key = GlobalKey();
+        await t.pumpWidget(
+          RepaintBoundary(
+            key: key,
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
+                fontFamily: 'Poppins',
+                colorScheme: ColorScheme.fromSeed(
+                  seedColor: const Color(0xff077cd3),
+                ),
               ),
-            ),
-            home: SalesReportsView(
-              service: VisualReports(empty: empty, fail: fail),
-              user: const User(
-                id: 'actor',
-                name: 'Jane Doe',
-                username: 'jane',
-                role: 'cashier',
-                outletName: 'Warteg Bahari',
+              home: SalesReportsView(
+                viewModel: ReportViewModel(
+                  service: VisualReports(empty: empty, fail: fail),
+                  accountId: () => 'actor',
+                ),
+                user: const User(
+                  id: 'actor',
+                  name: 'Jane Doe',
+                  username: 'jane',
+                  role: 'cashier',
+                  outletName: 'Warteg Bahari',
+                ),
+                initialKind: kind,
+                initialFilter: const ReportFilter(
+                  startDate: '2026-10-01',
+                  endDate: '2026-10-30',
+                ),
+                onLock: () {},
               ),
-              accountId: () => 'actor',
-              initialKind: kind,
-              initialFilter: const ReportFilter(
-                startDate: '2026-10-01',
-                endDate: '2026-10-30',
-              ),
-              onLock: () {},
             ),
           ),
-        ),
-      );
-      await t.pumpAndSettle();
-      expect(t.takeException(), isNull);
-      await t.runAsync(() async {
-        final boundary =
-            key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-        final img = await boundary.toImage();
-        final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
-        await Directory('build/reports-qa').create(recursive: true);
-        await File(
-          'build/reports-qa/$name.png',
-        ).writeAsBytes(bytes!.buffer.asUint8List());
-        img.dispose();
-      });
-    }
+        );
+        await t.pumpAndSettle();
+        expect(t.takeException(), isNull);
+        await t.runAsync(() async {
+          final boundary =
+              key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+          final img = await boundary.toImage();
+          final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
+          await Directory('build/reports-qa').create(recursive: true);
+          await File(
+            'build/reports-qa/$name.png',
+          ).writeAsBytes(bytes!.buffer.asUint8List());
+          img.dispose();
+        });
+      }
 
-    for (final k in ReportKind.values) {
-      await capture(k.name, k, const Size(1340, 800));
-    }
-    await capture('narrow', ReportKind.products, const Size(430, 940));
-    await capture(
-      'empty',
-      ReportKind.summary,
-      const Size(1340, 800),
-      empty: true,
-    );
-    await capture(
-      'error',
-      ReportKind.summary,
-      const Size(1340, 800),
-      fail: true,
-    );
-  }, skip: !const bool.fromEnvironment('CAPTURE_REPORTS'));
+      for (final k in ReportKind.values) {
+        await capture(k.name, k, const Size(1340, 800));
+      }
+      await capture('narrow', ReportKind.products, const Size(430, 940));
+      await capture(
+        'empty',
+        ReportKind.summary,
+        const Size(1340, 800),
+        empty: true,
+      );
+      await capture(
+        'error',
+        ReportKind.summary,
+        const Size(1340, 800),
+        fail: true,
+      );
+    },
+    skip: !const bool.fromEnvironment('CAPTURE_REPORTS'),
+  );
 }

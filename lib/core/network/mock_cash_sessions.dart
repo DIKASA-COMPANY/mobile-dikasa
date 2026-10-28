@@ -204,7 +204,11 @@ class MockCashSessions {
     return List.filled(4, h.toRadixString(16).padLeft(16, '0')).join();
   }
 
-  Map<String, dynamic> preview(String id, Map<String, dynamic> b,{bool allowMissingReason=false}) {
+  Map<String, dynamic> preview(
+    String id,
+    Map<String, dynamic> b, {
+    bool allowMissingReason = false,
+  }) {
     final s = _session(id);
     if (!_can(s)) {
       _fail('AKSES_DITOLAK', 'Hanya kasir pembuka atau manager.', 403);
@@ -240,7 +244,14 @@ class MockCashSessions {
       'counted_cash': counted,
       'difference': difference,
       'reason': reason,
-      'preview_hash': _hash([id, summary, activity, counted, reason,_movements.where((m)=>m['session_id']==id).toList()]),
+      'preview_hash': _hash([
+        id,
+        summary,
+        activity,
+        counted,
+        reason,
+        _movements.where((m) => m['session_id'] == id).toList(),
+      ]),
     };
   }
 
@@ -258,12 +269,14 @@ class MockCashSessions {
       if (old.hash != hash) _fail('REQUEST_ID_DIGUNAKAN', 'ID sudah dipakai.');
       return _copy(old.response);
     }
-    final p = preview(id, b,allowMissingReason:true);
+    final p = preview(id, b, allowMissingReason: true);
     if (p['preview_hash'] != b['preview_hash']) {
       _fail('SESI_KAS_PRATINJAU_BERUBAH', 'Aktivitas berubah. Muat ulang.');
     }
-    if(p['difference']!=0&&(p['reason'] as String).isEmpty)_fail('HITUNGAN_KAS_TIDAK_VALID','Alasan selisih wajib.',422);
- final s = _session(id);
+    if (p['difference'] != 0 && (p['reason'] as String).isEmpty) {
+      _fail('HITUNGAN_KAS_TIDAK_VALID', 'Alasan selisih wajib.', 422);
+    }
+    final s = _session(id);
     final r = <String, dynamic>{
       ...p,
       'session_id': id,

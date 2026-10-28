@@ -1,5 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_remote_image.dart';
 import 'package:mobile_dikasa/data/models/user.dart';
 import 'browser_design.dart';
 
@@ -21,7 +22,7 @@ class BrowserPageHeader extends StatelessWidget implements PreferredSizeWidget {
     builder: (c, s) {
       final wide = s.maxWidth >= 1000;
       return Container(
-        height: 88,
+        height: 88.h,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -40,7 +41,7 @@ class BrowserPageHeader extends StatelessWidget implements PreferredSizeWidget {
           children: [
             Positioned(
               left: wide ? 52 : 12,
-              top: 20,
+              top: 20.h,
               child: Row(
                 children: [
                   IconButton(
@@ -51,32 +52,32 @@ class BrowserPageHeader extends StatelessWidget implements PreferredSizeWidget {
                   SizedBox(width: wide ? 52 : 12),
                   Container(
                     width: wide ? 158 : 145,
-                    height: 46,
+                    height: 46.h,
                     alignment: Alignment.center,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: browserAction,
                       borderRadius: BorderRadius.horizontal(
-                        left: Radius.circular(10),
+                        left: Radius.circular(10.r),
                       ),
                     ),
                     child: Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
                   if (wide)
                     Container(
-                      width: 158,
-                      height: 46,
+                      width: 158.w,
+                      height: 46.h,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        border: Border.all(color: browserAction, width: 2),
-                        borderRadius: const BorderRadius.horizontal(
-                          right: Radius.circular(10),
+                        border: Border.all(color: browserAction, width: 2.w),
+                        borderRadius: BorderRadius.horizontal(
+                          right: Radius.circular(10.r),
                         ),
                       ),
                       child: TextButton(
@@ -85,9 +86,12 @@ class BrowserPageHeader extends StatelessWidget implements PreferredSizeWidget {
                             content: Text('Notifikasi belum tersedia.'),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Notifikasi',
-                          style: TextStyle(fontSize: 18, color: browserAction),
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            color: browserAction,
+                          ),
                         ),
                       ),
                     ),
@@ -98,14 +102,14 @@ class BrowserPageHeader extends StatelessWidget implements PreferredSizeWidget {
               Positioned(
                 left: wide ? s.maxWidth * .59 : null,
                 right: wide ? null : 80,
-                top: 17,
+                top: 17.h,
                 child: Tooltip(
                   message: 'Kunci layar',
                   child: InkWell(
                     onTap: onLock,
-                    child: const SizedBox(
-                      width: 54,
-                      height: 54,
+                    child: SizedBox(
+                      width: 54.w,
+                      height: 54.h,
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
@@ -119,12 +123,12 @@ class BrowserPageHeader extends StatelessWidget implements PreferredSizeWidget {
               ),
             Positioned(
               right: wide ? 32 : 12,
-              top: 17,
+              top: 17.h,
               child: Row(
                 children: [
                   if (wide) ...[
                     SizedBox(
-                      width: 240,
+                      width: 240.w,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
@@ -132,8 +136,8 @@ class BrowserPageHeader extends StatelessWidget implements PreferredSizeWidget {
                             user?.outletName ?? '',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 18,
+                            style: TextStyle(
+                              fontSize: 18.sp,
                               color: browserInk,
                               fontWeight: FontWeight.w500,
                             ),
@@ -142,8 +146,8 @@ class BrowserPageHeader extends StatelessWidget implements PreferredSizeWidget {
                             user?.name ?? '',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 15,
+                            style: TextStyle(
+                              fontSize: 15.sp,
                               color: browserInk,
                               fontStyle: FontStyle.italic,
                             ),
@@ -151,16 +155,16 @@ class BrowserPageHeader extends StatelessWidget implements PreferredSizeWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 18),
+                    SizedBox(width: 18.w),
                   ],
                   Container(
-                    width: 60,
-                    height: 55,
+                    width: 60.w,
+                    height: 55.h,
                     clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       border: Border.all(color: const Color(0xffdddddd)),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: _avatar(),
                   ),
@@ -177,25 +181,10 @@ class BrowserPageHeader extends StatelessWidget implements PreferredSizeWidget {
     final fallback = Center(
       child: Text(
         user?.initials ?? '?',
-        style: const TextStyle(color: browserAction, fontSize: 22),
+        style: TextStyle(color: browserAction, fontSize: 22.sp),
       ),
     );
     if (url == null) return fallback;
-    if (url.startsWith('data:image/')) {
-      try {
-        return Image.memory(
-          base64Decode(url.split(',').last),
-          fit: BoxFit.cover,
-          errorBuilder: (_, e, s) => fallback,
-        );
-      } catch (_) {
-        return fallback;
-      }
-    }
-    return Image.network(
-      url,
-      fit: BoxFit.cover,
-      errorBuilder: (_, e, s) => fallback,
-    );
+    return AppRemoteImage(url: url, fit: BoxFit.cover, fallback: fallback);
   }
 }

@@ -9,8 +9,13 @@ import 'package:mobile_dikasa/data/models/product.dart';
 import 'package:mobile_dikasa/data/models/user.dart';
 import 'package:mobile_dikasa/data/models/pos.dart';
 import 'package:mobile_dikasa/data/services/pos_service.dart';
+import 'package:mobile_dikasa/data/services/account_service.dart';
+import 'package:mobile_dikasa/data/services/catalog_service.dart';
 import 'package:mobile_dikasa/data/repositories/auth_repository.dart';
 import 'package:mobile_dikasa/data/repositories/product_repository.dart';
+import 'package:mobile_dikasa/features/account/view_model.dart';
+import 'package:mobile_dikasa/features/product/view_model.dart';
+import 'package:mobile_dikasa/features/report/view_model.dart';
 import 'package:mobx/mobx.dart';
 
 part 'view_model.g.dart';
@@ -30,18 +35,42 @@ abstract class NewOrderViewModelBase with Store {
     required ProductRepository productRepository,
     required AuthRepository authRepository,
     required this.posService,
+    AccountService? accountService,
+    CatalogService? catalogService,
   }) : _productRepository = productRepository,
        _authRepository = authRepository,
+       _accountService = accountService,
+       _catalogService = catalogService,
        _loadedSessionGeneration = authRepository.sessionGeneration;
 
   final ProductRepository _productRepository;
   final AuthRepository _authRepository;
+  final AccountService? _accountService;
+  final CatalogService? _catalogService;
   final PosService posService;
   final Observable<bool> _cashMovementGate = Observable(false);
   bool get cashMovementActive => _cashMovementGate.value;
   Object? _cashMovementOwner;
   CashMovementController? _movementController;
   AuthRepository get authRepository => _authRepository;
+
+  AccountSettingsViewModel createAccountSettingsViewModel() =>
+      AccountSettingsViewModel(
+        _accountService ??
+            (throw StateError('AccountService belum dikonfigurasi.')),
+        _authRepository,
+      );
+
+  CatalogViewModel createCatalogViewModel() => CatalogViewModel(
+    service:
+        _catalogService ??
+        (throw StateError('CatalogService belum dikonfigurasi.')),
+  );
+
+  ReportViewModel createReportViewModel() => ReportViewModel(
+    service: posService.reports,
+    accountId: () => currentUser?.id,
+  );
   CashMovementController get cashMovements {
     if (_movementController == null || !_movementController!.current) {
       _movementController?.dispose();
@@ -144,7 +173,10 @@ abstract class NewOrderViewModelBase with Store {
   // Invalidate old requests and cached data before a different account can use this store.
   void _syncUser() {
     final userId = currentUser?.id;
-    if (_loadedUserId == userId && _loadedSessionGeneration == _authRepository.sessionGeneration) return;
+    if (_loadedUserId == userId &&
+        _loadedSessionGeneration == _authRepository.sessionGeneration) {
+      return;
+    }
     _loadedUserId = userId;
     _loadedSessionGeneration = _authRepository.sessionGeneration;
     _draftGeneration++;

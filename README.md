@@ -7,11 +7,14 @@
 ## Backend lokal tanpa Firebase
 
 Backend setup: [local auth instructions](https://github.com/DIKASA-COMPANY/be-dikasa/blob/main/docs/development/local-auth.md).
-Set `API_BASE_URL=http://localhost:8081/dikasa/v1` and `USE_MOCK_API=false` in
-`.env`, then fully restart Flutter. Run the web preview on port 8080:
+Pass `API_BASE_URL` and `USE_MOCK_API` with `--dart-define`, then fully restart
+Flutter. The committed `.env.example` is only a safe development fallback.
+Run the web preview on port 8080:
 
 ```powershell
-flutter run -d web-server --web-hostname=127.0.0.1 --web-port=8080
+flutter run -d web-server --web-hostname=127.0.0.1 --web-port=8080 `
+  --dart-define=API_BASE_URL=http://localhost:8081/dikasa/v1 `
+  --dart-define=USE_MOCK_API=false
 ```
 
 The backend's explicit seed creates `admin` / `dikasa123`. Login reads the
@@ -131,7 +134,9 @@ dirancang untuk tablet landscape 1340x800.
 
 ## Arsitektur
 
-Project ini memakai MVVM dengan MobX sebagai state management dan Dio sebagai HTTP client.
+Project ini memakai feature-based MVVM, MobX/ChangeNotifier untuk state, dan Dio
+sebagai HTTP client. View tidak membuat atau memanggil service/repository; dependency
+dirangkai di composition root dan async state dimiliki ViewModel.
 
 ```
 View  ->  ViewModel  ->  Repository  ->  Service  ->  API
@@ -146,10 +151,34 @@ View  ->  ViewModel  ->  Repository  ->  Service  ->  API
 | Service | `lib/data/services/` | Panggilan HTTP lewat Dio |
 | Model | `lib/data/models/` | Bentuk data dan parsing JSON |
 
+Komponen lintas fitur seperti loading, async state, remote image, tabel, dan form
+berada di `lib/components/`. Seluruh ukuran desain memakai
+`flutter_screenutil`; `ScreenUtilInit` memakai artboard 1340×800 di atas
+`MaterialApp`, sementara `LayoutBuilder`/breakpoint tetap menangani layout responsif.
+
+## OpenAPI dan generated client
+
+Snapshot kontrak tersimpan di `openapi/dikasa.openapi.yaml` dan client hasil
+generate di `packages/dikasa_api/`. Generator dikunci ke OpenAPI Generator 7.24.0
+melalui `openapitools.json`; file hasil generate tidak boleh diedit manual.
+
+Sinkronkan selalu dari kontrak backend terbaru yang sudah dipublikasikan:
+
+```powershell
+.\tool\generate_api.ps1 -BackendSpec 'D:\path\to\be-dikasa\api\openapi.yaml'
+dart analyze .\packages\dikasa_api
+flutter analyze --no-pub
+flutter test --no-pub
+```
+
+SHA-256 snapshot saat ini:
+`9516928575677BD60440C4E04BAD714AD00D3DC4890AA9A9A9A4379604C23B7B`.
+Jika kontrak backend belum committed/masih dirty, cantumkan kondisi tersebut di PR
+karena snapshot mobile belum dapat dianggap reproducible dari revision backend.
+
 ## Menjalankan Project
 
 ```bash
-cp .env.example .env
 flutter pub get
 dart run build_runner build
 flutter run
@@ -161,8 +190,9 @@ Set `USE_MOCK_API=true` untuk data tiruan
 - Username: `admin`
 - Password: `dikasa123`
 
-Untuk backend lokal, set `USE_MOCK_API=false` dan `API_BASE_URL` seperti bagian
-setup di atas, lalu mulai ulang aplikasi.
+Untuk backend lokal, gunakan `--dart-define=USE_MOCK_API=false` dan
+`--dart-define=API_BASE_URL=...` seperti bagian setup di atas, lalu mulai ulang
+aplikasi.
 
 ## Testing
 

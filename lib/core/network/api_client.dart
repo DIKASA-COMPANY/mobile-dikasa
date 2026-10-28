@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:dikasa_api/dikasa_api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile_dikasa/core/network/mock_api_interceptor.dart';
@@ -7,16 +8,26 @@ import 'package:mobile_dikasa/core/network/mock_api_interceptor.dart';
 class ApiClient {
   ApiClient({Dio? dio}) : dio = dio ?? Dio() {
     _configure();
+    generated = DikasaApi(dio: this.dio, interceptors: const <Interceptor>[]);
   }
 
   final Dio dio;
+  late final DikasaApi generated;
 
   /// Token yang dilampirkan otomatis ke setiap request setelah login.
   String? _authToken;
 
   void _configure() {
+    const dartDefineBaseUrl = String.fromEnvironment('API_BASE_URL');
+    const dartDefineUseMock = String.fromEnvironment('USE_MOCK_API');
+    final baseUrl = dartDefineBaseUrl.isNotEmpty
+        ? dartDefineBaseUrl
+        : (dotenv.env['API_BASE_URL'] ?? 'http://localhost:8081/dikasa/v1');
+    final useMockValue = dartDefineUseMock.isNotEmpty
+        ? dartDefineUseMock
+        : (dotenv.env['USE_MOCK_API'] ?? 'true');
     dio.options = BaseOptions(
-      baseUrl: dotenv.env['API_BASE_URL'] ?? '',
+      baseUrl: baseUrl,
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       contentType: Headers.jsonContentType,
@@ -36,7 +47,7 @@ class ApiClient {
     );
 
     // Set USE_MOCK_API=false di .env untuk memakai backend asli.
-    if (dotenv.env['USE_MOCK_API'] == 'true') {
+    if (useMockValue.toLowerCase() == 'true') {
       dio.interceptors.add(MockApiInterceptor());
     }
 

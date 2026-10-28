@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/services.dart';
 import 'view_model.dart';
 
@@ -54,9 +55,9 @@ class _CredentialFormState extends State<CredentialForm> {
           : null,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.r)),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10.r),
           borderSide: const BorderSide(color: Color(0xffd6d6d6)),
         ),
         filled: true,
@@ -89,24 +90,24 @@ class _CredentialFormState extends State<CredentialForm> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
-          height: 73,
+          height: 73.h,
           alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          decoration: const BoxDecoration(
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
+          decoration: BoxDecoration(
             color: Color(0xff529dc8),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(10.r)),
           ),
           child: Text(
             pin ? 'PIN Akun' : 'Password Akun',
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 21,
+              fontSize: 21.sp,
               fontWeight: FontWeight.w600,
             ),
           ),
         ),
         Container(
-          padding: const EdgeInsets.all(28),
+          padding: EdgeInsets.all(28.r),
           color: const Color(0xfff8f8f8),
           child: !allowed
               ? const Text(
@@ -139,9 +140,7 @@ class _CredentialFormState extends State<CredentialForm> {
                                 children: [
                                   for (final f in fields)
                                     Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 16,
-                                      ),
+                                      padding: EdgeInsets.only(bottom: 16.h),
                                       child: f,
                                     ),
                                 ],
@@ -163,9 +162,9 @@ class _CredentialFormState extends State<CredentialForm> {
                         child: FilledButton(
                           style: FilledButton.styleFrom(
                             backgroundColor: const Color(0xffff8227),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 38,
-                              vertical: 22,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 38.w,
+                              vertical: 22.h,
                             ),
                           ),
                           onPressed: m.busy

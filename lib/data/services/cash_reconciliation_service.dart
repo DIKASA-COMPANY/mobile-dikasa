@@ -88,7 +88,8 @@ class CashReconciliationService {
             ),
           );
         } on DioException catch (e) {
-          if (e.response?.statusCode == null || e.response!.statusCode! >= 500) {
+          if (e.response?.statusCode == null ||
+              e.response!.statusCode! >= 500) {
             throw const CashCloseUncertainException();
           }
           rethrow;

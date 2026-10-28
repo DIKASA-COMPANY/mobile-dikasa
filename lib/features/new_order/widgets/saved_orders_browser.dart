@@ -1,6 +1,8 @@
 import 'browser_design.dart';
 import 'browser_empty_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobile_dikasa/core/network/api_exception.dart';
 import 'package:mobile_dikasa/core/utils/formatted_currency.dart';
@@ -54,7 +56,7 @@ class _SavedOrdersBrowserState extends State<SavedOrdersBrowser> {
         builder: (ctx) => AlertDialog(
           title: const Text('Periksa perubahan pesanan'),
           content: SizedBox(
-            width: 480,
+            width: 480.w,
             child: SingleChildScrollView(
               child: Text(vm.reopenWarnings.join('\n\n')),
             ),
@@ -130,7 +132,7 @@ class _SavedOrdersBrowserState extends State<SavedOrdersBrowser> {
         if (widget.navigation != null) widget.navigation!,
         if (vm.checkoutError != null)
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12.r),
             child: Text(
               vm.checkoutError!,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
@@ -146,13 +148,13 @@ class _SavedOrdersBrowserState extends State<SavedOrdersBrowser> {
                   },
             child: const Text('Coba ulang permintaan yang sama'),
           ),
-        if (vm.isSavingOrder) const LinearProgressIndicator(),
+        if (vm.isSavingOrder) const AppLinearLoadingIndicator(),
         Expanded(
           child: FutureBuilder<SavedOrderPage>(
             future: _result,
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: AppLoadingIndicator());
               }
               if (snapshot.hasError) {
                 return Center(
@@ -176,7 +178,7 @@ class _SavedOrdersBrowserState extends State<SavedOrdersBrowser> {
               final blocked =
                   vm.draftLocked || vm.isPaying || vm.paymentUncertain;
               return Padding(
-                padding: const EdgeInsets.fromLTRB(46, 24, 46, 0),
+                padding: EdgeInsets.fromLTRB(46.w, 24.h, 46.w, 0.h),
                 child: Column(
                   children: [
                     Expanded(
@@ -230,9 +232,9 @@ class _SavedOrdersBrowserState extends State<SavedOrdersBrowser> {
                                               prefix: 'Rp ',
                                             ),
                                           ),
-                                          const Text(
+                                          Text(
                                             'sebelum pajak',
-                                            style: TextStyle(fontSize: 12),
+                                            style: TextStyle(fontSize: 12.sp),
                                           ),
                                         ],
                                       ),

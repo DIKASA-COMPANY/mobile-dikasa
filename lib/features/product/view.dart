@@ -1,99 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
+import 'package:mobile_dikasa/components/app_remote_image.dart';
 import 'package:mobile_dikasa/components/table/main.dart';
-import 'package:mobile_dikasa/core/network/api_exception.dart';
 import 'package:mobile_dikasa/core/utils/formatted_currency.dart';
 import 'package:mobile_dikasa/data/models/catalog_product.dart';
 import 'package:mobile_dikasa/data/models/user.dart';
-import 'package:mobile_dikasa/data/services/catalog_service.dart';
 import 'categories.dart';
 import 'editor.dart';
+import 'view_model.dart';
 import 'widgets.dart';
-import 'package:mobile_dikasa/data/services/catalog_files.dart';
 
 class CatalogView extends StatefulWidget {
-  const CatalogView({
-    super.key,
-    required this.service,
-    this.user,
-    this.files = const CatalogFiles(),
-  });
-  final CatalogService service;
-  final CatalogFiles files;
+  const CatalogView({super.key, required this.viewModel, this.user});
+  final CatalogViewModel viewModel;
   final User? user;
   @override
   State<CatalogView> createState() => _CatalogViewState();
 }
 
 class _CatalogViewState extends State<CatalogView> {
-  List<CatalogProduct> _products = [];
-  List<Map<String, dynamic>> _types = [];
-  final Map<String, List<CatalogCategory>> _categories = {};
+  late final CatalogViewModel vm;
   final _search = TextEditingController();
-  String _query = '', _type = '', _stock = '', _category = '';
-  String? _error;
-  bool _loading = true, _includeInactive = false;
-  bool _exporting = false;
-  int _request = 0, _page = 0;
-  DateTime? _updated;
+  List<CatalogProduct> get _products => vm.products;
+  List<Map<String, dynamic>> get _types => vm.types;
+  Map<String, List<CatalogCategory>> get _categories => vm.categories;
+  String get _query => vm.query;
+  String get _type => vm.type;
+  String get _stock => vm.stock;
+  String get _category => vm.category;
+  String? get _error => vm.error;
+  bool get _loading => vm.loading;
+  bool get _includeInactive => vm.includeInactive;
+  bool get _exporting => vm.exporting;
+  int get _page => vm.page;
+  DateTime? get _updated => vm.updated;
+
   @override
   void initState() {
     super.initState();
-    _load();
+    vm = widget.viewModel;
+    vm.addListener(_changed);
+    vm.load();
+  }
+
+  void _changed() {
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
-    _request++;
+    vm.removeListener(_changed);
+    vm.dispose();
     _search.dispose();
     super.dispose();
   }
 
-  Future<void> _load() async {
-    final request = ++_request;
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    try {
-      final types = await widget.service.types();
-      final results = await Future.wait([
-        widget.service.products(includeInactive: _includeInactive),
-        ...types.map((t) => widget.service.categories(t['code'] as String)),
-      ]);
-      if (!mounted || request != _request) return;
-      setState(() {
-        _types = types;
-        _products = results[0] as List<CatalogProduct>;
-        _categories.clear();
-        for (var i = 0; i < types.length; i++) {
-          _categories[types[i]['code'] as String] =
-              results[i + 1] as List<CatalogCategory>;
-        }
-        _loading = false;
-        _updated = DateTime.now();
-        _page = 0;
-        if (!_categories.values
-            .expand((v) => v)
-            .any((c) => c.id == _category)) {
-          _category = '';
-        }
-      });
-    } on ApiException catch (e) {
-      if (mounted && request == _request) {
-        setState(() {
-          _error = e.message;
-          _loading = false;
-        });
-      }
-    }
-  }
+  Future<void> _load() => vm.load();
 
   Future<void> _edit([CatalogProduct? product]) async {
     await Navigator.push<bool>(
       context,
       MaterialPageRoute(
         builder: (_) => ProductEditor(
-          service: widget.service,
+          service: vm.editorService,
           product: product,
           user: widget.user,
         ),
@@ -102,49 +72,11 @@ class _CatalogViewState extends State<CatalogView> {
     if (mounted) await _load();
   }
 
-  Future<void> _export() async {
-    if (_exporting) return;
-    setState(() => _exporting = true);
-    try {
-      final bytes = await widget.service.exportProducts(
-        filters: {
-          if (_query.isNotEmpty) 'searchByProductName': _query,
-          if (_type.isNotEmpty) 'product_type': _type,
-          if (_category.isNotEmpty) 'category_id': _category,
-          if (_stock.isNotEmpty) 'availability': _stock,
-          if (_includeInactive) 'include_inactive': true,
-        },
-      );
-      await widget.files.saveWorkbook(bytes);
-    } on ApiException catch (e) {
-      if (mounted) setState(() => _error = e.message);
-    } finally {
-      if (mounted) setState(() => _exporting = false);
-    }
-  }
+  Future<void> _export() => vm.export();
 
-  String get _capitalLabel {
-    final tracked = _products.where((p) => p.trackStock);
-    if (tracked.isEmpty) return 'Nilai Modal Stok: — (stok belum dilacak)';
-    final missing = tracked.where((p) => p.costPrice == null).length;
-    final total = tracked.fold<BigInt>(
-      BigInt.zero,
-      (sum, p) =>
-          sum + BigInt.from(p.stockQuantity) * BigInt.from(p.costPrice ?? 0),
-    );
-    final digits = total.toString().replaceAllMapped(
-      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-      (m) => '${m[1]}.',
-    );
-    return 'Nilai Modal Stok: Rp $digits${missing == 0 ? '' : ' ($missing produk tanpa harga modal)'}';
-  }
+  String get _capitalLabel => vm.capitalLabel;
 
-  String _typeName(String code) =>
-      _types
-          .where((t) => t['code'] == code)
-          .map((t) => t['name'] as String)
-          .firstOrNull ??
-      code;
+  String _typeName(String code) => vm.typeName(code);
   Future<void> _filter() async {
     var type = _type, stock = _stock, category = _category;
     var inactive = _includeInactive;
@@ -154,7 +86,7 @@ class _CatalogViewState extends State<CatalogView> {
         builder: (context, update) => AlertDialog(
           title: const Text('Filter Produk'),
           content: SizedBox(
-            width: 440,
+            width: 440.w,
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -181,7 +113,7 @@ class _CatalogViewState extends State<CatalogView> {
                       category = '';
                     }),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   DropdownButtonFormField<String>(
                     key: ValueKey('category-$type-$category'),
                     initialValue: category,
@@ -208,7 +140,7 @@ class _CatalogViewState extends State<CatalogView> {
                     ],
                     onChanged: (v) => update(() => category = v!),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   DropdownButtonFormField<String>(
                     initialValue: stock,
                     decoration: const InputDecoration(
@@ -227,7 +159,7 @@ class _CatalogViewState extends State<CatalogView> {
                     ],
                     onChanged: (v) => update(() => stock = v!),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   CheckboxListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text('Sertakan produk nonaktif'),
@@ -262,14 +194,12 @@ class _CatalogViewState extends State<CatalogView> {
       ),
     );
     if (apply != true || !mounted) return;
-    final reload = _includeInactive != inactive;
-    setState(() {
-      _type = type;
-      _stock = stock;
-      _category = category;
-      _includeInactive = inactive;
-      _page = 0;
-    });
+    final reload = vm.applyFilters(
+      type: type,
+      stock: stock,
+      category: category,
+      includeInactive: inactive,
+    );
     if (reload) _load();
   }
 
@@ -280,7 +210,7 @@ class _CatalogViewState extends State<CatalogView> {
     actions: [
       SizedBox(
         width: MediaQuery.sizeOf(context).width > 1200 ? 371 : 250,
-        height: 46,
+        height: 46.h,
         child: TextField(
           key: const Key('catalog-search'),
           controller: _search,
@@ -295,30 +225,27 @@ class _CatalogViewState extends State<CatalogView> {
             filled: true,
             fillColor: Colors.white,
             prefixIcon: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: EdgeInsets.all(14.r),
               child: catalogIcon('search'),
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.r),
               borderSide: BorderSide.none,
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+            contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
           ),
-          onChanged: (v) => setState(() {
-            _query = v.trim().toLowerCase();
-            _page = 0;
-          }),
+          onChanged: vm.setSearch,
         ),
       ),
       SizedBox(
-        width: 276,
+        width: 276.w,
         child: CatalogButton(
           _exporting ? 'Mengunduh…' : 'Export / Download',
           onPressed: _loading || _exporting ? null : _export,
         ),
       ),
       SizedBox(
-        width: 193,
+        width: 193.w,
         child: CatalogButton(
           'Filter',
           icon: 'filter',
@@ -343,15 +270,15 @@ class _CatalogViewState extends State<CatalogView> {
           child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: small ? 20 : 46,
-              vertical: 32,
+              vertical: 32.h,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (_error != null) catalogError(_error!, retry: _load),
-                if (_loading) const LinearProgressIndicator(),
+                if (_loading) const AppLinearLoadingIndicator(),
                 _summary(c.maxWidth - (small ? 40 : 92)),
-                const SizedBox(height: 37),
+                SizedBox(height: 37.h),
                 Wrap(
                   alignment: WrapAlignment.spaceBetween,
                   crossAxisAlignment: WrapCrossAlignment.center,
@@ -381,10 +308,10 @@ class _CatalogViewState extends State<CatalogView> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 14),
+                SizedBox(height: 14.h),
                 if (!_loading || _products.isNotEmpty)
                   _table(visible, c.maxWidth - (small ? 40 : 92)),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 Wrap(
                   alignment: WrapAlignment.spaceBetween,
                   crossAxisAlignment: WrapCrossAlignment.center,
@@ -398,9 +325,7 @@ class _CatalogViewState extends State<CatalogView> {
                       children: [
                         IconButton(
                           tooltip: 'Halaman sebelumnya',
-                          onPressed: _page == 0
-                              ? null
-                              : () => setState(() => _page--),
+                          onPressed: _page == 0 ? null : vm.previousPage,
                           icon: const Icon(Icons.chevron_left),
                         ),
                         Text(
@@ -411,7 +336,7 @@ class _CatalogViewState extends State<CatalogView> {
                           tooltip: 'Halaman berikutnya',
                           onPressed: (_page + 1) * 25 >= rows.length
                               ? null
-                              : () => setState(() => _page++),
+                              : vm.nextPage,
                           icon: const Icon(Icons.chevron_right),
                         ),
                         IconButton(
@@ -423,7 +348,7 @@ class _CatalogViewState extends State<CatalogView> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
                 Text(
                   'Powered By Dikasa',
                   textAlign: TextAlign.center,
@@ -450,11 +375,11 @@ class _CatalogViewState extends State<CatalogView> {
     final itemWidth = (width - 43 * (columns - 1)) / columns;
     Widget stats(List<(String, String)> values) => Container(
       width: itemWidth,
-      height: 146,
-      padding: const EdgeInsets.symmetric(horizontal: 38, vertical: 26),
+      height: 146.h,
+      padding: EdgeInsets.symmetric(horizontal: 38.w, vertical: 26.h),
       decoration: BoxDecoration(
         color: const Color(0xFFF4F4F4),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         boxShadow: const [
           BoxShadow(
             color: Color(0x22000000),
@@ -478,7 +403,7 @@ class _CatalogViewState extends State<CatalogView> {
                         weight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     Text(
                       _updated == null ? '—' : v.$2,
                       style: catalogText(
@@ -528,21 +453,21 @@ class _CatalogViewState extends State<CatalogView> {
                 'Tambah Produk',
                 icon: 'add',
                 color: catalogOrange,
-                height: 63,
+                height: 63.h,
                 onPressed: _loading ? null : _edit,
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               CatalogButton(
                 'Tambah Kategori',
                 icon: 'category_add',
                 color: catalogAccent,
-                height: 63,
+                height: 63.h,
                 onPressed: _loading
                     ? null
                     : () async {
                         await manageCategories(
                           context,
-                          widget.service,
+                          vm.editorService,
                           onChanged: () {},
                         );
                         if (mounted) _load();
@@ -577,13 +502,13 @@ class _CatalogViewState extends State<CatalogView> {
       columns: [
         TableFieldColumn(
           title: 'Foto',
-          width: 170,
+          width: 170.w,
           headerTextAlign: TextAlign.center,
           valueBuilder: (_) => '',
           cellBuilder: (p) => Row(
             children: [
               SizedBox(
-                width: 40,
+                width: 40.w,
                 child: p.variations.isEmpty
                     ? null
                     : IconButton(
@@ -592,25 +517,25 @@ class _CatalogViewState extends State<CatalogView> {
                         onPressed: () => _prices(p),
                       ),
               ),
-              const SizedBox(width: 20),
+              SizedBox(width: 20.w),
               ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10.r),
                 child: p.imageUrl == null
                     ? Image.asset(
                         'assets/images/catalog_placeholder.png',
-                        width: 70,
-                        height: 70,
+                        width: 70.w,
+                        height: 70.h,
                         fit: BoxFit.cover,
                       )
-                    : Image.network(
-                        p.imageUrl!,
-                        width: 70,
-                        height: 70,
+                    : AppRemoteImage(
+                        url: p.imageUrl!,
+                        width: 70.w,
+                        height: 70.h,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => Image.asset(
+                        fallback: Image.asset(
                           'assets/images/catalog_placeholder.png',
-                          width: 70,
-                          height: 70,
+                          width: 70.w,
+                          height: 70.h,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -631,17 +556,17 @@ class _CatalogViewState extends State<CatalogView> {
         ),
         TableFieldColumn(
           title: 'Kategori',
-          width: 180,
+          width: 180.w,
           valueBuilder: (p) => p.category.name,
         ),
         TableFieldColumn(
           title: 'Jenis Produk',
-          width: 170,
+          width: 170.w,
           valueBuilder: (p) => _typeName(p.productType),
         ),
         TableFieldColumn(
           title: 'Status Stock',
-          width: 150,
+          width: 150.w,
           valueBuilder: (_) => '',
           cellBuilder: (p) => Text(
             p.availability == 'low_stock'
@@ -661,7 +586,7 @@ class _CatalogViewState extends State<CatalogView> {
         ),
         TableFieldColumn(
           title: 'Harga',
-          width: 140,
+          width: 140.w,
           headerTextAlign: TextAlign.center,
           cellTextAlign: TextAlign.center,
           valueBuilder: (p) => formatRupiah(p.price, prefix: ''),
@@ -677,7 +602,7 @@ class _CatalogViewState extends State<CatalogView> {
         ),
         TableFieldColumn(
           title: '',
-          width: 46,
+          width: 46.w,
           valueBuilder: (_) => '',
           cellBuilder: (p) => IconButton(
             tooltip: 'Ubah ${p.name}',
@@ -694,7 +619,7 @@ class _CatalogViewState extends State<CatalogView> {
     builder: (c) => AlertDialog(
       title: Text(product.name),
       content: SizedBox(
-        width: 440,
+        width: 440.w,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,

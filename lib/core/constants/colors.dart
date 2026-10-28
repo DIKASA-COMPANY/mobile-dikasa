@@ -128,4 +128,3 @@ class AppColors {
     c4D0F0F0F,
   ]);
 }
-

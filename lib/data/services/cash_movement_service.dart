@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import '../../core/network/api_client.dart';
 import '../../core/network/api_exception.dart';
@@ -74,15 +73,21 @@ class CashMovementService {
       ),
     ),
   );
-  Future<Uint8List> proof(String id, String mid) => _read(() async {
-    final r = await client.dio.get<List<int>>(
-      '/cash-sessions/$id/movements/$mid/proof',
-      options: Options(responseType: ResponseType.bytes),
+  Future<String> proof(String id, String mid) => _read(() async {
+    final response = await client.generated.getKasKasirApi().cashMovementProof(
+      sessionId: id,
+      movementId: mid,
     );
-    if (r.data == null || r.data!.isEmpty || r.data!.length > 3145728) {
+    final url = response.data?.data.url;
+    final uri = url == null ? null : Uri.tryParse(url);
+    if (uri == null ||
+        (!uri.hasScheme ||
+            (!uri.isScheme('https') &&
+                !uri.isScheme('http') &&
+                !uri.isScheme('data')))) {
       throw const FormatException('Invalid proof');
     }
-    return Uint8List.fromList(r.data!);
+    return url!;
   });
   Future<CashMovementRecord> create(String id, PendingCashMovement p) =>
       _write(id, p, false);

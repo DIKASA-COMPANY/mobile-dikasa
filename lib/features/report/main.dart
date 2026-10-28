@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
 import 'package:mobile_dikasa/data/models/user.dart';
 import 'package:mobile_dikasa/data/models/sales_report.dart';
-import 'package:mobile_dikasa/data/services/report_service.dart';
-import 'package:mobile_dikasa/data/services/report_files.dart';
 import 'view_model.dart';
 import 'widgets/report_header.dart';
 import 'widgets/report_selector.dart';
@@ -13,23 +13,17 @@ import 'widgets/report_tables.dart';
 class SalesReportsView extends StatefulWidget {
   const SalesReportsView({
     super.key,
-    required this.service,
-    required this.accountId,
+    required this.viewModel,
     this.user,
-    this.files = const ReportFiles(),
     this.onLock,
     this.onCashDrawer,
-    this.clock,
     this.initialKind = ReportKind.summary,
     this.initialFilter,
   });
-  final ReportService service;
-  final String? Function() accountId;
+  final ReportViewModel viewModel;
   final User? user;
-  final ReportFiles files;
   final VoidCallback? onLock;
   final VoidCallback? onCashDrawer;
-  final DateTime Function()? clock;
   final ReportKind initialKind;
   final ReportFilter? initialFilter;
   @override
@@ -41,11 +35,7 @@ class _ReportState extends State<SalesReportsView> {
   @override
   void initState() {
     super.initState();
-    vm = ReportViewModel(
-      service: widget.service,
-      accountId: widget.accountId,
-      clock: widget.clock,
-    );
+    vm = widget.viewModel;
     vm.kind = widget.initialKind;
     if (widget.initialFilter != null) vm.filter = widget.initialFilter!;
     vm.reload();
@@ -73,9 +63,7 @@ class _ReportState extends State<SalesReportsView> {
   }
 
   Future<void> _export() async {
-    final ok = await vm.export(
-      (bytes, name) => widget.files.saveWorkbook(bytes, filename: name),
-    );
+    final ok = await vm.export();
     if (!mounted || !vm.current) return;
     if (ok) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -90,16 +78,16 @@ class _ReportState extends State<SalesReportsView> {
       backgroundColor: Colors.white,
       foregroundColor: const Color(0xff9b9b9b),
       minimumSize: const Size(270, 46),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         const ReportIcon('calendar'),
-        const SizedBox(width: 18),
+        SizedBox(width: 18.w),
         Text(
           '${vm.filter.startDate} – ${vm.filter.endDate}',
-          style: const TextStyle(fontSize: 15, fontStyle: FontStyle.italic),
+          style: TextStyle(fontSize: 15.sp, fontStyle: FontStyle.italic),
         ),
       ],
     ),
@@ -107,8 +95,8 @@ class _ReportState extends State<SalesReportsView> {
   Widget _strip() => Container(
     width: double.infinity,
     color: reportDark,
-    padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 20),
-    constraints: const BoxConstraints(minHeight: 88),
+    padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 20.h),
+    constraints: BoxConstraints(minHeight: 88.h),
     child: Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 22,
@@ -121,8 +109,8 @@ class _ReportState extends State<SalesReportsView> {
         ),
         if (vm.kind.grouped)
           SizedBox(
-            width: 250,
-            height: 46,
+            width: 250.w,
+            height: 46.h,
             child: TextFormField(
               key: ValueKey(vm.kind),
               initialValue: vm.filter.query,
@@ -138,13 +126,13 @@ class _ReportState extends State<SalesReportsView> {
                   heightFactor: 1,
                   child: ReportIcon('search'),
                 ),
-                prefixIconConstraints: const BoxConstraints(
-                  minWidth: 44,
-                  minHeight: 44,
+                prefixIconConstraints: BoxConstraints(
+                  minWidth: 44.w,
+                  minHeight: 44.h,
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10.r),
                   borderSide: BorderSide.none,
                 ),
               ),
@@ -161,34 +149,30 @@ class _ReportState extends State<SalesReportsView> {
             ),
           ),
         SizedBox(
-          height: 46,
-          width: 150,
+          height: 46.h,
+          width: 150.w,
           child: OutlinedButton(
             onPressed: vm.exporting ? null : _export,
             style: OutlinedButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: const Color(0xff656565),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10.r),
               ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (vm.exporting)
-                  const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
+                  const AppLoadingIndicator(compact: true)
                 else
                   const ReportIcon('export'),
-                const SizedBox(width: 10),
-                const Flexible(
+                SizedBox(width: 10.w),
+                Flexible(
                   child: Text(
                     'Export',
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 17),
+                    style: TextStyle(fontSize: 17.sp),
                   ),
                 ),
               ],
@@ -233,15 +217,12 @@ class _ReportState extends State<SalesReportsView> {
               Container(
                 width: width,
                 height: summary ? 80 : 110,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                 decoration: BoxDecoration(
                   color: summary
                       ? (i < 3 ? reportBlue : reportSide)
                       : const Color(0xfff4f4f4),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10.r),
                   boxShadow: summary
                       ? null
                       : const [
@@ -287,14 +268,14 @@ class _ReportState extends State<SalesReportsView> {
   Widget _body() {
     final r = vm.report;
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(48, 24, 34, 24),
+      padding: EdgeInsets.fromLTRB(48.w, 24.h, 34.w, 24.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (vm.loading) const LinearProgressIndicator(),
+          if (vm.loading) const AppLinearLoadingIndicator(),
           if (vm.error != null)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: EdgeInsets.symmetric(vertical: 16.h),
               child: Row(
                 children: [
                   Expanded(
@@ -312,27 +293,27 @@ class _ReportState extends State<SalesReportsView> {
             ),
           if (r != null) ...[
             if (vm.kind == ReportKind.summary) ...[
-              const Text(
+              Text(
                 'Tabel Transaksi',
-                style: TextStyle(fontSize: 20, color: Color(0xff656565)),
+                style: TextStyle(fontSize: 20.sp, color: Color(0xff656565)),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16.r),
                 decoration: BoxDecoration(
                   color: const Color(0xfff4f4f4),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Material(
                   color: Colors.transparent,
                   child: DailySalesChart(points: r.daily),
                 ),
               ),
-              const SizedBox(height: 18),
+              SizedBox(height: 18.h),
               _cards(r),
             ] else if (vm.kind.grouped) ...[
               _cards(r),
-              const SizedBox(height: 28),
+              SizedBox(height: 28.h),
               Wrap(
                 spacing: 20,
                 runSpacing: 12,
@@ -340,16 +321,16 @@ class _ReportState extends State<SalesReportsView> {
                 children: [
                   _dateButton(),
                   SizedBox(
-                    width: 260,
+                    width: 260.w,
                     child: DropdownButtonFormField<String>(
                       isExpanded: true,
                       initialValue: vm.filter.sort,
                       key: ValueKey('${vm.kind}-${vm.filter.sort}'),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         contentPadding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
+                          horizontal: 16.w,
+                          vertical: 10.h,
                         ),
                       ),
                       icon: const ReportIcon('down'),
@@ -374,7 +355,7 @@ class _ReportState extends State<SalesReportsView> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
             ],
             if (vm.kind != ReportKind.summary) ...[
               Text(
@@ -384,10 +365,10 @@ class _ReportState extends State<SalesReportsView> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               ReportTables(report: r),
             ],
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             if (vm.kind.grouped)
               Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
@@ -421,14 +402,14 @@ class _ReportState extends State<SalesReportsView> {
             const Divider(),
             Text(
               'Penjualan bersih tanpa pajak • Pajak bersih ${reportMoney(r.totals.n('net_tax'))} • Nilai setelah refund ${reportMoney(r.totals.n('value_after_refunds'))}',
-              style: const TextStyle(fontSize: 12, color: Color(0xff656565)),
+              style: TextStyle(fontSize: 12.sp, color: Color(0xff656565)),
             ),
-            const SizedBox(height: 8),
-            const Text(
+            SizedBox(height: 8.h),
+            Text(
               'Penjualan menurut tanggal bayar; refund menurut tanggal pengembalian. Periode WIB. Export dihitung ulang saat dibuat.',
-              style: TextStyle(fontSize: 11, color: Color(0xff888888)),
+              style: TextStyle(fontSize: 11.sp, color: Color(0xff888888)),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             const Center(
               child: Text(
                 'Powered By Dikasa',

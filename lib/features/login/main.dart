@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_dikasa/components/text_field/main.dart';
 import 'package:mobile_dikasa/core/constants/colors.dart';
 import 'package:mobile_dikasa/core/utils/screen_utils.dart';
@@ -94,12 +95,12 @@ class _LoginPageState extends State<LoginPage> {
               ),
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 560),
+                  constraints: BoxConstraints(maxWidth: 560.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(16.r),
                         child: const AspectRatio(
                           aspectRatio: 670 / 800,
                           child: _LoginHeroPanel(assetPath: _heroAssetPath),
@@ -151,10 +152,7 @@ class _CenterScrollable extends StatelessWidget {
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 20,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 20.h),
                 child: child,
               ),
             ),
@@ -217,7 +215,7 @@ class _LoginFormSection extends StatelessWidget {
     final double actionTopSpacing = compact ? 16 : 20;
 
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 487),
+      constraints: BoxConstraints(maxWidth: 487.w),
       child: Form(
         key: formKey,
         child: Column(
@@ -241,7 +239,7 @@ class _LoginFormSection extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 44),
+            SizedBox(height: 44.h),
             AppTextField(
               controller: usernameController,
               hintText: 'Username atau Nomor Hp',
@@ -252,22 +250,22 @@ class _LoginFormSection extends StatelessWidget {
               focusedBorderColor: AppColors.c097BC2,
               textStyle: TextStyle(
                 color: AppColors.c0F0F0F,
-                fontSize: 14,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
               ),
               hintStyle: TextStyle(
                 color: AppColors.c707070.withAlpha(128),
-                fontSize: 14,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16.w,
+                vertical: 14.h,
               ),
               borderRadius: 10,
               prefixIcon: Icon(
                 Icons.person_outline_rounded,
-                size: 22,
+                size: 22.r,
                 color: AppColors.cA4A4A4,
               ),
               validator: (String? value) {
@@ -288,22 +286,22 @@ class _LoginFormSection extends StatelessWidget {
               focusedBorderColor: AppColors.c097BC2,
               textStyle: TextStyle(
                 color: AppColors.c0F0F0F,
-                fontSize: 14,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
               ),
               hintStyle: TextStyle(
                 color: AppColors.c707070.withAlpha(128),
-                fontSize: 14,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16.w,
+                vertical: 14.h,
               ),
               borderRadius: 10,
               prefixIcon: Icon(
                 Icons.lock_outline,
-                size: 22,
+                size: 22.r,
                 color: AppColors.cA4A4A4,
               ),
               suffixIcon: IconButton(
@@ -325,7 +323,7 @@ class _LoginFormSection extends StatelessWidget {
             ),
             SizedBox(height: buttonTopSpacing),
             SizedBox(
-              height: 53,
+              height: 53.h,
               child: ElevatedButton(
                 onPressed: onLoginPressed,
                 style: ElevatedButton.styleFrom(
@@ -333,10 +331,10 @@ class _LoginFormSection extends StatelessWidget {
                   foregroundColor: AppColors.cFFFFFF,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(10.r),
                   ),
-                  textStyle: const TextStyle(
-                    fontSize: 16,
+                  textStyle: TextStyle(
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -354,8 +352,8 @@ class _LoginFormSection extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     minimumSize: const Size(0, 36),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    textStyle: const TextStyle(
-                      fontSize: 16,
+                    textStyle: TextStyle(
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -368,8 +366,8 @@ class _LoginFormSection extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     minimumSize: const Size(0, 36),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    textStyle: const TextStyle(
-                      fontSize: 16,
+                    textStyle: TextStyle(
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

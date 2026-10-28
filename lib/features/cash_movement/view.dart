@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
 import '../../data/models/sales_report.dart';
 import '../../data/models/cash_reconciliation.dart';
 import '../new_order/view_model.dart';
@@ -91,8 +93,7 @@ class _CashMovementState extends State<CashMovementView> {
       context,
       MaterialPageRoute(
         builder: (_) => SalesReportsView(
-          service: widget.viewModel.posService.reports,
-          accountId: () => widget.viewModel.currentUser?.id,
+          viewModel: widget.viewModel.createReportViewModel(),
           user: widget.viewModel.currentUser,
           initialKind: k,
           onLock: widget.onLock,
@@ -103,12 +104,12 @@ class _CashMovementState extends State<CashMovementView> {
   }
 
   Widget card(String title, int? value) => Container(
-    height: 110,
- width:double.infinity,
-    padding: const EdgeInsets.all(18),
+    height: 110.h,
+    width: double.infinity,
+    padding: EdgeInsets.all(18.r),
     decoration: BoxDecoration(
       color: const Color(0xfff4f4f4),
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(10.r),
       boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 12)],
     ),
     child: Column(
@@ -119,16 +120,16 @@ class _CashMovementState extends State<CashMovementView> {
           title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(color: Color(0xff979797), fontSize: 17),
+          style: TextStyle(color: Color(0xff979797), fontSize: 17.sp),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         FittedBox(
           fit: BoxFit.scaleDown,
           alignment: Alignment.centerLeft,
           child: Text(
             value == null ? 'Tidak tersedia' : movementMoney(value),
-            style: const TextStyle(
-              fontSize: 20,
+            style: TextStyle(
+              fontSize: 20.sp,
               fontWeight: FontWeight.w600,
               color: Color(0xff979797),
             ),
@@ -142,14 +143,17 @@ class _CashMovementState extends State<CashMovementView> {
     final t = a?.totals;
     final narrow = MediaQuery.sizeOf(context).width < 700;
     return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(horizontal: narrow ? 16 : 52, vertical: 32),
+      padding: EdgeInsets.symmetric(
+        horizontal: narrow ? 16 : 52,
+        vertical: 32.h,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (c.uncertain)
             Container(
-              padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.only(bottom: 20),
+              padding: EdgeInsets.all(16.r),
+              margin: EdgeInsets.only(bottom: 20.h),
               color: const Color(0xfffff0d6),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,7 +188,7 @@ class _CashMovementState extends State<CashMovementView> {
             ),
           if (c.error != null && !c.uncertain)
             Padding(
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: EdgeInsets.only(bottom: 16.h),
               child: Text(c.error!, style: const TextStyle(color: Colors.red)),
             ),
           if (initialError != null) Text(initialError!),
@@ -223,14 +227,14 @@ class _CashMovementState extends State<CashMovementView> {
                         children: [
                           for (final v in cards)
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
+                              padding: EdgeInsets.only(bottom: 16.h),
                               child: v,
                             ),
                         ],
                       );
               },
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24.h),
             Wrap(
               spacing: 16,
               runSpacing: 12,
@@ -248,7 +252,7 @@ class _CashMovementState extends State<CashMovementView> {
             ),
             if (sessions.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: 16.h),
                 child: DropdownButtonFormField<String>(
                   key: ValueKey(c.sessionId),
                   initialValue: sessions.any((s) => s.id == c.sessionId)
@@ -277,7 +281,7 @@ class _CashMovementState extends State<CashMovementView> {
                 ),
               ),
             if (t == null) Text(a.session.unsupportedReason),
-            const SizedBox(height: 18),
+            SizedBox(height: 18.h),
             CashActivityTable(
               events: a.events,
               onDetail: (event) async {
@@ -286,7 +290,7 @@ class _CashMovementState extends State<CashMovementView> {
                 if (mounted && !c.locked) await refresh();
               },
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12.h),
             Wrap(
               alignment: WrapAlignment.spaceBetween,
               crossAxisAlignment: WrapCrossAlignment.center,
@@ -315,12 +319,12 @@ class _CashMovementState extends State<CashMovementView> {
                 ),
               ],
             ),
-            const Text(
+            Text(
               'Total mencakup seluruh sesi dan entri koreksi tercatat. Transaksi non-tunai ada pada rincian sesi.',
-              style: TextStyle(fontSize: 12, color: Color(0xff999999)),
+              style: TextStyle(fontSize: 12.sp, color: Color(0xff999999)),
             ),
           ],
-          const SizedBox(height: 40),
+          SizedBox(height: 40.h),
           const Center(
             child: Text(
               'Powered By Dikasa',
@@ -343,7 +347,7 @@ class _CashMovementState extends State<CashMovementView> {
       children: [
         Container(
           color: cashDark,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
           child: MediaQuery.sizeOf(context).width < 600
               ? Column(
                   children: [
@@ -355,20 +359,20 @@ class _CashMovementState extends State<CashMovementView> {
                               : () => Navigator.pop(context),
                           icon: const CashIcon('back'),
                         ),
-                        const SizedBox(width: 12),
-                        const Expanded(
+                        SizedBox(width: 12.w),
+                        Expanded(
                           child: Text(
                             'Kas Kasir',
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 22,
+                              fontSize: 22.sp,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -382,13 +386,13 @@ class _CashMovementState extends State<CashMovementView> {
                               : close,
                           child: const Text('Tutup Kas'),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         FilledButton.icon(
                           style: FilledButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: const Color(0xff656565),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(10.r),
                             ),
                           ),
                           onPressed: c.locked || a?.canCreate != true
@@ -402,20 +406,20 @@ class _CashMovementState extends State<CashMovementView> {
                   ],
                 )
               : SizedBox(
-                  height: 64,
+                  height: 64.h,
                   child: Row(
                     children: [
                       IconButton(
                         onPressed: c.busy ? null : () => Navigator.pop(context),
                         icon: const CashIcon('back'),
                       ),
-                      const SizedBox(width: 12),
-                      const Expanded(
+                      SizedBox(width: 12.w),
+                      Expanded(
                         child: Text(
                           'Kas Kasir',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 22,
+                            fontSize: 22.sp,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -430,13 +434,13 @@ class _CashMovementState extends State<CashMovementView> {
                             : close,
                         child: const Text('Tutup Kas'),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.w),
                       FilledButton.icon(
                         style: FilledButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: const Color(0xff656565),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(10.r),
                           ),
                         ),
                         onPressed: c.locked || a?.canCreate != true
@@ -449,7 +453,7 @@ class _CashMovementState extends State<CashMovementView> {
                   ),
                 ),
         ),
-        if (c.busy || starting) const LinearProgressIndicator(),
+        if (c.busy || starting) const AppLinearLoadingIndicator(),
         if (!wide)
           TextButton(
             onPressed: c.locked ? null : () => reports(ReportKind.summary),
@@ -487,7 +491,7 @@ class _CashMovementState extends State<CashMovementView> {
                           children: [
                             Expanded(child: main),
                             SizedBox(
-                              width: 451,
+                              width: 451.w,
                               child: ReportSelector(
                                 kind: null,
                                 onChanged: reports,

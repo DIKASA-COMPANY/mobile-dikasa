@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile_dikasa/data/models/user.dart';
 import 'package:mobile_dikasa/data/models/sales_report.dart';
 import 'package:mobile_dikasa/features/report/main.dart';
+import 'package:mobile_dikasa/features/report/view_model.dart';
 import 'view_model_test.dart' show FakeReportService;
 
 void main() {
@@ -21,7 +22,10 @@ void main() {
     await t.pumpWidget(
       MaterialApp(
         home: SalesReportsView(
-          service: FakeReportService(),
+          viewModel: ReportViewModel(
+            service: FakeReportService(),
+            accountId: () => 'actor',
+          ),
           user: const User(
             id: 'actor',
             name: 'Jane Doe',
@@ -29,7 +33,6 @@ void main() {
             role: 'cashier',
             outletName: 'Dikasa',
           ),
-          accountId: () => 'actor',
         ),
       ),
     );

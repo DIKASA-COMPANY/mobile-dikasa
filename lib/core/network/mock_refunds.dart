@@ -11,8 +11,8 @@ class MockRefundError implements Exception {
 /// In-memory refund ledger sharing the existing demo receipts and catalog.
 class MockRefunds {
   MockRefunds(this.orders, this.catalog, this.hasCash, {this.currentSessionId});
- final String? Function()? currentSessionId;
- List<Map<String,dynamic>> get cashActivity=>_records.map(_copy).toList();
+  final String? Function()? currentSessionId;
+  List<Map<String, dynamic>> get cashActivity => _records.map(_copy).toList();
   final List<Map<String, dynamic>> orders;
   final MockCatalog catalog;
   final bool Function() hasCash;
@@ -42,8 +42,11 @@ class MockRefunds {
       final p = catalog.products
           .where((p) => p['id'] == i['product_id'])
           .firstOrNull;
-      final category=p?['category'] as Map?;
-      if(category!=null){i['category_id_snapshot']=category['id'];i['category_name_snapshot']=category['name'];}
+      final category = p?['category'] as Map?;
+      if (category != null) {
+        i['category_id_snapshot'] = category['id'];
+        i['category_name_snapshot'] = category['name'];
+      }
       if (p?['track_stock'] == true) {
         units[i['product_id'] as String] =
             (units[i['product_id']] ?? 0) + (i['quantity'] as int);
@@ -264,7 +267,8 @@ class MockRefunds {
       if (r > 0 &&
           (original['track_stock'] != true ||
               ret[product]! > (original['restock_budget'] as int) ||
-              (original['stock_quantity'] as int) > 1000000000 - ret[product]!)) {
+              (original['stock_quantity'] as int) >
+                  1000000000 - ret[product]!)) {
         _error(
           'STOK_PENGEMBALIAN_TIDAK_VALID',
           'Stok pengembalian tidak tersedia.',

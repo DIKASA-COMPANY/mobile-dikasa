@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_dikasa/components/text_field/main.dart';
 import 'package:mobile_dikasa/data/models/catalog_product.dart';
 
@@ -61,7 +62,7 @@ class _VariantEditorState extends State<_VariantEditor> {
   Widget build(BuildContext context) => AlertDialog(
     title: Text(widget.variant == null ? 'Tambah Variasi' : 'Ubah Variasi'),
     content: SizedBox(
-      width: 560,
+      width: 560.w,
       child: SingleChildScrollView(
         child: Form(
           key: form,
@@ -70,7 +71,7 @@ class _VariantEditorState extends State<_VariantEditor> {
             children: [
               for (var i = 0; i < fields.length; i++)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
+                  padding: EdgeInsets.only(bottom: 16.h),
                   child: AppTextField(
                     controller: fields[i],
                     label: [

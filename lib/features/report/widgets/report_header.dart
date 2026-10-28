@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_dikasa/data/models/user.dart';
 
@@ -46,7 +47,7 @@ class ReportHeader extends StatelessWidget implements PreferredSizeWidget {
     builder: (c, size) {
       final wide = size.maxWidth >= 1000;
       return Container(
-        height: 88,
+        height: 88.h,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -65,7 +66,7 @@ class ReportHeader extends StatelessWidget implements PreferredSizeWidget {
           children: [
             Positioned(
               left: wide ? 52 : 12,
-              top: 20,
+              top: 20.h,
               child: Row(
                 children: [
                   IconButton(
@@ -76,35 +77,35 @@ class ReportHeader extends StatelessWidget implements PreferredSizeWidget {
                   SizedBox(width: wide ? 52 : 12),
                   Container(
                     width: wide ? 158 : 110,
-                    height: 46,
+                    height: 46.h,
                     alignment: Alignment.center,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: Color(0xff077cd3),
                       borderRadius: BorderRadius.horizontal(
-                        left: Radius.circular(10),
+                        left: Radius.circular(10.r),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Laporan',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
-                        fontSize: 18,
+                        fontSize: 18.sp,
                       ),
                     ),
                   ),
                   if (wide)
                     Container(
-                      width: 158,
-                      height: 46,
+                      width: 158.w,
+                      height: 46.h,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         border: Border.all(
                           color: const Color(0xff077cd3),
-                          width: 2,
+                          width: 2.w,
                         ),
-                        borderRadius: const BorderRadius.horizontal(
-                          right: Radius.circular(10),
+                        borderRadius: BorderRadius.horizontal(
+                          right: Radius.circular(10.r),
                         ),
                       ),
                       child: TextButton(
@@ -114,9 +115,9 @@ class ReportHeader extends StatelessWidget implements PreferredSizeWidget {
                                 content: Text('Notifikasi belum tersedia.'),
                               ),
                             ),
-                        child: const Text(
+                        child: Text(
                           'Notifikasi',
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(fontSize: 18.sp),
                         ),
                       ),
                     ),
@@ -127,14 +128,14 @@ class ReportHeader extends StatelessWidget implements PreferredSizeWidget {
               Positioned(
                 left: wide ? size.maxWidth * .59 : null,
                 right: wide ? null : 70,
-                top: 17,
+                top: 17.h,
                 child: Tooltip(
                   message: 'Kunci layar',
                   child: InkWell(
                     onTap: onLock,
-                    child: const SizedBox(
-                      width: 54,
-                      height: 54,
+                    child: SizedBox(
+                      width: 54.w,
+                      height: 54.h,
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
@@ -148,7 +149,7 @@ class ReportHeader extends StatelessWidget implements PreferredSizeWidget {
               ),
             Positioned(
               right: wide ? 32 : 12,
-              top: 17,
+              top: 17.h,
               child: Row(
                 children: [
                   if (wide) ...[
@@ -157,37 +158,37 @@ class ReportHeader extends StatelessWidget implements PreferredSizeWidget {
                       children: [
                         Text(
                           user?.outletName ?? '',
-                          style: const TextStyle(
-                            fontSize: 18,
+                          style: TextStyle(
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.w500,
                             color: Color(0xff656565),
                           ),
                         ),
                         Text(
                           user?.name ?? '',
-                          style: const TextStyle(
-                            fontSize: 15,
+                          style: TextStyle(
+                            fontSize: 15.sp,
                             fontStyle: FontStyle.italic,
                             color: Color(0xff656565),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(width: 18),
+                    SizedBox(width: 18.w),
                   ],
                   Container(
-                    width: 60,
-                    height: 55,
+                    width: 60.w,
+                    height: 55.h,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                       border: Border.all(color: const Color(0xffdddddd)),
                     ),
                     child: Text(
                       user?.initials ?? '?',
-                      style: const TextStyle(
-                        fontSize: 22,
+                      style: TextStyle(
+                        fontSize: 22.sp,
                         color: reportSide,
                         fontWeight: FontWeight.bold,
                       ),

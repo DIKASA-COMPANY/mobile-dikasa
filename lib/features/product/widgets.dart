@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_dikasa/core/routing/app_routes.dart';
 import 'package:mobile_dikasa/data/models/user.dart';
@@ -17,7 +18,7 @@ class CatalogPhotoBorder extends CustomPainter {
       ..addRRect(
         RRect.fromRectAndRadius(
           (Offset.zero & size).deflate(1),
-          const Radius.circular(10),
+          Radius.circular(10.r),
         ),
       );
     final paint = Paint()
@@ -109,14 +110,16 @@ class CatalogButton extends StatelessWidget {
         disabledForegroundColor: catalogGrey,
         elevation: 2,
         shadowColor: color.withValues(alpha: .2),
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.r),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (icon != null) ...[catalogIcon(icon!), const SizedBox(width: 20)],
+          if (icon != null) ...[catalogIcon(icon!), SizedBox(width: 20.w)],
           Flexible(
             child: Text(
               label,
@@ -162,7 +165,7 @@ class CatalogShell extends StatelessWidget {
           children: [
             LayoutBuilder(
               builder: (context, c) => Container(
-                height: 88,
+                height: 88.h,
                 color: const Color(0xFFF6F6F6),
                 padding: EdgeInsets.symmetric(
                   horizontal: c.maxWidth < 700 ? 16 : 46,
@@ -176,10 +179,10 @@ class CatalogShell extends StatelessWidget {
                     ),
                     SizedBox(width: c.maxWidth < 700 ? 12 : 58),
                     Container(
-                      height: 46,
+                      height: 46.h,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: catalogAccent, width: 2),
+                        borderRadius: BorderRadius.circular(10.r),
+                        border: Border.all(color: catalogAccent, width: 2.w),
                       ),
                       clipBehavior: Clip.antiAlias,
                       child: Row(
@@ -202,7 +205,7 @@ class CatalogShell extends StatelessWidget {
                             Tooltip(
                               message: 'Belum ada halaman notifikasi produk.',
                               child: SizedBox(
-                                width: 156,
+                                width: 156.w,
                                 child: Center(
                                   child: Text(
                                     'Notifikasi',
@@ -249,13 +252,13 @@ class CatalogShell extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16.w),
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                         child: Image.asset(
                           'assets/images/avatar_profile_men.png',
-                          width: 60,
-                          height: 60,
+                          width: 60.w,
+                          height: 60.h,
                         ),
                       ),
                     ],
@@ -288,14 +291,14 @@ class CatalogShell extends StatelessWidget {
                   color: catalogBar,
                   padding: EdgeInsets.symmetric(
                     horizontal: small ? 16 : 46,
-                    vertical: 20,
+                    vertical: 20.h,
                   ),
                   child: small
                       ? Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             heading,
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12.h),
                             Wrap(
                               spacing: 12,
                               runSpacing: 12,
@@ -308,7 +311,7 @@ class CatalogShell extends StatelessWidget {
                             heading,
                             const Spacer(),
                             ...actions.expand(
-                              (w) => [const SizedBox(width: 20), w],
+                              (w) => [SizedBox(width: 20.w), w],
                             ),
                           ],
                         ),
@@ -328,23 +331,23 @@ class CatalogSection extends StatelessWidget {
     super.key,
     required this.title,
     required this.child,
-    this.padding = const EdgeInsets.all(34),
+    this.padding,
   });
   final String title;
   final Widget child;
-  final EdgeInsets padding;
+  final EdgeInsets? padding;
   @override
   Widget build(BuildContext context) => ClipRRect(
-    borderRadius: BorderRadius.circular(10),
+    borderRadius: BorderRadius.circular(10.r),
     child: Container(
       color: const Color(0xFFF8F8F8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            height: 73,
+            height: 73.h,
             color: catalogBlue,
-            padding: const EdgeInsets.symmetric(horizontal: 34),
+            padding: EdgeInsets.symmetric(horizontal: 34.w),
             alignment: Alignment.centerLeft,
             child: Text(
               title,
@@ -355,7 +358,7 @@ class CatalogSection extends StatelessWidget {
               ),
             ),
           ),
-          Padding(padding: padding, child: child),
+          Padding(padding: padding ?? EdgeInsets.all(34.r), child: child),
         ],
       ),
     ),
@@ -363,11 +366,11 @@ class CatalogSection extends StatelessWidget {
 }
 
 Widget catalogError(String message, {VoidCallback? retry}) => Container(
-  padding: const EdgeInsets.all(16),
-  margin: const EdgeInsets.only(bottom: 16),
+  padding: EdgeInsets.all(16.r),
+  margin: EdgeInsets.only(bottom: 16.h),
   decoration: BoxDecoration(
     color: const Color(0xFFFFF0EC),
-    borderRadius: BorderRadius.circular(10),
+    borderRadius: BorderRadius.circular(10.r),
   ),
   child: Row(
     children: [

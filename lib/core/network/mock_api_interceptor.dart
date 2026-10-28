@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'mock_account.dart';
 import 'mock_reports.dart';
@@ -201,7 +202,10 @@ class MockApiInterceptor extends Interceptor {
           };
           status = 201;
         } else if (parts.last == 'proof') {
-          result = _cashLedger.movementProof(sid, parts[4]);
+          final proof = _cashLedger.movementProof(sid, parts[4]);
+          result = {
+            'data': {'url': 'data:image/png;base64,${base64Encode(proof)}'},
+          };
         } else if (parts.contains('by-request')) {
           result = {'data': _cashLedger.movementByRequest(sid, parts.last)};
         } else {

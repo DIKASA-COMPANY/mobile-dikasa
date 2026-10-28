@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobile_dikasa/features/new_order/view_model.dart';
 
@@ -35,7 +36,7 @@ class _SaveOrderDialogState extends State<SaveOrderDialog> {
         child: AlertDialog(
           title: const Text('Simpan Pesanan'),
           content: SizedBox(
-            width: 440,
+            width: 440.w,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -43,7 +44,7 @@ class _SaveOrderDialogState extends State<SaveOrderDialog> {
                 const Text(
                   'Pesanan tersimpan di outlet. Stok berkurang setelah pembayaran berhasil.',
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 TextField(
                   controller: _label,
                   maxLength: 100,

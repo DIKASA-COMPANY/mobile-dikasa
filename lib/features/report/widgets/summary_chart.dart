@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_dikasa/data/models/sales_report.dart';
 import 'package:mobile_dikasa/core/utils/formatted_currency.dart';
 import 'report_header.dart';
@@ -26,10 +27,10 @@ class _ChartState extends State<DailySalesChart> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const ReportIcon('legend-transactions'),
-              const SizedBox(width: 10),
-              const Text(
+              SizedBox(width: 10.w),
+              Text(
                 'Transaksi / hari (kiri)',
-                style: TextStyle(fontSize: 13, fontStyle: FontStyle.italic),
+                style: TextStyle(fontSize: 13.sp, fontStyle: FontStyle.italic),
               ),
             ],
           ),
@@ -37,16 +38,16 @@ class _ChartState extends State<DailySalesChart> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const ReportIcon('legend-money'),
-              const SizedBox(width: 10),
-              const Text(
+              SizedBox(width: 10.w),
+              Text(
                 'Penjualan bersih Rp (kanan)',
-                style: TextStyle(fontSize: 13, fontStyle: FontStyle.italic),
+                style: TextStyle(fontSize: 13.sp, fontStyle: FontStyle.italic),
               ),
             ],
           ),
         ],
       ),
-      const SizedBox(height: 12),
+      SizedBox(height: 12.h),
       LayoutBuilder(
         builder: (context, constraints) => MouseRegion(
           onHover: (e) {
@@ -72,7 +73,7 @@ class _ChartState extends State<DailySalesChart> {
               );
             },
             child: SizedBox(
-              height: 240,
+              height: 240.h,
               width: double.infinity,
               child: CustomPaint(
                 painter: _DailyPainter(widget.points, selected),
@@ -86,7 +87,7 @@ class _ChartState extends State<DailySalesChart> {
           '${widget.points[selected!].date}: ${widget.points[selected!].count} transaksi • ${formatRupiah(widget.points[selected!].net, prefix: 'Rp ')} bersih',
         ),
       ExpansionTile(
-        title: const Text('Lihat angka harian', style: TextStyle(fontSize: 13)),
+        title: Text('Lihat angka harian', style: TextStyle(fontSize: 13.sp)),
         children: [
           for (final p in widget.points)
             Semantics(
@@ -118,9 +119,9 @@ class _DailyPainter extends CustomPainter {
       final tp = TextPainter(
         text: TextSpan(
           text: t,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Poppins',
-            fontSize: 9,
+            fontSize: 9.sp,
             color: Color(0xff888888),
           ),
         ),

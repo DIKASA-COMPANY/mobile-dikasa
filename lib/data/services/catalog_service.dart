@@ -138,10 +138,7 @@ class CatalogService {
   }) => _request(() async {
     final r = await client.dio.get<List<int>>(
       '/products/export.xlsx',
-      queryParameters: {
-        ...filters,
-        'product_id': ?productId,
-      },
+      queryParameters: {...filters, 'product_id': ?productId},
       options: Options(responseType: ResponseType.bytes),
     );
     return Uint8List.fromList(r.data!);

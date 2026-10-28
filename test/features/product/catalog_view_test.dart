@@ -11,6 +11,7 @@ import 'package:mobile_dikasa/core/network/api_exception.dart';
 import 'package:mobile_dikasa/data/models/catalog_product.dart';
 import 'package:mobile_dikasa/data/services/catalog_service.dart';
 import 'package:mobile_dikasa/features/product/view.dart';
+import 'package:mobile_dikasa/features/product/view_model.dart';
 import 'package:mobile_dikasa/features/product/editor.dart';
 import 'package:mobile_dikasa/features/product/stock_panel.dart';
 import 'package:mobile_dikasa/data/services/catalog_files.dart';
@@ -117,7 +118,11 @@ void main() {
     'catalog shows real counts, search and empty result at tablet width',
     (t) async {
       await size(t, const Size(1340, 800));
-      await t.pumpWidget(MaterialApp(home: CatalogView(service: service)));
+      await t.pumpWidget(
+        MaterialApp(
+          home: CatalogView(viewModel: CatalogViewModel(service: service)),
+        ),
+      );
       await t.pumpAndSettle();
       expect(find.text('Nasi Goreng'), findsOneWidget);
       expect(find.text('Habis'), findsOneWidget);
@@ -173,7 +178,11 @@ void main() {
   );
   testWidgets('catalog and editor fit narrow screens', (t) async {
     await size(t, const Size(390, 844));
-    await t.pumpWidget(MaterialApp(home: CatalogView(service: service)));
+    await t.pumpWidget(
+      MaterialApp(
+        home: CatalogView(viewModel: CatalogViewModel(service: service)),
+      ),
+    );
     await t.pumpAndSettle();
     expect(t.takeException(), isNull);
     await t.pumpWidget(MaterialApp(home: ProductEditor(service: service)));
@@ -314,7 +323,11 @@ void main() {
 
   testWidgets('catalog fits intermediate tablet widths', (t) async {
     await size(t, const Size(1100, 900));
-    await t.pumpWidget(MaterialApp(home: CatalogView(service: service)));
+    await t.pumpWidget(
+      MaterialApp(
+        home: CatalogView(viewModel: CatalogViewModel(service: service)),
+      ),
+    );
     await t.pumpAndSettle();
     expect(t.takeException(), isNull);
   });
@@ -439,34 +452,38 @@ void main() {
     },
   );
 
-  testWidgets('capture catalog and editor for visual review', (t) async {
-    await size(t, const Size(1340, 1000));
-    for (final entry in <String, Widget>{
-      'catalog': CatalogView(service: service),
-      'editor': ProductEditor(service: service),
-    }.entries) {
-      final key = GlobalKey();
-      await t.pumpWidget(
-        RepaintBoundary(
-          key: key,
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: entry.value,
+  testWidgets(
+    'capture catalog and editor for visual review',
+    (t) async {
+      await size(t, const Size(1340, 1000));
+      for (final entry in <String, Widget>{
+        'catalog': CatalogView(viewModel: CatalogViewModel(service: service)),
+        'editor': ProductEditor(service: service),
+      }.entries) {
+        final key = GlobalKey();
+        await t.pumpWidget(
+          RepaintBoundary(
+            key: key,
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: entry.value,
+            ),
           ),
-        ),
-      );
-      await t.pumpAndSettle();
-      await t.runAsync(() async {
-        final boundary =
-            key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-        final image = await boundary.toImage();
-        final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-        await Directory('build/catalog-qa').create(recursive: true);
-        await File(
-          'build/catalog-qa/${entry.key}.png',
-        ).writeAsBytes(bytes!.buffer.asUint8List());
-        image.dispose();
-      });
-    }
-  }, skip: !const bool.fromEnvironment('CAPTURE_CATALOG'));
+        );
+        await t.pumpAndSettle();
+        await t.runAsync(() async {
+          final boundary =
+              key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+          final image = await boundary.toImage();
+          final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+          await Directory('build/catalog-qa').create(recursive: true);
+          await File(
+            'build/catalog-qa/${entry.key}.png',
+          ).writeAsBytes(bytes!.buffer.asUint8List());
+          image.dispose();
+        });
+      }
+    },
+    skip: !const bool.fromEnvironment('CAPTURE_CATALOG'),
+  );
 }

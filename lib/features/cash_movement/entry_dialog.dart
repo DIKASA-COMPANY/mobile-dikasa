@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
 import 'package:flutter/services.dart';
 import '../../data/services/account_files.dart';
 import 'controller.dart';
@@ -95,15 +97,12 @@ class _EntryState extends State<CashMovementEntry> {
     inputFormatters: money ? [FilteringTextInputFormatter.digitsOnly] : null,
     decoration: InputDecoration(
       labelText: label,
-      prefixIcon: Padding(
-        padding: const EdgeInsets.all(12),
-        child: CashIcon(icon),
-      ),
+      prefixIcon: Padding(padding: EdgeInsets.all(12.r), child: CashIcon(icon)),
       filled: true,
       fillColor: Colors.white,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.r)),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(10.r),
         borderSide: const BorderSide(color: Color(0xffe6e6e6)),
       ),
     ),
@@ -149,10 +148,10 @@ class _EntryState extends State<CashMovementEntry> {
                 backgroundColor: const Color(0xfff8f8f8),
                 clipBehavior: Clip.antiAlias,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(15.r),
                 ),
                 child: SizedBox(
-                  width: 986,
+                  width: 986.w,
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
                       maxHeight: MediaQuery.sizeOf(context).height * .90,
@@ -162,18 +161,18 @@ class _EntryState extends State<CashMovementEntry> {
                       children: [
                         Container(
                           color: const Color(0xff367aa0),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 28,
-                            vertical: 12,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 28.w,
+                            vertical: 12.h,
                           ),
                           child: Row(
                             children: [
-                              const Expanded(
+                              Expanded(
                                 child: Text(
                                   'Tambah Transaksi Kas Kasir',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 18,
+                                    fontSize: 18.sp,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -185,10 +184,10 @@ class _EntryState extends State<CashMovementEntry> {
                             ],
                           ),
                         ),
-                        if (c.busy) const LinearProgressIndicator(),
+                        if (c.busy) const AppLinearLoadingIndicator(),
                         Flexible(
                           child: SingleChildScrollView(
-                            padding: const EdgeInsets.all(28),
+                            padding: EdgeInsets.all(28.r),
                             child: Form(
                               key: form,
                               child: Column(
@@ -196,9 +195,7 @@ class _EntryState extends State<CashMovementEntry> {
                                 children: [
                                   if (c.error != null)
                                     Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 18,
-                                      ),
+                                      padding: EdgeInsets.only(bottom: 18.h),
                                       child: Text(
                                         c.error!,
                                         style: const TextStyle(
@@ -212,20 +209,20 @@ class _EntryState extends State<CashMovementEntry> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.stretch,
                                         children: [
-                                          const Text(
+                                          Text(
                                             'Informasi Transaksi Kas',
-                                            style: TextStyle(fontSize: 18),
+                                            style: TextStyle(fontSize: 18.sp),
                                           ),
-                                          const SizedBox(height: 22),
+                                          SizedBox(height: 22.h),
                                           field('Nama Transaksi', 'name', name),
-                                          const SizedBox(height: 16),
+                                          SizedBox(height: 16.h),
                                           field(
                                             'Nominal',
                                             'amount',
                                             amount,
                                             money: true,
                                           ),
-                                          const SizedBox(height: 16),
+                                          SizedBox(height: 16.h),
                                           DropdownButtonFormField<String>(
                                             isExpanded: true,
                                             initialValue: kind,
@@ -234,8 +231,8 @@ class _EntryState extends State<CashMovementEntry> {
                                             ),
                                             icon: const CashIcon('down'),
                                             decoration: InputDecoration(
-                                              prefixIcon: const Padding(
-                                                padding: EdgeInsets.all(12),
+                                              prefixIcon: Padding(
+                                                padding: EdgeInsets.all(12.r),
                                                 child: CashIcon('type'),
                                               ),
                                               filled: true,
@@ -244,7 +241,7 @@ class _EntryState extends State<CashMovementEntry> {
                                               ),
                                               border: OutlineInputBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(10),
+                                                    BorderRadius.circular(10.r),
                                               ),
                                             ),
                                             items: const [
@@ -267,7 +264,7 @@ class _EntryState extends State<CashMovementEntry> {
                                                 ? 'Pilih jenis transaksi'
                                                 : null,
                                           ),
-                                          const SizedBox(height: 16),
+                                          SizedBox(height: 16.h),
                                           field(
                                             'Alasan / Catatan',
                                             'note',
@@ -284,7 +281,7 @@ class _EntryState extends State<CashMovementEntry> {
                                             InkWell(
                                               onTap: c.locked ? null : pick,
                                               child: Container(
-                                                height: 240,
+                                                height: 240.h,
                                                 decoration: BoxDecoration(
                                                   color: const Color(
                                                     0xffe6e6e6,
@@ -293,19 +290,23 @@ class _EntryState extends State<CashMovementEntry> {
                                                     color: const Color(
                                                       0xffbbbbbb,
                                                     ),
-                                                    width: 2,
+                                                    width: 2.w,
                                                   ),
                                                   borderRadius:
-                                                      BorderRadius.circular(10),
+                                                      BorderRadius.circular(
+                                                        10.r,
+                                                      ),
                                                 ),
                                                 child: bytes == null
-                                                    ? const Column(
+                                                    ? Column(
                                                         mainAxisAlignment:
                                                             MainAxisAlignment
                                                                 .center,
                                                         children: [
                                                           CashIcon('camera'),
-                                                          SizedBox(height: 18),
+                                                          SizedBox(
+                                                            height: 18.h,
+                                                          ),
                                                           Text(
                                                             'Upload Foto Bukti',
                                                           ),
@@ -327,7 +328,7 @@ class _EntryState extends State<CashMovementEntry> {
                                                     }),
                                               child: const Text('Hapus Foto'),
                                             ),
-                                          const SizedBox(height: 20),
+                                          SizedBox(height: 20.h),
                                           Wrap(
                                             alignment: WrapAlignment.end,
                                             spacing: 16,
@@ -338,9 +339,9 @@ class _EntryState extends State<CashMovementEntry> {
                                                   foregroundColor: const Color(
                                                     0xff9d1414,
                                                   ),
-                                                  side: const BorderSide(
+                                                  side: BorderSide(
                                                     color: Color(0xff9d1414),
-                                                    width: 2,
+                                                    width: 2.w,
                                                   ),
                                                   shape: RoundedRectangleBorder(
                                                     borderRadius:
@@ -348,11 +349,10 @@ class _EntryState extends State<CashMovementEntry> {
                                                           10,
                                                         ),
                                                   ),
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 30,
-                                                        vertical: 18,
-                                                      ),
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal: 30.w,
+                                                    vertical: 18.h,
+                                                  ),
                                                 ),
                                                 onPressed: c.busy
                                                     ? null
@@ -372,11 +372,10 @@ class _EntryState extends State<CashMovementEntry> {
                                                           10,
                                                         ),
                                                   ),
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 32,
-                                                        vertical: 20,
-                                                      ),
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal: 32.w,
+                                                    vertical: 20.h,
+                                                  ),
                                                 ),
                                                 onPressed: c.locked
                                                     ? null
@@ -418,14 +417,14 @@ class _EntryState extends State<CashMovementEntry> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Expanded(child: left),
-                                                const SizedBox(width: 48),
+                                                SizedBox(width: 48.w),
                                                 Expanded(child: right),
                                               ],
                                             )
                                           : Column(
                                               children: [
                                                 left,
-                                                const SizedBox(height: 24),
+                                                SizedBox(height: 24.h),
                                                 right,
                                               ],
                                             );
