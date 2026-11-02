@@ -23,8 +23,6 @@ class AuthRepository {
   /// Pengguna yang sedang login, `null` jika belum login.
   User? get currentUser => _session?.user;
 
-  bool get isLoggedIn => _session != null;
-
   /// Melakukan login lalu menyimpan session dan token aktif.
   ///
   /// Melempar [ApiException] bila gagal — penanganannya di ViewModel.
@@ -42,11 +40,5 @@ class AuthRepository {
     _apiClient.updateAuthToken(session.token);
 
     return session.user;
-  }
-
-  /// Menghapus session dan token yang tersimpan.
-  void logout() {
-    _session = null;
-    _apiClient.updateAuthToken(null);
   }
 }

@@ -25,9 +25,11 @@ class ChangePasswordRequest {
     required this.newPasswordConfirmation,
   });
 
+  /// Panjang 8–72 byte UTF-8; divalidasi service.
   @JsonKey(name: r'current_password', required: true, includeIfNull: false)
   final String currentPassword;
 
+  /// Panjang 8–72 byte UTF-8; divalidasi service.
   @JsonKey(name: r'new_password', required: true, includeIfNull: false)
   final String newPassword;
 

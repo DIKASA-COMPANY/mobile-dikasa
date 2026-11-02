@@ -63,7 +63,8 @@ class ProductService {
       category: data.category.name,
       isHighlighted: data.isHighlighted,
       isAvailable:
-          data.stockStatus == generated.ProductDataStockStatusEnum.available,
+          data.effectiveStockStatus !=
+          generated.ProductDataEffectiveStockStatusEnum.outOfStock,
     );
   }
 

@@ -36,7 +36,7 @@ class Product {
   final String name;
   final int price;
 
-  /// URL Firebase/backend untuk data nyata.
+  /// Public URL Supabase Storage untuk data nyata.
   final String? imageUrl;
 
   /// Fallback asset lokal untuk data demo dan produk tanpa gambar.

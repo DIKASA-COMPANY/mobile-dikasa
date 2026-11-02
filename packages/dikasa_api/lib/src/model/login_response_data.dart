@@ -22,27 +22,27 @@ class LoginResponseData {
 
     required this.expiresIn,
 
-    required this.firebaseUid,
-
     required this.refreshToken,
+
+    required this.supabaseUserId,
 
     required this.tokenType,
   });
 
-  /// Firebase ID token untuk Authorization Bearer
+  /// Supabase access token untuk Authorization Bearer
   @JsonKey(name: r'access_token', required: true, includeIfNull: false)
   final String accessToken;
 
   @JsonKey(name: r'expires_in', required: true, includeIfNull: false)
   final int expiresIn;
 
-  /// Sama dengan UUID user PostgreSQL
-  @JsonKey(name: r'firebase_uid', required: true, includeIfNull: false)
-  final String firebaseUid;
-
-  /// Firebase refresh token untuk memperbarui sesi
+  /// Supabase refresh token
   @JsonKey(name: r'refresh_token', required: true, includeIfNull: false)
   final String refreshToken;
+
+  /// UUID identitas Supabase Auth yang terikat ke user PostgreSQL
+  @JsonKey(name: r'supabase_user_id', required: true, includeIfNull: false)
+  final String supabaseUserId;
 
   @JsonKey(
     name: r'token_type',
@@ -58,16 +58,16 @@ class LoginResponseData {
       other is LoginResponseData &&
           other.accessToken == accessToken &&
           other.expiresIn == expiresIn &&
-          other.firebaseUid == firebaseUid &&
           other.refreshToken == refreshToken &&
+          other.supabaseUserId == supabaseUserId &&
           other.tokenType == tokenType;
 
   @override
   int get hashCode =>
       accessToken.hashCode +
       expiresIn.hashCode +
-      firebaseUid.hashCode +
       refreshToken.hashCode +
+      supabaseUserId.hashCode +
       tokenType.hashCode;
 
   factory LoginResponseData.fromJson(Map<String, dynamic> json) =>

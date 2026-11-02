@@ -8,8 +8,6 @@ class CashSessionRepository {
   final CashSessionService _cashSessionService;
   CashSession? _current;
 
-  CashSession? get current => _current;
-
   Future<CashSession?> getCurrent({bool forceRefresh = false}) async {
     if (!forceRefresh && _current != null) {
       return _current;

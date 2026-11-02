@@ -23,6 +23,4 @@ class ProductRepository {
     _cachedProducts = products;
     return products;
   }
-
-  void clear() => _cachedProducts = null;
 }

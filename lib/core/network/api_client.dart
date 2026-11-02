@@ -36,10 +36,10 @@ class ApiClient {
   /// Mengisi interceptor bearer generated setelah login / menghapusnya saat logout.
   void updateAuthToken(String? token) {
     if (token == null || token.isEmpty) {
-      api.removeBearerAuth('firebaseBearer');
+      api.removeBearerAuth('supabaseBearer');
       return;
     }
 
-    api.setBearerAuth('firebaseBearer', token);
+    api.setBearerAuth('supabaseBearer', token);
   }
 }

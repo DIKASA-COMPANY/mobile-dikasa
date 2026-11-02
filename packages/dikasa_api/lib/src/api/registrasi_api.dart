@@ -109,7 +109,7 @@ class RegistrasiApi {
   }
 
   /// Mendaftarkan usaha dan akun pemilik
-  /// Membuat outlet dan akun nonaktif, lalu mengirim OTP lima digit ke email verifikasi yang dipilih.
+  /// Membuat outlet dan akun nonaktif, lalu mengirim OTP lima digit. MAIL_MODE&#x3D;disabled mengembalikan 503 sebelum menyimpan akun.
   ///
   /// Parameters:
   /// * [registerRequest]

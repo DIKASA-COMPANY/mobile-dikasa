@@ -12,6 +12,8 @@ import 'package:dio/dio.dart';
 import 'package:dikasa_api/src/model/categories_output_body.dart';
 import 'package:dikasa_api/src/model/category_output_body.dart';
 import 'package:dikasa_api/src/model/category_request.dart';
+import 'package:dikasa_api/src/model/product_image_upload_intent_output_body.dart';
+import 'package:dikasa_api/src/model/product_image_upload_intent_request.dart';
 import 'package:dikasa_api/src/model/product_output_body.dart';
 import 'package:dikasa_api/src/model/product_types_output_body.dart';
 import 'package:dikasa_api/src/model/product_variant_request.dart';
@@ -24,7 +26,7 @@ class KatalogApi {
   const KatalogApi(this._dio);
 
   /// Membuat produk
-  /// Khusus manager. Multipart memakai product_type, selling_price, stock_status, harga online/modal opsional, variations JSON opsional, dan gambar PNG/JPEG opsional maksimal 3 MiB.
+  /// Khusus manager. Multipart tidak menerima byte gambar. Untuk gambar opsional, selesaikan direct upload Supabase lalu kirim image_object_name dari endpoint upload intent.
   ///
   /// Parameters:
   /// * [categoryId]
@@ -34,7 +36,7 @@ class KatalogApi {
   /// * [stockStatus]
   /// * [costPrice]
   /// * [description]
-  /// * [image]
+  /// * [imageObjectName]
   /// * [isActive]
   /// * [isHighlighted]
   /// * [onlineCostPrice]
@@ -59,7 +61,7 @@ class KatalogApi {
     required String stockStatus,
     int? costPrice,
     String? description,
-    MultipartFile? image,
+    String? imageObjectName,
     bool? isActive,
     bool? isHighlighted,
     int? onlineCostPrice,
@@ -80,7 +82,7 @@ class KatalogApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -95,7 +97,7 @@ class KatalogApi {
         r'category_id': categoryId,
         if (costPrice != null) r'cost_price': costPrice,
         if (description != null) r'description': description,
-        if (image != null) r'image': image,
+        if (imageObjectName != null) r'image_object_name': imageObjectName,
         if (isActive != null) r'is_active': isActive,
         if (isHighlighted != null) r'is_highlighted': isHighlighted,
         r'name': name,
@@ -196,7 +198,7 @@ class KatalogApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -259,6 +261,98 @@ class KatalogApi {
     );
   }
 
+  /// Buat signed upload URL gambar produk
+  /// Khusus manager. Backend membuat object_name terikat aktor/outlet dan signed upload URL Supabase yang berlaku 2 jam. Client mengunggah langsung ke URL tersebut lalu mengirim object_name pada create/update produk.
+  ///
+  /// Parameters:
+  /// * [productImageUploadIntentRequest]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [ProductImageUploadIntentOutputBody] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<ProductImageUploadIntentOutputBody>>
+  createProductImageUploadIntent({
+    required ProductImageUploadIntentRequest productImageUploadIntentRequest,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/products/image-upload-intents';
+    final _options = Options(
+      method: r'POST',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
+        ],
+        ...?extra,
+      },
+      contentType: 'application/json',
+      validateStatus: validateStatus,
+    );
+
+    dynamic _bodyData;
+
+    try {
+      _bodyData = jsonEncode(productImageUploadIntentRequest);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _options.compose(_dio.options, _path),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    final _response = await _dio.request<Object>(
+      _path,
+      data: _bodyData,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    ProductImageUploadIntentOutputBody? _responseData;
+
+    try {
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ProductImageUploadIntentOutputBody,
+              ProductImageUploadIntentOutputBody
+            >(rawData, 'ProductImageUploadIntentOutputBody', growable: true);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<ProductImageUploadIntentOutputBody>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
   /// Menonaktifkan produk
   /// Khusus manager. Soft delete mempertahankan object gambar.
   ///
@@ -293,7 +387,7 @@ class KatalogApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -354,7 +448,7 @@ class KatalogApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -370,6 +464,100 @@ class KatalogApi {
     );
 
     return _response;
+  }
+
+  /// Unduh workbook Excel produk dan variasi
+  /// Manager. Seluruh halaman yang cocok dengan filter outlet; stok bersama ditulis satu kali per produk.
+  ///
+  /// Parameters:
+  /// * [productId]
+  /// * [productType]
+  /// * [categoryId]
+  /// * [searchByProductName]
+  /// * [availability]
+  /// * [includeInactive]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [String] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<String>> exportProductsXlsx({
+    String? productId,
+    String? productType,
+    String? categoryId,
+    String? searchByProductName,
+    String? availability,
+    bool? includeInactive,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/products/export.xlsx';
+    final _options = Options(
+      method: r'GET',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _queryParameters = <String, dynamic>{
+      if (productId != null) r'product_id': productId,
+      if (productType != null) r'product_type': productType,
+      if (categoryId != null) r'category_id': categoryId,
+      if (searchByProductName != null)
+        r'searchByProductName': searchByProductName,
+      if (availability != null) r'availability': availability,
+      if (includeInactive != null) r'include_inactive': includeInactive,
+    };
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      queryParameters: _queryParameters,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    String? _responseData;
+
+    try {
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<String, String>(rawData, 'String', growable: true);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<String>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
   }
 
   /// Detail produk
@@ -408,7 +596,7 @@ class KatalogApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -497,7 +685,7 @@ class KatalogApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -577,7 +765,7 @@ class KatalogApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -664,7 +852,7 @@ class KatalogApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -724,14 +912,14 @@ class KatalogApi {
   }
 
   /// Memperbarui produk
-  /// Khusus manager. Multipart parsial dapat mengganti daftar variations, mengganti image, atau menghapus image dengan remove_image.
+  /// Khusus manager. Multipart parsial dapat mengganti daftar variations, mengadopsi direct upload melalui image_object_name, atau menghapus image dengan remove_image.
   ///
   /// Parameters:
   /// * [productId]
   /// * [categoryId]
   /// * [costPrice]
   /// * [description]
-  /// * [image]
+  /// * [imageObjectName]
   /// * [isActive]
   /// * [isHighlighted]
   /// * [name]
@@ -757,7 +945,7 @@ class KatalogApi {
     String? categoryId,
     int? costPrice,
     String? description,
-    MultipartFile? image,
+    String? imageObjectName,
     bool? isActive,
     bool? isHighlighted,
     String? name,
@@ -787,7 +975,7 @@ class KatalogApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -802,7 +990,7 @@ class KatalogApi {
         if (categoryId != null) r'category_id': categoryId,
         if (costPrice != null) r'cost_price': costPrice,
         if (description != null) r'description': description,
-        if (image != null) r'image': image,
+        if (imageObjectName != null) r'image_object_name': imageObjectName,
         if (isActive != null) r'is_active': isActive,
         if (isHighlighted != null) r'is_highlighted': isHighlighted,
         if (name != null) r'name': name,
@@ -912,7 +1100,7 @@ class KatalogApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },

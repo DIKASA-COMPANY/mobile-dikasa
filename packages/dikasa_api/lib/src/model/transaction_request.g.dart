@@ -25,6 +25,10 @@ abstract class _$TransactionRequestCWProxy {
 
   TransactionRequest roundingAmount(int roundingAmount);
 
+  TransactionRequest savedOrderId(String? savedOrderId);
+
+  TransactionRequest savedOrderRevision(int? savedOrderRevision);
+
   TransactionRequest subtotal(int subtotal);
 
   TransactionRequest taxAmount(int taxAmount);
@@ -52,6 +56,8 @@ abstract class _$TransactionRequestCWProxy {
     TransactionRequestPaymentMethodEnum paymentMethod,
     String? restaurantTableId,
     int roundingAmount,
+    String? savedOrderId,
+    int? savedOrderRevision,
     int subtotal,
     int taxAmount,
     double taxPercentage,
@@ -100,6 +106,14 @@ class _$TransactionRequestCWProxyImpl implements _$TransactionRequestCWProxy {
       this(roundingAmount: roundingAmount);
 
   @override
+  TransactionRequest savedOrderId(String? savedOrderId) =>
+      this(savedOrderId: savedOrderId);
+
+  @override
+  TransactionRequest savedOrderRevision(int? savedOrderRevision) =>
+      this(savedOrderRevision: savedOrderRevision);
+
+  @override
   TransactionRequest subtotal(int subtotal) => this(subtotal: subtotal);
 
   @override
@@ -135,6 +149,8 @@ class _$TransactionRequestCWProxyImpl implements _$TransactionRequestCWProxy {
     Object? paymentMethod = const $CopyWithPlaceholder(),
     Object? restaurantTableId = const $CopyWithPlaceholder(),
     Object? roundingAmount = const $CopyWithPlaceholder(),
+    Object? savedOrderId = const $CopyWithPlaceholder(),
+    Object? savedOrderRevision = const $CopyWithPlaceholder(),
     Object? subtotal = const $CopyWithPlaceholder(),
     Object? taxAmount = const $CopyWithPlaceholder(),
     Object? taxPercentage = const $CopyWithPlaceholder(),
@@ -175,6 +191,14 @@ class _$TransactionRequestCWProxyImpl implements _$TransactionRequestCWProxy {
           ? _value.roundingAmount
           // ignore: cast_nullable_to_non_nullable
           : roundingAmount as int,
+      savedOrderId: savedOrderId == const $CopyWithPlaceholder()
+          ? _value.savedOrderId
+          // ignore: cast_nullable_to_non_nullable
+          : savedOrderId as String?,
+      savedOrderRevision: savedOrderRevision == const $CopyWithPlaceholder()
+          ? _value.savedOrderRevision
+          // ignore: cast_nullable_to_non_nullable
+          : savedOrderRevision as int?,
       subtotal: subtotal == const $CopyWithPlaceholder()
           ? _value.subtotal
           // ignore: cast_nullable_to_non_nullable
@@ -270,6 +294,11 @@ TransactionRequest _$TransactionRequestFromJson(
         'rounding_amount',
         (v) => (v as num).toInt(),
       ),
+      savedOrderId: $checkedConvert('saved_order_id', (v) => v as String?),
+      savedOrderRevision: $checkedConvert(
+        'saved_order_revision',
+        (v) => (v as num?)?.toInt(),
+      ),
       subtotal: $checkedConvert('subtotal', (v) => (v as num).toInt()),
       taxAmount: $checkedConvert('tax_amount', (v) => (v as num).toInt()),
       taxPercentage: $checkedConvert(
@@ -290,6 +319,8 @@ TransactionRequest _$TransactionRequestFromJson(
     'paymentMethod': 'payment_method',
     'restaurantTableId': 'restaurant_table_id',
     'roundingAmount': 'rounding_amount',
+    'savedOrderId': 'saved_order_id',
+    'savedOrderRevision': 'saved_order_revision',
     'taxAmount': 'tax_amount',
     'taxPercentage': 'tax_percentage',
     'tipAmount': 'tip_amount',
@@ -309,6 +340,8 @@ Map<String, dynamic> _$TransactionRequestToJson(TransactionRequest instance) =>
           _$TransactionRequestPaymentMethodEnumEnumMap[instance.paymentMethod]!,
       'restaurant_table_id': ?instance.restaurantTableId,
       'rounding_amount': instance.roundingAmount,
+      'saved_order_id': ?instance.savedOrderId,
+      'saved_order_revision': ?instance.savedOrderRevision,
       'subtotal': instance.subtotal,
       'tax_amount': instance.taxAmount,
       'tax_percentage': instance.taxPercentage,
