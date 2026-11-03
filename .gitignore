@@ -37,9 +37,11 @@ pubspec.lock
 # VS Code
 .vscode/
 
-# Android Studio / IntelliJ
+# Android Studio / IntelliJ project metadata is local-only.
 .idea/
 *.iml
+*.ipr
+*.iws
 
 # Logs
 *.log
