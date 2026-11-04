@@ -1,0 +1,71 @@
+name: Mobile release
+run-name: Android ${{ inputs.environment || 'dev' }} from CI ${{ inputs.ci_run_id || github.event.workflow_run.id }}
+
+on:
+  workflow_run:
+    workflows: [Mobile CI]
+    branches: [main]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target stage (the previous stage must have succeeded)
+        required: true
+        type: choice
+        options: [dev, sit, uat, stg, prd]
+      ci_run_id:
+        description: Successful Mobile CI push run ID on main; reuse it for every stage
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-release-${{ inputs.environment || 'dev' }}
+  cancel-in-progress: false
+
+jobs:
+  candidate:
+    if: >-
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_repository.full_name == github.repository) ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+      deployments: read
+    outputs:
+      sha: ${{ steps.resolve.outputs.sha }}
+      ci_run_id: ${{ steps.resolve.outputs.ci_run_id }}
+      environment: ${{ steps.resolve.outputs.environment }}
+    steps:
+      # Use trusted main tooling before checking out any selected candidate.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: main
+          persist-credentials: false
+      - id: resolve
+        name: Verify CI provenance and previous stage
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_ENVIRONMENT: ${{ inputs.environment || 'dev' }}
+          CI_RUN_ID: ${{ inputs.ci_run_id || github.event.workflow_run.id }}
+        run: python3 tool/ci/release.py resolve
+
+  distribute:
+    needs: candidate
+    uses: ./.github/workflows/reusable-android-distribute.yml
+    permissions:
+      contents: read
+      actions: read
+      deployments: write
+    with:
+      source_sha: ${{ needs.candidate.outputs.sha }}
+      ci_run_id: ${{ needs.candidate.outputs.ci_run_id }}
+      environment: ${{ needs.candidate.outputs.environment }}
+    secrets: inherit

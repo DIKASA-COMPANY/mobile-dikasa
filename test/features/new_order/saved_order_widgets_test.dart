@@ -105,69 +105,73 @@ void main() {
     expect(find.textContaining('Simpan atau hapus keranjang'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
-  testWidgets('capture saved browser and changed-price review', (tester) async {
-    tester.view.physicalSize = const Size(1400, 1000);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    dotenv.loadFromString(
-      envString:
-          'API_BASE_URL=http://localhost:8081/dikasa/v1\nUSE_MOCK_API=false',
-    );
-    final c = ApiClient();
-    final pos = TestPos(c);
-    pos.draft['items'][0]['unit_price'] = 80;
-    final vm = NewOrderViewModel(
-      productRepository: TestProducts(c),
-      authRepository: TestAuth(c),
-      posService: pos,
-    );
-    await vm.loadProducts();
-    await vm.loadPos();
-    final key = GlobalKey();
-    await tester.pumpWidget(
-      RepaintBoundary(
-        key: key,
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(fontFamily: 'Poppins'),
-          home: Builder(
-            builder: (ctx) => Scaffold(
-              body: TextButton(
-                onPressed: () => SalesBrowser.show(ctx, vm),
-                child: const Text('Browse'),
+  testWidgets(
+    'capture saved browser and changed-price review',
+    (tester) async {
+      tester.view.physicalSize = const Size(1400, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      dotenv.loadFromString(
+        envString:
+            'API_BASE_URL=http://localhost:8081/dikasa/v1\nUSE_MOCK_API=false',
+      );
+      final c = ApiClient();
+      final pos = TestPos(c);
+      pos.draft['items'][0]['unit_price'] = 80;
+      final vm = NewOrderViewModel(
+        productRepository: TestProducts(c),
+        authRepository: TestAuth(c),
+        posService: pos,
+      );
+      await vm.loadProducts();
+      await vm.loadPos();
+      final key = GlobalKey();
+      await tester.pumpWidget(
+        RepaintBoundary(
+          key: key,
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(fontFamily: 'Poppins'),
+            home: Builder(
+              builder: (ctx) => Scaffold(
+                body: TextButton(
+                  onPressed: () => SalesBrowser.show(ctx, vm),
+                  child: const Text('Browse'),
+                ),
               ),
             ),
           ),
         ),
-      ),
-    );
-    await tester.tap(find.text('Browse'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Tersimpan'));
-    await tester.pumpAndSettle();
-    Future<void> capture(String name) async {
-      await tester.runAsync(() async {
-        final render =
-            key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-        final img = await render.toImage();
-        final data = await img.toByteData(format: ui.ImageByteFormat.png);
-        await Directory('build/saved-order-qa').create(recursive: true);
-        await File(
-          'build/saved-order-qa/$name.png',
-        ).writeAsBytes(data!.buffer.asUint8List());
-        img.dispose();
-      });
-    }
+      );
+      await tester.tap(find.text('Browse'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Tersimpan'));
+      await tester.pumpAndSettle();
+      Future<void> capture(String name) async {
+        await tester.runAsync(() async {
+          final render =
+              key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+          final img = await render.toImage();
+          final data = await img.toByteData(format: ui.ImageByteFormat.png);
+          await Directory('build/saved-order-qa').create(recursive: true);
+          await File(
+            'build/saved-order-qa/$name.png',
+          ).writeAsBytes(data!.buffer.asUint8List());
+          img.dispose();
+        });
+      }
 
-    await capture('saved-orders');
-    await tester.tap(find.text('Buka'));
-    await tester.pumpAndSettle();
-    expect(find.text('Periksa perubahan pesanan'), findsOneWidget);
-    await capture('saved-review');
-    await tester.tap(find.text('Batal'));
-    await tester.pumpAndSettle();
-    expect(vm.orderItems, isEmpty);
-    expect(tester.takeException(), isNull);
-  }, skip: !const bool.fromEnvironment('CAPTURE_SAVED'));
+      await capture('saved-orders');
+      await tester.tap(find.text('Buka'));
+      await tester.pumpAndSettle();
+      expect(find.text('Periksa perubahan pesanan'), findsOneWidget);
+      await capture('saved-review');
+      await tester.tap(find.text('Batal'));
+      await tester.pumpAndSettle();
+      expect(vm.orderItems, isEmpty);
+      expect(tester.takeException(), isNull);
+    },
+    skip: !const bool.fromEnvironment('CAPTURE_SAVED'),
+  );
 }

@@ -88,95 +88,99 @@ void main() {
     expect(find.text('Tutup Sesi Kas'), findsOneWidget);
     expect(t.takeException(), isNull);
   });
-  testWidgets('capture cash closing and session history', (tester) async {
-    dotenv.loadFromString(
-      envString:
-          'API_BASE_URL=http://localhost:8081/dikasa/v1\nUSE_MOCK_API=false',
-    );
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.view.resetPhysicalSize);
-    Future<void> capture(String name, Widget child, Size size) async {
-      tester.view.physicalSize = size;
-      final key = GlobalKey();
-      await tester.pumpWidget(
-        RepaintBoundary(
-          key: key,
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              fontFamily: 'Poppins',
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color(0xff097bc2),
+  testWidgets(
+    'capture cash closing and session history',
+    (tester) async {
+      dotenv.loadFromString(
+        envString:
+            'API_BASE_URL=http://localhost:8081/dikasa/v1\nUSE_MOCK_API=false',
+      );
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      Future<void> capture(String name, Widget child, Size size) async {
+        tester.view.physicalSize = size;
+        final key = GlobalKey();
+        await tester.pumpWidget(
+          RepaintBoundary(
+            key: key,
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
+                fontFamily: 'Poppins',
+                colorScheme: ColorScheme.fromSeed(
+                  seedColor: const Color(0xff097bc2),
+                ),
               ),
+              home: Scaffold(body: child),
             ),
-            home: Scaffold(body: child),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      if (name == 'closed-summary') {
-        await tester.tap(find.byType(ListTile).first);
-        await tester.pump(const Duration(milliseconds: 350));
-        await tester.pump(const Duration(milliseconds: 350));
+        );
+        await tester.pumpAndSettle();
+        if (name == 'closed-summary') {
+          await tester.tap(find.byType(ListTile).first);
+          await tester.pump(const Duration(milliseconds: 350));
+          await tester.pump(const Duration(milliseconds: 350));
+        }
+        expect(tester.takeException(), isNull);
+        await tester.runAsync(() async {
+          final render =
+              key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+          final img = await render.toImage();
+          final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
+          await Directory('build/cash-qa').create(recursive: true);
+          await File(
+            'build/cash-qa/$name.png',
+          ).writeAsBytes(bytes!.buffer.asUint8List());
+          img.dispose();
+        });
       }
-      expect(tester.takeException(), isNull);
-      await tester.runAsync(() async {
-        final render =
-            key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-        final img = await render.toImage();
-        final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
-        await Directory('build/cash-qa').create(recursive: true);
-        await File(
-          'build/cash-qa/$name.png',
-        ).writeAsBytes(bytes!.buffer.asUint8List());
-        img.dispose();
-      });
-    }
 
-    for (final mode in ['matched', 'shortage', 'uncertain']) {
-      final s = FakeClosing();
-      final c = CashClosingController(
-        service: s,
-        accountId: () => 'actor',
-        acquire: (_) => true,
-        release: (_) {},
-        onCommitted: () async {},
-      );
-      await c.load('session');
-      c.setCountedCash(mode == 'matched' ? '170000' : '169000');
-      if (mode != 'matched') c.setReason('Cash counted twice');
-      await c.preview();
-      if (mode == 'uncertain') {
-        s.uncertain = true;
-        await c.confirm();
+      for (final mode in ['matched', 'shortage', 'uncertain']) {
+        final s = FakeClosing();
+        final c = CashClosingController(
+          service: s,
+          accountId: () => 'actor',
+          acquire: (_) => true,
+          release: (_) {},
+          onCommitted: () async {},
+        );
+        await c.load('session');
+        c.setCountedCash(mode == 'matched' ? '170000' : '169000');
+        if (mode != 'matched') c.setReason('Cash counted twice');
+        await c.preview();
+        if (mode == 'uncertain') {
+          s.uncertain = true;
+          await c.confirm();
+        }
+        await capture(
+          'close-$mode',
+          CashClosingDialog(controller: c),
+          mode == 'shortage' ? const Size(430, 940) : const Size(1400, 1050),
+        );
       }
-      await capture(
-        'close-$mode',
-        CashClosingDialog(controller: c),
-        mode == 'shortage' ? const Size(430, 940) : const Size(1400, 1050),
+      final api = ApiClient();
+      final vm = NewOrderViewModel(
+        productRepository: TestProducts(api),
+        authRepository: TestAuth(api),
+        posService: CashHistoryPos(api),
       );
-    }
-    final api = ApiClient();
-    final vm = NewOrderViewModel(
-      productRepository: TestProducts(api),
-      authRepository: TestAuth(api),
-      posService: CashHistoryPos(api),
-    );
-    await capture(
-      'session-history',
-      CashSessionsDialog(viewModel: vm),
-      const Size(1400, 900),
-    );
-    final closedVm = NewOrderViewModel(
-      productRepository: TestProducts(api),
-      authRepository: TestAuth(api),
-      posService: CashHistoryPos(api, closedMode: true),
-    );
-    await capture(
-      'closed-summary',
-      CashSessionsDialog(viewModel: closedVm),
-      const Size(1400, 1050),
-    );
-  }, skip: !const bool.fromEnvironment('CAPTURE_CASH'));
+      await capture(
+        'session-history',
+        CashSessionsDialog(viewModel: vm),
+        const Size(1400, 900),
+      );
+      final closedVm = NewOrderViewModel(
+        productRepository: TestProducts(api),
+        authRepository: TestAuth(api),
+        posService: CashHistoryPos(api, closedMode: true),
+      );
+      await capture(
+        'closed-summary',
+        CashSessionsDialog(viewModel: closedVm),
+        const Size(1400, 1050),
+      );
+    },
+    skip: !const bool.fromEnvironment('CAPTURE_CASH'),
+  );
 }

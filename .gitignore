@@ -32,7 +32,10 @@ linux/flutter/ephemeral/
 macos/Flutter/ephemeral/
 windows/flutter/ephemeral/
 
-pubspec.lock
+# The application lockfile is committed for reproducible CI builds.
+android/key.properties
+*service-account*.json
+firebase-credentials*.json
 
 # VS Code
 .vscode/

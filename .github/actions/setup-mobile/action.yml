@@ -1,0 +1,21 @@
+name: Set up DIKASA Android
+description: Pinned Flutter SDK, Java, and locked application dependencies
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
+      with:
+        distribution: temurin
+        java-version: '17'
+        cache: gradle
+        cache-dependency-path: |
+          android/**/*.gradle*
+          android/gradle/wrapper/gradle-wrapper.properties
+    - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+      with:
+        flutter-version: '3.44.2'
+        channel: stable
+        cache: true
+    - name: Resolve locked dependencies
+      shell: bash
+      run: flutter pub get --enforce-lockfile

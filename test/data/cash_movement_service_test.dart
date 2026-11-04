@@ -10,8 +10,7 @@ import 'package:mobile_dikasa/data/services/cash_movement_service.dart';
 void main() {
   setUp(
     () => dotenv.loadFromString(
-      envString:
-          'API_BASE_URL=http://localhost/dikasa/v1\nUSE_MOCK_API=false',
+      envString: 'API_BASE_URL=http://localhost/dikasa/v1\nUSE_MOCK_API=false',
     ),
   );
 

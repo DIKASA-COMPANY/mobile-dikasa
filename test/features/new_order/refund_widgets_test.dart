@@ -108,84 +108,86 @@ void main() {
     },
   );
 
-  testWidgets('capture refund screens at desktop and narrow widths', (
-    tester,
-  ) async {
-    dotenv.loadFromString(
-      envString:
-          'API_BASE_URL=http://localhost:8081/dikasa/v1\nUSE_MOCK_API=false',
-    );
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    Future<void> capture(String name, Widget widget, Size size) async {
-      tester.view.physicalSize = size;
-      final key = GlobalKey();
-      await tester.pumpWidget(
-        RepaintBoundary(
-          key: key,
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              fontFamily: 'Poppins',
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color(0xff097bc2),
+  testWidgets(
+    'capture refund screens at desktop and narrow widths',
+    (tester) async {
+      dotenv.loadFromString(
+        envString:
+            'API_BASE_URL=http://localhost:8081/dikasa/v1\nUSE_MOCK_API=false',
+      );
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      Future<void> capture(String name, Widget widget, Size size) async {
+        tester.view.physicalSize = size;
+        final key = GlobalKey();
+        await tester.pumpWidget(
+          RepaintBoundary(
+            key: key,
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
+                fontFamily: 'Poppins',
+                colorScheme: ColorScheme.fromSeed(
+                  seedColor: const Color(0xff097bc2),
+                ),
               ),
+              home: Scaffold(body: widget),
             ),
-            home: Scaffold(body: widget),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(tester.takeException(), isNull);
-      await tester.runAsync(() async {
-        final render =
-            key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-        final img = await render.toImage();
-        final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
-        await Directory('build/refund-qa').create(recursive: true);
-        await File(
-          'build/refund-qa/$name.png',
-        ).writeAsBytes(bytes!.buffer.asUint8List());
-        img.dispose();
-      });
-    }
-
-    for (final mode in ['full', 'items', 'uncertain']) {
-      final service = FakeRefundService();
-      final c = RefundController(
-        service: service,
-        accountId: () => 'actor',
-        acquire: (_) => true,
-        release: (_) {},
-        onCommitted: () async {},
-      );
-      await c.load('sale', mode == 'full' ? 'full' : 'items');
-      if (mode != 'full') c.setQuantity('item', 1);
-      c.setReason('Customer return');
-      await c.preview();
-      if (mode == 'uncertain') {
-        service.uncertain = true;
-        await c.confirm();
+        );
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        await tester.runAsync(() async {
+          final render =
+              key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+          final img = await render.toImage();
+          final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
+          await Directory('build/refund-qa').create(recursive: true);
+          await File(
+            'build/refund-qa/$name.png',
+          ).writeAsBytes(bytes!.buffer.asUint8List());
+          img.dispose();
+        });
       }
-      await capture(
-        'refund-$mode',
-        RefundDialog(controller: c),
-        mode == 'items' ? const Size(430, 900) : const Size(1400, 1000),
+
+      for (final mode in ['full', 'items', 'uncertain']) {
+        final service = FakeRefundService();
+        final c = RefundController(
+          service: service,
+          accountId: () => 'actor',
+          acquire: (_) => true,
+          release: (_) {},
+          onCommitted: () async {},
+        );
+        await c.load('sale', mode == 'full' ? 'full' : 'items');
+        if (mode != 'full') c.setQuantity('item', 1);
+        c.setReason('Customer return');
+        await c.preview();
+        if (mode == 'uncertain') {
+          service.uncertain = true;
+          await c.confirm();
+        }
+        await capture(
+          'refund-$mode',
+          RefundDialog(controller: c),
+          mode == 'items' ? const Size(430, 900) : const Size(1400, 1000),
+        );
+        c.dispose();
+      }
+      final client = ApiClient();
+      final vm = NewOrderViewModel(
+        productRepository: TestProducts(client),
+        authRepository: TestAuth(client),
+        posService: HistoryPos(client),
       );
-      c.dispose();
-    }
-    final client = ApiClient();
-    final vm = NewOrderViewModel(
-      productRepository: TestProducts(client),
-      authRepository: TestAuth(client),
-      posService: HistoryPos(client),
-    );
-    await vm.loadProducts();
-    await capture(
-      'receipt-detail',
-      ReceiptDetailDialog(viewModel: vm, transactionId: 'sale'),
-      const Size(1400, 1000),
-    );
-  }, skip: !const bool.fromEnvironment('CAPTURE_REFUNDS'));
+      await vm.loadProducts();
+      await capture(
+        'receipt-detail',
+        ReceiptDetailDialog(viewModel: vm, transactionId: 'sale'),
+        const Size(1400, 1000),
+      );
+    },
+    skip: !const bool.fromEnvironment('CAPTURE_REFUNDS'),
+  );
 }
