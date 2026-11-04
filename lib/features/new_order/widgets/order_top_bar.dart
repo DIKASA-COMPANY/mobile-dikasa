@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_dikasa/core/constants/colors.dart';
 import 'package:mobile_dikasa/core/themes/text_styles.dart';
@@ -31,21 +32,21 @@ class OrderTopBar extends StatelessWidget implements PreferredSizeWidget {
       child: SizedBox(
         height: height,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Row(
             children: <Widget>[
               _IconAction(
                 assetPath: 'assets/icons/menu_icon.svg',
-                size: 30,
+                size: 30.r,
                 tooltip: 'Buka menu',
                 onPressed: onMenuPressed,
               ),
-              const SizedBox(width: 36),
+              SizedBox(width: 36.w),
               const _SectionSwitch(),
               const Spacer(),
               _IconAction(
                 assetPath: 'assets/icons/lock_circle_icon.svg',
-                size: 52,
+                size: 52.r,
                 tooltip: 'Kunci layar',
                 onPressed: onLockPressed,
               ),
@@ -94,7 +95,7 @@ class _SectionSwitch extends StatelessWidget {
     return Stack(
       children: <Widget>[
         ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -120,8 +121,8 @@ class _SectionSwitch extends StatelessWidget {
           child: IgnorePointer(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.c097BC2, width: 2),
-                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.c097BC2, width: 2.w),
+                borderRadius: BorderRadius.circular(8.r),
               ),
             ),
           ),
@@ -149,8 +150,8 @@ class _SwitchSegment extends StatelessWidget {
       child: InkWell(
         onTap: onPressed,
         child: SizedBox(
-          width: 156,
-          height: 42,
+          width: 156.w,
+          height: 42.h,
           child: Center(
             child: Text(
               label,
@@ -183,59 +184,33 @@ class _OutletIdentity extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              currentUser?.outletLabel ?? '-',
+              currentUser?.outletName ?? '-',
               style: AppTextStyles.sectionTitle,
             ),
-            const SizedBox(height: 2),
+            SizedBox(height: 2.h),
             Text(
-              currentUser?.name ?? '',
+              '${currentUser?.role ?? ''} ${currentUser?.name ?? ''}'.trim(),
               style: AppTextStyles.caption.copyWith(
                 fontStyle: FontStyle.italic,
-                fontSize: 14,
+                fontSize: 14.sp,
               ),
             ),
           ],
         ),
-        const SizedBox(width: 14),
-        _UserAvatar(user: currentUser),
-      ],
-    );
-  }
-}
-
-class _UserAvatar extends StatelessWidget {
-  const _UserAvatar({required this.user});
-
-  final User? user;
-
-  @override
-  Widget build(BuildContext context) {
-    final String? avatarUrl = user?.avatarUrl;
-
-    final Widget fallback = Image.asset(
-      'assets/images/avatar_profile_men.png',
-      width: 56,
-      height: 56,
-      fit: BoxFit.cover,
-    );
-
-    return Container(
-      width: 56,
-      height: 56,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.cD9D9D9),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: avatarUrl == null || avatarUrl.isEmpty
-          ? fallback
-          : Image.network(
-              avatarUrl,
-              width: 56,
-              height: 56,
+        SizedBox(width: 14.w),
+        Container(
+          width: 56.w,
+          height: 56.h,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8.r),
+            border: Border.all(color: AppColors.cD9D9D9),
+            image: const DecorationImage(
+              image: AssetImage('assets/images/avatar_profile_men.png'),
               fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => fallback,
             ),
+          ),
+        ),
+      ],
     );
   }
 }

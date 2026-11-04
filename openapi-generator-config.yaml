@@ -15,4 +15,3 @@ additionalProperties:
   disallowAdditionalPropertiesIfNotPresent: false
   enumUnknownDefaultCase: true
   finalProperties: true
-

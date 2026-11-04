@@ -1,0 +1,112 @@
+[
+  {
+    "file_key": "jgBLUfP6OXyxmErwgTjfIT",
+    "node": "1:4212",
+    "slot": "ReportHeader menu",
+    "path": "assets/icons/report_design_menu.svg",
+    "width": 34.4,
+    "height": 26.0,
+    "bytes": 486,
+    "sha256": "0336772ab8955646730fda16804ddb19f85f1142c17dfae71d7bcc7cf468f676",
+    "callsite": "lib/features/report/widgets/report_header.dart:ReportIcon; report main/chart/selector consumers"
+  },
+  {
+    "file_key": "jgBLUfP6OXyxmErwgTjfIT",
+    "node": "1:4226",
+    "slot": "ReportHeader lock glyph",
+    "path": "assets/icons/report_design_lock.svg",
+    "width": 46.0,
+    "height": 46.0,
+    "bytes": 1014,
+    "sha256": "e9cbb767bff67fbaa13dca1a326f7a4b293d46ea03461f50122ba8a7aae72b25",
+    "callsite": "lib/features/report/widgets/report_header.dart:ReportIcon; report main/chart/selector consumers"
+  },
+  {
+    "file_key": "jgBLUfP6OXyxmErwgTjfIT",
+    "node": "1:4217",
+    "slot": "ReportHeader lock background",
+    "path": "assets/icons/report_design_lock-background.svg",
+    "width": 54.0,
+    "height": 54.0,
+    "bytes": 316,
+    "sha256": "3df0891c443e592d19ca007d0e1171cfd022b874ad6abb563bf14c7733e61767",
+    "callsite": "lib/features/report/widgets/report_header.dart:ReportIcon; report main/chart/selector consumers"
+  },
+  {
+    "file_key": "jgBLUfP6OXyxmErwgTjfIT",
+    "node": "1:4252",
+    "slot": "report filter back",
+    "path": "assets/icons/report_design_back.svg",
+    "width": 32.0,
+    "height": 25.0,
+    "bytes": 496,
+    "sha256": "20d30dbce579c774a1c5c5a5f2390dfa79dee8931f7c3d4d3c6e6251243392d0",
+    "callsite": "lib/features/report/widgets/report_header.dart:ReportIcon; report main/chart/selector consumers"
+  },
+  {
+    "file_key": "jgBLUfP6OXyxmErwgTjfIT",
+    "node": "1:4261",
+    "slot": "date range button",
+    "path": "assets/icons/report_design_calendar.svg",
+    "width": 19.5724,
+    "height": 18.8023,
+    "bytes": 1855,
+    "sha256": "2d29a6a5050f3b1c3b309693ce879f385c873e378ec27972947936ce843776cb",
+    "callsite": "lib/features/report/widgets/report_header.dart:ReportIcon; report main/chart/selector consumers"
+  },
+  {
+    "file_key": "jgBLUfP6OXyxmErwgTjfIT",
+    "node": "1:4279",
+    "slot": "export button",
+    "path": "assets/icons/report_design_export.svg",
+    "width": 20.0,
+    "height": 20.0,
+    "bytes": 665,
+    "sha256": "b5eac500c3271e054a063659ade26eed63c076f6236c2b530e43a18147e0adb9",
+    "callsite": "lib/features/report/widgets/report_header.dart:ReportIcon; report main/chart/selector consumers"
+  },
+  {
+    "file_key": "jgBLUfP6OXyxmErwgTjfIT",
+    "node": "1:4384",
+    "slot": "search field",
+    "path": "assets/icons/report_design_search.svg",
+    "width": 19.0,
+    "height": 19.0,
+    "bytes": 547,
+    "sha256": "cbbab51af28a98e6a195c546ce0eeb730e70549d26ac02d9ca96386213d6d233",
+    "callsite": "lib/features/report/widgets/report_header.dart:ReportIcon; report main/chart/selector consumers"
+  },
+  {
+    "file_key": "jgBLUfP6OXyxmErwgTjfIT",
+    "node": "1:4407",
+    "slot": "sort dropdown",
+    "path": "assets/icons/report_design_down.svg",
+    "width": 20.2314,
+    "height": 10.0653,
+    "bytes": 464,
+    "sha256": "fcb62efe621c0ddc032432e0f4d0ce1f54d4c5432b00086f16b3e0cc9eaeb41d",
+    "callsite": "lib/features/report/widgets/report_header.dart:ReportIcon; report main/chart/selector consumers"
+  },
+  {
+    "file_key": "jgBLUfP6OXyxmErwgTjfIT",
+    "node": "1:4170",
+    "slot": "chart transaction legend",
+    "path": "assets/icons/report_design_legend-transactions.svg",
+    "width": 11.9543,
+    "height": 12.0,
+    "bytes": 265,
+    "sha256": "1eb5c988812e9e1fb58aa7279801a03d3a75ede6b29c11811bc40bb4f3c38d96",
+    "callsite": "lib/features/report/widgets/report_header.dart:ReportIcon; report main/chart/selector consumers"
+  },
+  {
+    "file_key": "jgBLUfP6OXyxmErwgTjfIT",
+    "node": "1:4173",
+    "slot": "chart money legend",
+    "path": "assets/icons/report_design_legend-money.svg",
+    "width": 11.9543,
+    "height": 12.0,
+    "bytes": 265,
+    "sha256": "606cd756f6a3a5ebfc0b5da38b6145811df75f7514daf67d169e35140ce2955f",
+    "callsite": "lib/features/report/widgets/report_header.dart:ReportIcon; report main/chart/selector consumers"
+  }
+]

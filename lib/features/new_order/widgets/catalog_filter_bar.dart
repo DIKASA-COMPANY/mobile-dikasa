@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_dikasa/core/constants/colors.dart';
@@ -19,27 +20,28 @@ class CatalogFilterBar extends StatelessWidget {
     return ColoredBox(
       color: AppColors.c2C5E7A,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 26, 24, 26),
+        padding: EdgeInsets.fromLTRB(24.w, 26.h, 24.w, 26.h),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             _GroupTabs(viewModel: viewModel),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             Row(
               children: <Widget>[
                 SizedBox(
-                  width: 268,
+                  width: 268.w,
                   child: Observer(
                     builder: (_) => PanelDropdown<String>(
                       label: viewModel.selectedCategory,
                       options: viewModel.categories,
                       optionLabel: (String category) => category,
                       onSelected: viewModel.selectCategory,
-                      isActive: viewModel.selectedCategory != allCategoriesFilter,
+                      isActive:
+                          viewModel.selectedCategory != allCategoriesFilter,
                     ),
                   ),
                 ),
-                const SizedBox(width: 24),
+                SizedBox(width: 24.w),
                 Expanded(child: _SearchField(viewModel: viewModel)),
               ],
             ),
@@ -58,7 +60,7 @@ class _GroupTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(8.r),
       child: Row(
         children: ProductGroup.values
             .map(
@@ -96,7 +98,7 @@ class _GroupTab extends StatelessWidget {
       child: InkWell(
         onTap: onPressed,
         child: SizedBox(
-          height: 44,
+          height: 44.h,
           child: Center(
             child: Text(
               label,
@@ -120,7 +122,7 @@ class _SearchField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 44,
+      height: 44.h,
       child: TextField(
         onChanged: viewModel.onSearchChanged,
         style: AppTextStyles.body,
@@ -135,20 +137,17 @@ class _SearchField extends StatelessWidget {
           filled: true,
           fillColor: AppColors.cFFFFFF,
           isDense: true,
-          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+          contentPadding: EdgeInsets.symmetric(vertical: 12.h),
           prefixIcon: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 12, 12),
+            padding: EdgeInsets.fromLTRB(16.w, 12.h, 12.w, 12.h),
             child: SvgPicture.asset(
               'assets/icons/search_icon.svg',
-              width: 20,
-              height: 20,
-              colorFilter: ColorFilter.mode(
-                AppColors.cA4A4A4,
-                BlendMode.srcIn,
-              ),
+              width: 20.w,
+              height: 20.h,
+              colorFilter: ColorFilter.mode(AppColors.cA4A4A4, BlendMode.srcIn),
             ),
           ),
-          prefixIconConstraints: const BoxConstraints(minWidth: 0),
+          prefixIconConstraints: BoxConstraints(minWidth: 0.w),
           border: _border,
           enabledBorder: _border,
           focusedBorder: _border,
@@ -158,7 +157,7 @@ class _SearchField extends StatelessWidget {
   }
 
   OutlineInputBorder get _border => OutlineInputBorder(
-    borderRadius: BorderRadius.circular(8),
+    borderRadius: BorderRadius.circular(8.r),
     borderSide: BorderSide.none,
   );
 }

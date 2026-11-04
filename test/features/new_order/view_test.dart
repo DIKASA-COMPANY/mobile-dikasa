@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_dikasa/core/network/api_client.dart';
 import 'package:mobile_dikasa/core/network/mock_api_interceptor.dart';
 import 'package:mobile_dikasa/data/repositories/auth_repository.dart';
-import 'package:mobile_dikasa/data/repositories/cash_session_repository.dart';
-import 'package:mobile_dikasa/data/repositories/order_type_repository.dart';
 import 'package:mobile_dikasa/data/repositories/product_repository.dart';
 import 'package:mobile_dikasa/data/services/auth_service.dart';
-import 'package:mobile_dikasa/data/services/cash_session_service.dart';
-import 'package:mobile_dikasa/data/services/order_type_service.dart';
+import 'package:mobile_dikasa/data/services/account_service.dart';
 import 'package:mobile_dikasa/data/services/product_service.dart';
+import 'package:mobile_dikasa/data/services/pos_service.dart';
+import 'package:mobile_dikasa/data/services/catalog_service.dart';
+import 'package:mobile_dikasa/features/product/view.dart';
 import 'package:mobile_dikasa/features/new_order/view.dart';
 import 'package:mobile_dikasa/features/new_order/view_model.dart';
 import 'package:mobile_dikasa/features/new_order/widgets/opening_cash_dialog.dart';
@@ -18,6 +19,12 @@ import 'package:provider/provider.dart';
 import '../../helpers/test_env.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() async {
+    final font = FontLoader('Poppins')
+      ..addFont(rootBundle.load('assets/fonts/Poppins-Regular.ttf'));
+    await font.load();
+  });
   setUp(loadTestEnv);
 
   /// Ukuran layar tablet yang dipakai desain Figma.
@@ -50,17 +57,17 @@ void main() {
         productService: ProductService(apiClient),
       ),
       authRepository: authRepository,
-      orderTypeRepository: OrderTypeRepository(
-        orderTypeService: OrderTypeService(apiClient),
-      ),
-      cashSessionRepository: CashSessionRepository(
-        cashSessionService: CashSessionService(apiClient),
-      ),
+      posService: PosService(apiClient),
+      accountService: AccountService(apiClient),
+      catalogService: CatalogService(apiClient),
     );
 
     await tester.pumpWidget(
-      Provider<NewOrderViewModel>.value(
-        value: viewModel,
+      MultiProvider(
+        providers: [
+          Provider<NewOrderViewModel>.value(value: viewModel),
+          Provider<CatalogService>(create: (_) => CatalogService(apiClient)),
+        ],
         child: const MaterialApp(home: NewOrderView()),
       ),
     );
@@ -75,14 +82,23 @@ void main() {
     await tester.pump();
   }
 
-  Future<void> skipOpeningCash(WidgetTester tester) async {
+  testWidgets('cashier can refresh the catalog without losing an unpaid cart', (
+    tester,
+  ) async {
+    final vm = await pumpOrderPage(tester);
+    await settleCatalog(tester);
     await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
-    // Menutup dialog lebih dulu agar request POST /cash-sessions dimulai,
-    // lalu majukan fake clock melewati latency interceptor.
-    await tester.pump();
-    await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();
-  }
+    await tester.tap(find.text('Cumi Goreng Asam Manis'));
+    await tester.pump();
+    await tester.tap(find.byTooltip('Buka menu'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Muat ulang Katalog'));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 2));
+    expect(vm.orderItems.single.quantity, 1);
+    expect(find.textContaining('Katalog dimuat ulang'), findsOneWidget);
+  });
 
   testWidgets('dialog Kas Awal muncul saat halaman dibuka', (
     WidgetTester tester,
@@ -98,16 +114,57 @@ void main() {
     );
   });
 
-  testWidgets('menekan Lewati membuka sesi kas dengan modal nol', (
+  testWidgets('cashier menu opens management and returns to the cashier', (
+    tester,
+  ) async {
+    await pumpOrderPage(tester);
+    await settleCatalog(tester);
+    await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Buka menu'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Katalog Produk'));
+    await tester.pumpAndSettle();
+    expect(find.byType(CatalogView), findsOneWidget);
+    expect(find.text('Tambah Produk'), findsOneWidget);
+    await tester.tap(find.byTooltip('Kembali'));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.byType(CatalogView), findsNothing);
+    expect(find.text('Belum ada menu yang dipilih'), findsOneWidget);
+  });
+
+  testWidgets('product management refuses navigation while order is unpaid', (
+    tester,
+  ) async {
+    await pumpOrderPage(tester);
+    await settleCatalog(tester);
+    await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cumi Goreng Asam Manis'));
+    await tester.pump();
+    await tester.tap(find.byTooltip('Buka menu'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Katalog Produk'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Selesaikan atau hapus pesanan sebelum mengubah katalog.'),
+      findsOneWidget,
+    );
+    expect(find.byType(NewOrderView), findsOneWidget);
+  });
+
+  testWidgets('menekan Lewati menutup dialog tanpa menyimpan nominal', (
     WidgetTester tester,
   ) async {
     final NewOrderViewModel viewModel = await pumpOrderPage(tester);
     await settleCatalog(tester);
 
-    await skipOpeningCash(tester);
+    await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
+    await tester.pumpAndSettle();
 
     expect(find.byType(OpeningCashDialog), findsNothing);
-    expect(viewModel.openingCash, 0);
+    expect(viewModel.openingCash, isNull);
     expect(viewModel.isOpeningCashResolved, isTrue);
   });
 
@@ -117,11 +174,12 @@ void main() {
     await pumpOrderPage(tester);
     await settleCatalog(tester);
 
-    await skipOpeningCash(tester);
+    await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
+    await tester.pumpAndSettle();
 
     // Identitas outlet pada baris teratas.
-    expect(find.text('Outlet aktif'), findsOneWidget);
-    expect(find.text('Jane Doe'), findsOneWidget);
+    expect(find.text('Warteg Bahari'), findsOneWidget);
+    expect(find.text('Kasir Jane Doe'), findsOneWidget);
 
     // Tab kelompok produk.
     expect(find.text('Makanan'), findsOneWidget);
@@ -141,7 +199,8 @@ void main() {
     await pumpOrderPage(tester);
     await settleCatalog(tester);
 
-    await skipOpeningCash(tester);
+    await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Cumi Goreng Asam Manis'));
     await tester.pump();
@@ -158,7 +217,8 @@ void main() {
       await pumpOrderPage(tester);
       await settleCatalog(tester);
 
-      await skipOpeningCash(tester);
+      await tester.tap(find.widgetWithText(TextButton, 'Lewati'));
+      await tester.pumpAndSettle();
 
       // Satu Cumi Goreng Asam Manis, dua Cumi Goreng Mentega.
       // `.first` menargetkan kartu di katalog (kiri), bukan baris di panel

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mobile_dikasa/components/app_loading_indicator.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_dikasa/components/text_field/main.dart';
@@ -51,8 +53,7 @@ class _LoginViewState extends State<LoginView> {
       backgroundColor: AppColors.cFFFFFF,
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          final bool isTwoColumn =
-              constraints.maxWidth >= _twoColumnBreakpoint;
+          final bool isTwoColumn = constraints.maxWidth >= _twoColumnBreakpoint;
 
           final Widget form = _LoginForm(
             viewModel: viewModel,
@@ -75,21 +76,21 @@ class _LoginViewState extends State<LoginView> {
 
           return SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+              padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 28.h),
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 560),
+                  constraints: BoxConstraints(maxWidth: 560.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(16.r),
                         child: const AspectRatio(
                           aspectRatio: 670 / 460,
                           child: _HeroPanel(),
                         ),
                       ),
-                      const SizedBox(height: 28),
+                      SizedBox(height: 28.h),
                       form,
                     ],
                   ),
@@ -117,10 +118,7 @@ class _CenteredScrollable extends StatelessWidget {
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 24,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 24.h),
                 child: child,
               ),
             ),
@@ -149,14 +147,14 @@ class _HeroPanel extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(52, 60, 52, 52),
+        padding: EdgeInsets.fromLTRB(52.w, 60.h, 52.w, 52.h),
         child: Align(
           alignment: Alignment.topLeft,
           child: Text(
             _headline,
             style: TextStyle(
               color: AppColors.cFFFFFF,
-              fontSize: 30,
+              fontSize: 30.sp,
               fontWeight: FontWeight.w700,
               height: 1.5,
               shadows: <Shadow>[
@@ -190,7 +188,7 @@ class _LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 488),
+      constraints: BoxConstraints(maxWidth: 488.w),
       child: Form(
         key: formKey,
         child: Column(
@@ -214,12 +212,12 @@ class _LoginForm extends StatelessWidget {
             ),
             SizedBox(height: compact ? 48 : 100),
             _UsernameField(viewModel: viewModel),
-            const SizedBox(height: 34),
+            SizedBox(height: 34.h),
             _PasswordField(viewModel: viewModel, onSubmit: onSubmit),
             const _ErrorBanner(),
             SizedBox(height: compact ? 40 : 62),
             _SubmitButton(viewModel: viewModel, onSubmit: onSubmit),
-            const SizedBox(height: 18),
+            SizedBox(height: 18.h),
             const _SecondaryActions(),
           ],
         ),
@@ -271,16 +269,13 @@ class _LoginTextField extends StatelessWidget {
       textStyle: AppTextStyles.input,
       hintStyle: AppTextStyles.inputHint,
       borderRadius: 10,
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 17,
-      ),
+      contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 17.h),
       prefixIcon: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 14, 14, 14),
+        padding: EdgeInsets.fromLTRB(20.w, 14.h, 14.w, 14.h),
         child: SvgPicture.asset(
           iconAssetPath,
-          width: 24,
-          height: 24,
+          width: 24.w,
+          height: 24.h,
           colorFilter: ColorFilter.mode(AppColors.cA4A4A4, BlendMode.srcIn),
         ),
       ),
@@ -336,8 +331,8 @@ class _PasswordField extends StatelessWidget {
           icon: viewModel.isPasswordHidden
               ? SvgPicture.asset(
                   'assets/icons/eye_slash_icon.svg',
-                  width: 24,
-                  height: 24,
+                  width: 24.w,
+                  height: 24.h,
                   colorFilter: ColorFilter.mode(
                     AppColors.cA4A4A4,
                     BlendMode.srcIn,
@@ -345,7 +340,7 @@ class _PasswordField extends StatelessWidget {
                 )
               : Icon(
                   Icons.visibility_outlined,
-                  size: 24,
+                  size: 24.r,
                   color: AppColors.cA4A4A4,
                 ),
         ),
@@ -370,12 +365,12 @@ class _ErrorBanner extends StatelessWidget {
         }
 
         return Padding(
-          padding: const EdgeInsets.only(top: 16),
+          padding: EdgeInsets.only(top: 16.h),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Icon(Icons.error_outline, size: 18, color: AppColors.c9D1414),
-              const SizedBox(width: 8),
+              Icon(Icons.error_outline, size: 18.r, color: AppColors.c9D1414),
+              SizedBox(width: 8.w),
               Expanded(child: Text(message, style: AppTextStyles.error)),
             ],
           ),
@@ -395,7 +390,7 @@ class _SubmitButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) => SizedBox(
-        height: 54,
+        height: 54.h,
         child: ElevatedButton(
           // Tombol tetap aktif meski field kosong, mengikuti desain.
           // Field yang belum diisi ditangkap oleh validator form.
@@ -407,22 +402,15 @@ class _SubmitButton extends StatelessWidget {
             disabledForegroundColor: AppColors.cFFFFFF,
             elevation: 0,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(8.r),
             ),
             textStyle: AppTextStyles.button.copyWith(
-              fontSize: 19,
+              fontSize: 19.sp,
               fontWeight: FontWeight.w600,
             ),
           ),
           child: viewModel.isSubmitting
-              ? SizedBox(
-                  height: 22,
-                  width: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    color: AppColors.cFFFFFF,
-                  ),
-                )
+              ? AppLoadingIndicator(compact: true, color: AppColors.cFFFFFF)
               : const Text('Masuk'),
         ),
       ),
@@ -435,8 +423,10 @@ class _SecondaryActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      spacing: 16.w,
+      runSpacing: 8.h,
       children: <Widget>[
         _LinkButton(
           label: 'Daftar Akun Baru',
