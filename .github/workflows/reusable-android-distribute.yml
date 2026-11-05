@@ -1,0 +1,106 @@
+name: Distribute signed Android build
+
+on:
+  workflow_call:
+    inputs:
+      source_sha:
+        required: true
+        type: string
+      ci_run_id:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+  deployments: write
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: ${{ inputs.environment }}
+    env:
+      TARGET_ENVIRONMENT: ${{ inputs.environment }}
+      CI_RUN_ID: ${{ inputs.ci_run_id }}
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      API_BASE_URL: ${{ vars.API_BASE_URL }}
+      FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
+      FIREBASE_GROUPS: ${{ vars.FIREBASE_GROUPS }}
+      ANDROID_BUILD_NUMBER_OFFSET: ${{ vars.ANDROID_BUILD_NUMBER_OFFSET || '0' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ inputs.source_sha }}
+          persist-credentials: false
+      - name: Recheck candidate after environment approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tool/ci/release.py verify
+      - name: Set temporary credential paths
+        shell: bash
+        run: |
+          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/dikasa-upload.jks" >> "$GITHUB_ENV"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-credentials.json" >> "$GITHUB_ENV"
+      - name: Validate environment and materialize credentials
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: python3 tool/ci/release.py prepare
+      - uses: ./.github/actions/setup-mobile
+      - name: Build signed APK and production bundle
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--release --no-pub --flavor "$TARGET_ENVIRONMENT"
+            --build-number "$ANDROID_BUILD_NUMBER"
+            --dart-define="API_BASE_URL=$API_BASE_URL"
+            --dart-define=USE_MOCK_API=false)
+          flutter build apk "${args[@]}"
+          if [[ "$TARGET_ENVIRONMENT" == prd ]]; then
+            flutter build appbundle "${args[@]}"
+          fi
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+      - name: Install pinned Firebase CLI
+        run: npm install --global firebase-tools@15.34.2
+      - name: Write release metadata and checksums
+        run: python3 tool/ci/release.py manifest
+      - name: Distribute to Firebase testers
+        shell: bash
+        run: |
+          set -euo pipefail
+          firebase appdistribution:distribute \
+            "build/app/outputs/flutter-apk/app-$TARGET_ENVIRONMENT-release.apk" \
+            --app "$FIREBASE_APP_ID" --groups "$FIREBASE_GROUPS" \
+            --release-notes-file build/distribution/release-notes.txt \
+            --non-interactive
+      - name: Archive signed artifacts and release manifest
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: android-${{ inputs.environment }}-${{ github.run_number }}-${{ github.run_attempt }}-${{ inputs.source_sha }}
+          path: |
+            build/app/outputs/flutter-apk/app-${{ inputs.environment }}-release.apk
+            build/app/outputs/bundle/prdRelease/*.aab
+            build/distribution/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Record successful promotion for this exact candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tool/ci/release.py record
+      - name: Remove signing and Firebase credentials
+        if: always()
+        shell: bash
+        run: rm -f -- "$ANDROID_KEYSTORE_PATH" "$GOOGLE_APPLICATION_CREDENTIALS"

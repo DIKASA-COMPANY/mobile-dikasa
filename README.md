@@ -1,5 +1,14 @@
 # Mobile Dikasa
 
+## CI/CD Android
+
+GitHub Actions menjalankan format, analyze, unit/widget test, dan build sebelum
+distribusi melalui Firebase App Distribution. Merge `main` memicu DEV;
+promosi kandidat berurutan `dev → sit → uat → stg → prd` memakai CI run ID yang sama.
+Lihat [panduan setup CI/CD](docs/ci-cd.md) untuk GitHub Environments, signing,
+Firebase, secret/variable, dan cara promosi. Build Android sekarang memerlukan
+`--flavor dev|sit|uat|stg|prd`; contoh: `flutter run --flavor dev`.
+
 > Local two-repository workspace records: [Changelog](../CHANGELOG.md),
 > [Feature history](../FEATURE_HISTORY.md), [Backlog](../BACKLOG.md).
 > These parent-folder documents should be shared alongside both checkouts.
@@ -182,7 +191,7 @@ karena snapshot mobile belum dapat dianggap reproducible dari revision backend.
 ```bash
 flutter pub get
 dart run build_runner build
-flutter run
+flutter run --flavor dev
 ```
 
 Set `USE_MOCK_API=true` untuk data tiruan
