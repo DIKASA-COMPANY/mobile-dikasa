@@ -55,7 +55,7 @@ class Profile {
     required this.username,
   });
 
-  /// Firebase Storage download URL for direct client rendering
+  /// Supabase Storage public URL for direct client rendering
   @JsonKey(name: r'avatar_url', required: false, includeIfNull: false)
   final String? avatarUrl;
 

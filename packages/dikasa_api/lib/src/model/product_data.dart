@@ -82,7 +82,7 @@ class ProductData {
   @JsonKey(name: r'id', required: true, includeIfNull: false)
   final String id;
 
-  /// Firebase Storage download URL; render directly and do not proxy through the API
+  /// Supabase Storage public URL; render directly and do not proxy through the API
   @JsonKey(name: r'image_url', required: false, includeIfNull: false)
   final String? imageUrl;
 

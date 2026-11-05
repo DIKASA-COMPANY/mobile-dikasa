@@ -1,4 +1,5 @@
-import 'dart:convert';
+import 'package:dikasa_api/dikasa_api.dart' as api;
+import 'image_upload_service.dart';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:mobile_dikasa/core/network/api_client.dart';
@@ -27,7 +28,9 @@ class CatalogService {
       return await action();
     } on DioException catch (e) {
       if (write &&
-          (e.response == null || (e.response?.statusCode ?? 500) >= 500)) {
+          (e.response == null ||
+              (e.response?.statusCode ?? 500) >= 500 ||
+              e.type == DioExceptionType.unknown)) {
         throw const CatalogWriteUncertain();
       }
       throw ApiException.fromDio(e);
@@ -81,41 +84,64 @@ class CatalogService {
     CatalogProduct product, {
     String? id,
     bool replaceVariations = false,
-  }) => _request(() async {
-    final form = FormData.fromMap(product.toFields());
-    if (product.image != null) {
-      form.files.add(
-        MapEntry(
-          "image",
-          MultipartFile.fromBytes(
-            product.image!.bytes,
-            filename: product.image!.name,
-            contentType: DioMediaType.parse(product.image!.mimeType),
-          ),
-        ),
-      );
-    }
-    if (id == null || replaceVariations) {
-      form.files.add(
-        MapEntry(
-          'variations',
-          MultipartFile.fromString(
-            jsonEncode(product.variations.map((v) => v.toRequest()).toList()),
-            contentType: DioMediaType('application', 'json'),
-          ),
-        ),
-      );
-    }
-    final r = await client.dio.request<Map<String, dynamic>>(
-      id == null ? '/products' : '/products/$id',
-      data: form,
-      options: Options(
-        method: id == null ? 'POST' : 'PATCH',
-        contentType: 'multipart/form-data',
-      ),
-    );
-    return CatalogProduct.fromJson(r.data!['data'] as Map<String, dynamic>);
-  }, write: true);
+  }) async {
+    final image = product.image;
+    final objectName = image == null
+        ? null
+        : await ImageUploadService(client).product(image.bytes, image.mimeType);
+    return _request(() async {
+      final variants = id == null || replaceVariations
+          ? product.variations
+                .map((v) => api.ProductVariantRequest.fromJson(v.toRequest()))
+                .toList()
+          : null;
+      final extra = <String, dynamic>{
+        'jsonMultipartParts': <String, dynamic>{
+          'variations': variants?.map((v) => v.toJson()).toList(),
+        },
+      };
+      final service = client.generated.getKatalogApi();
+      final response = id == null
+          ? await service.createProduct(
+              categoryId: product.category.id,
+              name: product.name.trim(),
+              productType: product.productType,
+              sellingPrice: product.price,
+              stockStatus: product.stockStatus,
+              description: product.description.trim(),
+              imageObjectName: objectName,
+              removeImage: product.removeImage,
+              isActive: product.isActive,
+              isHighlighted: product.isHighlighted,
+              costPrice: product.costPrice,
+              onlineCostPrice: product.onlineCostPrice,
+              onlineSellingPrice: product.onlinePrice,
+              sortOrder: product.sortOrder,
+              variations: variants,
+              extra: extra,
+            )
+          : await service.updateProduct(
+              productId: id,
+              categoryId: product.category.id,
+              name: product.name.trim(),
+              productType: product.productType,
+              sellingPrice: product.price,
+              stockStatus: product.stockStatus,
+              description: product.description.trim(),
+              imageObjectName: objectName,
+              removeImage: product.removeImage,
+              isActive: product.isActive,
+              isHighlighted: product.isHighlighted,
+              costPrice: product.costPrice,
+              onlineCostPrice: product.onlineCostPrice,
+              onlineSellingPrice: product.onlinePrice,
+              sortOrder: product.sortOrder,
+              variations: variants,
+              extra: extra,
+            );
+      return CatalogProduct.fromJson(response.data!.data.toJson());
+    }, write: true);
+  }
 
   Future<void> deactivateProduct(String id) => _request(() async {
     await client.dio.delete<void>('/products/$id');

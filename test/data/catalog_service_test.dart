@@ -10,13 +10,18 @@ import 'package:mobile_dikasa/data/services/catalog_service.dart';
 
 const productJson = <String, dynamic>{
   'id': 'p1',
+  'price': 12000,
+  'track_stock': false,
+  'stock_quantity': 0,
+  'low_stock_threshold': 0,
+  'effective_stock_status': 'available',
   'name': 'Nasi',
   'selling_price': 12000,
   'online_selling_price': 15000,
   'cost_price': 7000,
   'stock_status': 'available',
   'description': 'Catatan',
-  'category': {'id': 'c1', 'name': 'Utama', 'is_active': true},
+  'category': {'id': 'c1', 'name': 'Utama', 'is_active': true, 'sort_order': 0},
   'product_type': 'food',
   'is_active': true,
   'is_highlighted': true,
@@ -178,30 +183,58 @@ void main() {
     );
   });
 
-  test('photo multipart sends bytes and removal is explicit', () async {
-    respond((o) {
-      final data = o.data as FormData;
-      expect(data.files.single.key, 'image');
-      expect(data.files.single.value.filename, 'photo.png');
-      expect(data.files.single.value.contentType!.mimeType, 'image/png');
-      expect(Map.fromEntries(data.fields)['remove_image'], 'false');
-      return {'data': productJson};
-    });
-    await service.saveProduct(
-      CatalogProduct(
-        name: 'Nasi',
-        category: const CatalogCategory(id: 'c1', name: 'Utama'),
-        productType: 'food',
-        price: 10000,
-        image: CatalogImage(
-          name: 'photo.png',
-          bytes: Uint8List.fromList([137, 80, 78, 71]),
-          mimeType: 'image/png',
+  test(
+    'photo is uploaded before generated mutation adopts object name',
+    () async {
+      final storage = Dio();
+      client = ApiClient(storageDio: storage);
+      service = CatalogService(client);
+      var uploaded = false;
+      storage.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (o, h) {
+            expect(o.data, [137, 80, 78, 71]);
+            uploaded = true;
+            h.resolve(Response(requestOptions: o, statusCode: 200));
+          },
         ),
-      ),
-      id: 'p1',
-    );
-  });
+      );
+      respond((o) {
+        if (o.path.endsWith('image-upload-intents')) {
+          return {
+            'data': {
+              'upload_url': 'https://storage.example/image',
+              'object_name': 'products/image.png',
+              'expires_in': 7200,
+            },
+          };
+        }
+        expect(uploaded, isTrue);
+        final data = o.data as FormData;
+        expect(data.files, isEmpty);
+        expect(
+          Map.fromEntries(data.fields)['image_object_name'],
+          'products/image.png',
+        );
+        expect(Map.fromEntries(data.fields)['remove_image'], 'false');
+        return {'data': productJson};
+      });
+      await service.saveProduct(
+        CatalogProduct(
+          name: 'Nasi',
+          category: const CatalogCategory(id: 'c1', name: 'Utama'),
+          productType: 'food',
+          price: 10000,
+          image: CatalogImage(
+            name: 'photo.png',
+            bytes: Uint8List.fromList([137, 80, 78, 71]),
+            mimeType: 'image/png',
+          ),
+        ),
+        id: 'p1',
+      );
+    },
+  );
 
   test(
     'lost save response is uncertain and never automatically retried',
@@ -227,4 +260,15 @@ void main() {
       expect(calls, 1);
     },
   );
+  test('malformed success response leaves product write uncertain', () async {
+    respond(
+      (o) => {
+        'data': {'id': 'p1'},
+      },
+    );
+    await expectLater(
+      service.saveProduct(CatalogProduct.fromJson(productJson)),
+      throwsA(isA<CatalogWriteUncertain>()),
+    );
+  });
 }

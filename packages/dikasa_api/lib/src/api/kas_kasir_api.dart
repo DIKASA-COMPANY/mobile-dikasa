@@ -13,6 +13,8 @@ import 'package:dikasa_api/src/model/activity_page.dart';
 import 'package:dikasa_api/src/model/movement_detail_output_body.dart';
 import 'package:dikasa_api/src/model/movement_output_body.dart';
 import 'package:dikasa_api/src/model/movement_proof_output_body.dart';
+import 'package:dikasa_api/src/model/proof_upload_intent_output_body.dart';
+import 'package:dikasa_api/src/model/proof_upload_intent_request.dart';
 import 'package:dikasa_api/src/model/reversal_command.dart';
 import 'package:dikasa_api/src/model/status_error.dart';
 
@@ -59,7 +61,7 @@ class KasKasirApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -156,7 +158,7 @@ class KasKasirApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -205,7 +207,7 @@ class KasKasirApi {
   }
 
   /// URL bukti kas
-  /// Wajib autentikasi dan outlet cocok. Mengembalikan Firebase Storage download URL agar frontend merender gambar langsung tanpa proxy file melalui API.
+  /// Wajib autentikasi dan outlet cocok. Mengembalikan Supabase Storage public URL agar frontend merender gambar langsung tanpa proxy file melalui API.
   ///
   /// Parameters:
   /// * [sessionId]
@@ -247,7 +249,7 @@ class KasKasirApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -296,7 +298,7 @@ class KasKasirApi {
   }
 
   /// Catat kas masuk/keluar
-  /// Kasir pembuka atau manager. UUID terikat aktor/sesi/body/foto; replay identik tidak menambah entri. Bukti PNG/JPEG opsional &lt;&#x3D;3 MiB. Pengeluaran tidak boleh melebihi kas diharapkan. Respons hilang: pulihkan atau kirim ulang intent asli, jangan UUID baru.
+  /// Kasir pembuka atau manager. Multipart tidak menerima byte bukti. Gunakan proof_object_name hasil direct upload Supabase. UUID terikat aktor/sesi/body/object; replay identik tidak menambah entri.
   ///
   /// Parameters:
   /// * [sessionId]
@@ -305,7 +307,7 @@ class KasKasirApi {
   /// * [name]
   /// * [reason]
   /// * [requestId]
-  /// * [proof]
+  /// * [proofObjectName]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -322,7 +324,7 @@ class KasKasirApi {
     required String name,
     required String reason,
     required String requestId,
-    MultipartFile? proof,
+    String? proofObjectName,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -341,7 +343,7 @@ class KasKasirApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -356,7 +358,7 @@ class KasKasirApi {
         r'amount': amount,
         r'kind': kind,
         r'name': name,
-        if (proof != null) r'proof': proof,
+        if (proofObjectName != null) r'proof_object_name': proofObjectName,
         r'reason': reason,
         r'request_id': requestId,
       });
@@ -400,6 +402,105 @@ class KasKasirApi {
     }
 
     return Response<MovementOutputBody>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// Buat signed upload URL bukti kas
+  /// Kasir pembuka atau manager pada sesi terbuka. Backend mengikat object_name ke aktor, outlet, sesi, dan request_id; client upload langsung ke Supabase lalu mengirim proof_object_name saat membuat movement.
+  ///
+  /// Parameters:
+  /// * [sessionId]
+  /// * [proofUploadIntentRequest]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [ProofUploadIntentOutputBody] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<ProofUploadIntentOutputBody>> createCashProofUploadIntent({
+    required String sessionId,
+    required ProofUploadIntentRequest proofUploadIntentRequest,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/cash-sessions/{session_id}/movement-proof-upload-intents'
+        .replaceAll(
+          '{'
+          r'session_id'
+          '}',
+          sessionId.toString(),
+        );
+    final _options = Options(
+      method: r'POST',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
+        ],
+        ...?extra,
+      },
+      contentType: 'application/json',
+      validateStatus: validateStatus,
+    );
+
+    dynamic _bodyData;
+
+    try {
+      _bodyData = jsonEncode(proofUploadIntentRequest);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _options.compose(_dio.options, _path),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    final _response = await _dio.request<Object>(
+      _path,
+      data: _bodyData,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    ProofUploadIntentOutputBody? _responseData;
+
+    try {
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<
+              ProofUploadIntentOutputBody,
+              ProofUploadIntentOutputBody
+            >(rawData, 'ProofUploadIntentOutputBody', growable: true);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<ProofUploadIntentOutputBody>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -455,7 +556,7 @@ class KasKasirApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -548,7 +649,7 @@ class KasKasirApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },

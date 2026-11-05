@@ -48,7 +48,7 @@ class PesananTersimpanApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -149,7 +149,7 @@ class PesananTersimpanApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -237,7 +237,7 @@ class PesananTersimpanApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -318,7 +318,7 @@ class PesananTersimpanApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },
@@ -409,7 +409,7 @@ class PesananTersimpanApi {
       headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {'type': 'http', 'scheme': 'bearer', 'name': 'firebaseBearer'},
+          {'type': 'http', 'scheme': 'bearer', 'name': 'supabaseBearer'},
         ],
         ...?extra,
       },

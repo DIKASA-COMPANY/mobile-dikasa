@@ -4,7 +4,7 @@
 > [Feature history](../FEATURE_HISTORY.md), [Backlog](../BACKLOG.md).
 > These parent-folder documents should be shared alongside both checkouts.
 
-## Backend lokal tanpa Firebase
+## Konfigurasi backend
 
 Backend setup: [local auth instructions](https://github.com/DIKASA-COMPANY/be-dikasa/blob/main/docs/development/local-auth.md).
 Pass `API_BASE_URL` and `USE_MOCK_API` with `--dart-define`, then fully restart
@@ -73,8 +73,9 @@ be added to an order. Mock mode uses a session-local editable demo catalog.
 
 The screens follow Figma frames `1:12841` and `1:14083` and bundle their icons
 and Poppins locally. Fully restart Flutter after pulling these asset changes.
-Photo upload/preview/replacement/removal and XLSX downloads are connected. The local
-backend can store photos in `be-dikasa/uploads/` without Firebase. Enable quantitative
+Photo upload/preview/replacement/removal uses scoped Supabase signed upload URLs.
+Images go directly to Storage; API mutations receive the returned object name.
+XLSX downloads remain connected. Enable quantitative
 inventory from **Ubah Produk → Persediaan Bersama → Atur Pelacakan**, then use
 **Sesuaikan Stok** and **Riwayat Stok**. Save a new product before configuring its
 initial stock. All variations share the parent balance; successful sales deduct it
@@ -281,3 +282,29 @@ remain available. Restart Flutter to load the new assets; no backend migration
 or restart is needed for this batch. Printing/WhatsApp sharing and deferred
 customer creation/attachment remain disabled. See the [batch-1 history](../FIGMA_ALIGNMENT_BATCH_1_IMPLEMENTATION_LOG_2026-10-24.md)
 for design references, adaptations, test evidence and remaining batch-2 work.
+
+## Supabase authentication and signed images
+
+The versioned OpenAPI snapshot matches backend commit `5277d6a` (SHA-256
+`3c266e1652f974627e56a4d1edd2bd2996d54c3b7e0c837b2faa5ed4bbee495f`).
+The generated client uses `supabaseBearer`; login fixtures use `supabase_user_id`.
+OpenAPI Generator **7.24.0**, CLI **2.41.0**, and `tool/generate_api.ps1` reproduce
+the client from `openapi/dikasa.openapi.yaml`. Use a committed backend spec when
+syncing; local backend attendance changes are outside this contract snapshot.
+
+Avatar, product images, and cash proofs follow one flow: request an upload intent,
+PUT PNG/JPEG bytes directly to the signed Storage URL, then send
+`avatar_object_name`, `image_object_name`, or `proof_object_name` to the generated
+mutation. The dedicated Storage client sends no API bearer token and does not log
+signed URLs. A failed upload never submits the mutation. Logout during upload
+prevents adoption. Cash retries reuse the completed proof upload and frozen
+request ID, including when the first mutation response was lost.
+
+The pinned Dart generator does not serialize JSON multipart arrays correctly.
+`GeneratedMultipartInterceptor` converts the explicit variations part to JSON;
+unchanged variations stay omitted and an explicit empty list clears them.
+Generated sources are never patched by hand. The demo Storage follows the same
+intent/upload/adopt flow without using the network.
+
+Fresh checkouts bundle `.env.example`; production values can be passed with
+`--dart-define=API_BASE_URL=...` and `--dart-define=USE_MOCK_API=false`.

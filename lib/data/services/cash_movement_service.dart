@@ -1,3 +1,5 @@
+import 'package:dikasa_api/dikasa_api.dart' as api;
+import 'image_upload_service.dart';
 import 'package:dio/dio.dart';
 import '../../core/network/api_client.dart';
 import '../../core/network/api_exception.dart';
@@ -19,6 +21,36 @@ class CashMovementApiException extends ApiException {
 class CashMovementService {
   CashMovementService(this.client);
   final ApiClient client;
+  final _proofUploads = Expando<({int revision, Future<String> upload})>();
+
+  Future<String?> _proof(PendingCashMovement pending) async {
+    if (pending.proofBytes == null) return null;
+    final cached = _proofUploads[pending];
+    if (cached != null) {
+      if (cached.revision != client.authRevision) {
+        throw const ApiException(
+          type: ApiErrorType.unauthorized,
+          message:
+              'Sesi berubah. Silakan masuk kembali sebelum menyimpan bukti.',
+        );
+      }
+      return cached.upload;
+    }
+    final uploading = ImageUploadService(client).cashProof(
+      pending.sessionId,
+      pending.requestId,
+      pending.proofBytes!,
+      pending.proofName ?? 'proof.png',
+    );
+    _proofUploads[pending] = (revision: client.authRevision, upload: uploading);
+    try {
+      return await uploading;
+    } catch (_) {
+      _proofUploads[pending] = null;
+      rethrow;
+    }
+  }
+
   Map<String, dynamic> _body(Response<dynamic> r) =>
       Map<String, dynamic>.from(r.data as Map);
   Map<String, dynamic> _data(Response<dynamic> r) =>
@@ -101,49 +133,39 @@ class CashMovementService {
     PendingCashMovement p,
     bool reversing,
   ) async {
+    final objectName = reversing ? null : await _proof(p);
     try {
       return await _read(() async {
-        dynamic body;
-        String path = '/cash-sessions/$id/movements';
-        if (reversing) {
-          path += '/${p.reverseId}/reverse';
-          body = {'request_id': p.requestId, 'reason': p.reason};
-        } else {
-          final f = FormData.fromMap({
-            'request_id': p.requestId,
-            'kind': p.kind,
-            'name': p.name,
-            'amount': p.amount.toString(),
-            'reason': p.reason,
-          });
-          if (p.proofBytes != null) {
-            final name = p.proofName ?? 'proof.png';
-            f.files.add(
-              MapEntry(
-                'proof',
-                MultipartFile.fromBytes(
-                  p.proofBytes!,
-                  filename: name,
-                  contentType: DioMediaType(
-                    'image',
-                    name.toLowerCase().endsWith('.png') ? 'png' : 'jpeg',
-                  ),
-                ),
-              ),
-            );
-          }
-          body = f;
-        }
         try {
-          final r = await client.dio.post<dynamic>(path, data: body);
+          final service = client.generated.getKasKasirApi();
+          final r = reversing
+              ? await service.reverseCashMovement(
+                  sessionId: id,
+                  movementId: p.reverseId!,
+                  reversalCommand: api.ReversalCommand(
+                    requestId: p.requestId,
+                    reason: p.reason,
+                  ),
+                )
+              : await service.createCashMovement(
+                  sessionId: id,
+                  amount: p.amount,
+                  kind: p.kind,
+                  name: p.name,
+                  reason: p.reason,
+                  requestId: p.requestId,
+                  proofObjectName: objectName,
+                );
           if (r.statusCode != 201) throw const CashMovementUncertainException();
-          final m = CashMovementRecord.fromJson(_data(r));
+          final m = CashMovementRecord.fromJson(r.data!.data.toJson());
           if (m.sessionId != p.sessionId || m.requestId != p.requestId) {
             throw const CashMovementUncertainException();
           }
           return m;
         } on DioException catch (e) {
-          if (e.response == null || (e.response!.statusCode ?? 500) >= 500) {
+          if (e.response == null ||
+              (e.response!.statusCode ?? 500) >= 500 ||
+              e.type == DioExceptionType.unknown) {
             throw const CashMovementUncertainException();
           }
           rethrow;

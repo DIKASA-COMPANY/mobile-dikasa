@@ -11,9 +11,9 @@ abstract class _$LoginResponseDataCWProxy {
 
   LoginResponseData expiresIn(int expiresIn);
 
-  LoginResponseData firebaseUid(String firebaseUid);
-
   LoginResponseData refreshToken(String refreshToken);
+
+  LoginResponseData supabaseUserId(String supabaseUserId);
 
   LoginResponseData tokenType(LoginResponseDataTokenTypeEnum tokenType);
 
@@ -26,8 +26,8 @@ abstract class _$LoginResponseDataCWProxy {
   LoginResponseData call({
     String accessToken,
     int expiresIn,
-    String firebaseUid,
     String refreshToken,
+    String supabaseUserId,
     LoginResponseDataTokenTypeEnum tokenType,
   });
 }
@@ -46,12 +46,12 @@ class _$LoginResponseDataCWProxyImpl implements _$LoginResponseDataCWProxy {
   LoginResponseData expiresIn(int expiresIn) => this(expiresIn: expiresIn);
 
   @override
-  LoginResponseData firebaseUid(String firebaseUid) =>
-      this(firebaseUid: firebaseUid);
-
-  @override
   LoginResponseData refreshToken(String refreshToken) =>
       this(refreshToken: refreshToken);
+
+  @override
+  LoginResponseData supabaseUserId(String supabaseUserId) =>
+      this(supabaseUserId: supabaseUserId);
 
   @override
   LoginResponseData tokenType(LoginResponseDataTokenTypeEnum tokenType) =>
@@ -67,8 +67,8 @@ class _$LoginResponseDataCWProxyImpl implements _$LoginResponseDataCWProxy {
   LoginResponseData call({
     Object? accessToken = const $CopyWithPlaceholder(),
     Object? expiresIn = const $CopyWithPlaceholder(),
-    Object? firebaseUid = const $CopyWithPlaceholder(),
     Object? refreshToken = const $CopyWithPlaceholder(),
+    Object? supabaseUserId = const $CopyWithPlaceholder(),
     Object? tokenType = const $CopyWithPlaceholder(),
   }) {
     return LoginResponseData(
@@ -80,14 +80,14 @@ class _$LoginResponseDataCWProxyImpl implements _$LoginResponseDataCWProxy {
           ? _value.expiresIn
           // ignore: cast_nullable_to_non_nullable
           : expiresIn as int,
-      firebaseUid: firebaseUid == const $CopyWithPlaceholder()
-          ? _value.firebaseUid
-          // ignore: cast_nullable_to_non_nullable
-          : firebaseUid as String,
       refreshToken: refreshToken == const $CopyWithPlaceholder()
           ? _value.refreshToken
           // ignore: cast_nullable_to_non_nullable
           : refreshToken as String,
+      supabaseUserId: supabaseUserId == const $CopyWithPlaceholder()
+          ? _value.supabaseUserId
+          // ignore: cast_nullable_to_non_nullable
+          : supabaseUserId as String,
       tokenType: tokenType == const $CopyWithPlaceholder()
           ? _value.tokenType
           // ignore: cast_nullable_to_non_nullable
@@ -107,54 +107,54 @@ extension $LoginResponseDataCopyWith on LoginResponseData {
 // JsonSerializableGenerator
 // **************************************************************************
 
-LoginResponseData _$LoginResponseDataFromJson(Map<String, dynamic> json) =>
-    $checkedCreate(
-      'LoginResponseData',
+LoginResponseData _$LoginResponseDataFromJson(
+  Map<String, dynamic> json,
+) => $checkedCreate(
+  'LoginResponseData',
+  json,
+  ($checkedConvert) {
+    $checkKeys(
       json,
-      ($checkedConvert) {
-        $checkKeys(
-          json,
-          requiredKeys: const [
-            'access_token',
-            'expires_in',
-            'firebase_uid',
-            'refresh_token',
-            'token_type',
-          ],
-        );
-        final val = LoginResponseData(
-          accessToken: $checkedConvert('access_token', (v) => v as String),
-          expiresIn: $checkedConvert('expires_in', (v) => (v as num).toInt()),
-          firebaseUid: $checkedConvert('firebase_uid', (v) => v as String),
-          refreshToken: $checkedConvert('refresh_token', (v) => v as String),
-          tokenType: $checkedConvert(
-            'token_type',
-            (v) => $enumDecode(
-              _$LoginResponseDataTokenTypeEnumEnumMap,
-              v,
-              unknownValue:
-                  LoginResponseDataTokenTypeEnum.unknownDefaultOpenApi,
-            ),
-          ),
-        );
-        return val;
-      },
-      fieldKeyMap: const {
-        'accessToken': 'access_token',
-        'expiresIn': 'expires_in',
-        'firebaseUid': 'firebase_uid',
-        'refreshToken': 'refresh_token',
-        'tokenType': 'token_type',
-      },
+      requiredKeys: const [
+        'access_token',
+        'expires_in',
+        'refresh_token',
+        'supabase_user_id',
+        'token_type',
+      ],
     );
+    final val = LoginResponseData(
+      accessToken: $checkedConvert('access_token', (v) => v as String),
+      expiresIn: $checkedConvert('expires_in', (v) => (v as num).toInt()),
+      refreshToken: $checkedConvert('refresh_token', (v) => v as String),
+      supabaseUserId: $checkedConvert('supabase_user_id', (v) => v as String),
+      tokenType: $checkedConvert(
+        'token_type',
+        (v) => $enumDecode(
+          _$LoginResponseDataTokenTypeEnumEnumMap,
+          v,
+          unknownValue: LoginResponseDataTokenTypeEnum.unknownDefaultOpenApi,
+        ),
+      ),
+    );
+    return val;
+  },
+  fieldKeyMap: const {
+    'accessToken': 'access_token',
+    'expiresIn': 'expires_in',
+    'refreshToken': 'refresh_token',
+    'supabaseUserId': 'supabase_user_id',
+    'tokenType': 'token_type',
+  },
+);
 
 Map<String, dynamic> _$LoginResponseDataToJson(
   LoginResponseData instance,
 ) => <String, dynamic>{
   'access_token': instance.accessToken,
   'expires_in': instance.expiresIn,
-  'firebase_uid': instance.firebaseUid,
   'refresh_token': instance.refreshToken,
+  'supabase_user_id': instance.supabaseUserId,
   'token_type': _$LoginResponseDataTokenTypeEnumEnumMap[instance.tokenType]!,
 };
 

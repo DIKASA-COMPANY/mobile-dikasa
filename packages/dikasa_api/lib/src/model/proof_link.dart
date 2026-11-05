@@ -19,7 +19,7 @@ class ProofLink {
   /// Returns a new [ProofLink] instance.
   ProofLink({required this.url});
 
-  /// Firebase Storage download URL for direct client rendering
+  /// Supabase Storage public URL for direct client rendering
   @JsonKey(name: r'url', required: true, includeIfNull: false)
   final String url;
 

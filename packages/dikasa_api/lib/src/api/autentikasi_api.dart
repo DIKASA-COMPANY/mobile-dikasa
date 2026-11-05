@@ -19,7 +19,7 @@ class AutentikasiApi {
   const AutentikasiApi(this._dio);
 
   /// Masuk ke aplikasi
-  /// Memvalidasi kredensial PostgreSQL lalu menerbitkan Firebase ID token dan refresh token.
+  /// Memvalidasi kredensial PostgreSQL, memigrasikan akun lama bila perlu, lalu menerbitkan access dan refresh token Supabase.
   ///
   /// Parameters:
   /// * [loginRequest]

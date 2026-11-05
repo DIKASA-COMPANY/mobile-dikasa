@@ -1,5 +1,5 @@
+import 'mock_image_uploads.dart';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'mock_account.dart';
 import 'mock_reports.dart';
 import 'mock_cash_sessions.dart';
@@ -11,7 +11,8 @@ import 'package:mobile_dikasa/core/network/mock_catalog.dart';
 
 /// Penjawab request tiruan sementara backend belum ada; data mengikuti Figma dan dinonaktifkan lewat `USE_MOCK_API=false`.
 class MockApiInterceptor extends Interceptor {
-  final _account = MockAccount();
+  final _uploads = MockImageUploads();
+  late final _account = MockAccount(uploads: _uploads);
   final _savedOrders = MockSavedOrders();
   late final _reports = MockReports(_orders, () => _refunds.cashActivity);
   late final _refunds = MockRefunds(
@@ -26,7 +27,7 @@ class MockApiInterceptor extends Interceptor {
   );
   Map<String, dynamic>? get _cash => _cashLedger.current;
   final List<Map<String, dynamic>> _orders = [];
-  late final MockCatalog _catalog = MockCatalog(_products);
+  late final MockCatalog _catalog = MockCatalog(_products, uploads: _uploads);
 
   /// Kredensial demo untuk mencoba alur login.
   static const String demoUsername = 'admin';
@@ -40,6 +41,7 @@ class MockApiInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    if (_uploads.handle(options, handler)) return;
     await Future<void>.delayed(_latency);
     if (await _account.handle(options, handler)) return;
     if (await _catalog.handle(options, handler)) return;
@@ -180,14 +182,7 @@ class MockApiInterceptor extends Interceptor {
             );
           }
           data['amount'] = int.parse(text);
-          Uint8List? proof;
-          if (f.files.isNotEmpty) {
-            final b = await f.files.first.value.finalize().fold<List<int>>(
-              [],
-              (a, b) => a..addAll(b),
-            );
-            proof = Uint8List.fromList(b);
-          }
+          final proof = _uploads.bytes(data['proof_object_name'] as String?);
           result = {
             'data': _cashLedger.movementCreate(sid, data, proof: proof),
           };
@@ -432,15 +427,12 @@ class MockApiInterceptor extends Interceptor {
 
     handler.resolve(
       _response(options, 200, <String, dynamic>{
-        'token': 'mock-token-dikasa',
-        'user': <String, dynamic>{
-          'id': '1',
-          'name':
-              '${_account.profile['first_name'] ?? ''} ${_account.profile['last_name'] ?? ''}'
-                  .trim(),
-          'username': demoUsername,
-          'role': 'Kasir',
-          'outlet_name': 'Warteg Bahari',
+        'data': <String, dynamic>{
+          'access_token': 'mock-token-dikasa',
+          'refresh_token': 'mock-refresh-token',
+          'token_type': 'Bearer',
+          'expires_in': 3600,
+          'supabase_user_id': 'mock-supabase-user',
         },
       }),
     );

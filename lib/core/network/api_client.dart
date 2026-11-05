@@ -3,15 +3,30 @@ import 'package:dikasa_api/dikasa_api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile_dikasa/core/network/mock_api_interceptor.dart';
+import 'generated_multipart_interceptor.dart';
 
 /// Pembungkus tunggal Dio; base URL, timeout, header auth, dan logging diatur sekali di sini.
 class ApiClient {
-  ApiClient({Dio? dio}) : dio = dio ?? Dio() {
+  ApiClient({Dio? dio, Dio? storageDio})
+    : dio = dio ?? Dio(),
+      storage =
+          storageDio ??
+          Dio(
+            BaseOptions(
+              connectTimeout: const Duration(seconds: 10),
+              receiveTimeout: const Duration(seconds: 30),
+              sendTimeout: const Duration(seconds: 30),
+              followRedirects: false,
+            ),
+          ) {
     _configure();
     generated = DikasaApi(dio: this.dio, interceptors: const <Interceptor>[]);
   }
 
   final Dio dio;
+  final Dio storage;
+  int _authRevision = 0;
+  int get authRevision => _authRevision;
   late final DikasaApi generated;
   DikasaApi get api => generated;
 
@@ -34,6 +49,8 @@ class ApiClient {
       contentType: Headers.jsonContentType,
     );
 
+    dio.interceptors.add(GeneratedMultipartInterceptor());
+
     // Menyisipkan Authorization header tanpa perlu diulang di tiap Service.
     dio.interceptors.add(
       InterceptorsWrapper(
@@ -49,7 +66,9 @@ class ApiClient {
 
     // Set USE_MOCK_API=false di .env untuk memakai backend asli.
     if (useMockValue.toLowerCase() == 'true') {
-      dio.interceptors.add(MockApiInterceptor());
+      final mock = MockApiInterceptor();
+      dio.interceptors.add(mock);
+      storage.interceptors.add(mock);
     }
 
     // Log request/response hanya saat debug, agar tidak bocor di build rilis.
@@ -63,12 +82,13 @@ class ApiClient {
 
   /// Mengisi interceptor bearer generated setelah login / menghapusnya saat logout.
   void updateAuthToken(String? token) {
+    _authRevision++;
     _authToken = token;
     if (token == null || token.isEmpty) {
-      generated.removeBearerAuth('firebaseBearer');
+      generated.removeBearerAuth('supabaseBearer');
       return;
     }
 
-    generated.setBearerAuth('firebaseBearer', token);
+    generated.setBearerAuth('supabaseBearer', token);
   }
 }

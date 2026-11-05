@@ -75,10 +75,12 @@ Class | Method | HTTP request | Description
 [*KasKasirApi*](doc/KasKasirApi.md) | [**cashMovementDetail**](doc/KasKasirApi.md#cashmovementdetail) | **GET** /cash-sessions/{session_id}/movements/{movement_id} | Rincian entri kas
 [*KasKasirApi*](doc/KasKasirApi.md) | [**cashMovementProof**](doc/KasKasirApi.md#cashmovementproof) | **GET** /cash-sessions/{session_id}/movements/{movement_id}/proof | URL bukti kas
 [*KasKasirApi*](doc/KasKasirApi.md) | [**createCashMovement**](doc/KasKasirApi.md#createcashmovement) | **POST** /cash-sessions/{session_id}/movements | Catat kas masuk/keluar
+[*KasKasirApi*](doc/KasKasirApi.md) | [**createCashProofUploadIntent**](doc/KasKasirApi.md#createcashproofuploadintent) | **POST** /cash-sessions/{session_id}/movement-proof-upload-intents | Buat signed upload URL bukti kas
 [*KasKasirApi*](doc/KasKasirApi.md) | [**recoverCashMovement**](doc/KasKasirApi.md#recovercashmovement) | **GET** /cash-sessions/{session_id}/movements/by-request/{request_id} | Pulihkan permintaan kas sendiri
 [*KasKasirApi*](doc/KasKasirApi.md) | [**reverseCashMovement**](doc/KasKasirApi.md#reversecashmovement) | **POST** /cash-sessions/{session_id}/movements/{movement_id}/reverse | Koreksi entri kas dengan entri lawan
 [*KatalogApi*](doc/KatalogApi.md) | [**createProduct**](doc/KatalogApi.md#createproduct) | **POST** /products | Membuat produk
 [*KatalogApi*](doc/KatalogApi.md) | [**createProductCategory**](doc/KatalogApi.md#createproductcategory) | **POST** /product-types/{product_type}/categories | Membuat kategori
+[*KatalogApi*](doc/KatalogApi.md) | [**createProductImageUploadIntent**](doc/KatalogApi.md#createproductimageuploadintent) | **POST** /products/image-upload-intents | Buat signed upload URL gambar produk
 [*KatalogApi*](doc/KatalogApi.md) | [**deleteProduct**](doc/KatalogApi.md#deleteproduct) | **DELETE** /products/{product_id} | Menonaktifkan produk
 [*KatalogApi*](doc/KatalogApi.md) | [**deleteProductCategory**](doc/KatalogApi.md#deleteproductcategory) | **DELETE** /product-types/{product_type}/categories/{category_id} | Menonaktifkan kategori
 [*KatalogApi*](doc/KatalogApi.md) | [**exportProductsXlsx**](doc/KatalogApi.md#exportproductsxlsx) | **GET** /products/export.xlsx | Unduh workbook Excel produk dan variasi
@@ -136,6 +138,7 @@ Class | Method | HTTP request | Description
 [*StokApi*](doc/StokApi.md) | [**listStockMovements**](doc/StokApi.md#liststockmovements) | **GET** /products/{product_id}/stock-movements | Riwayat perubahan stok outlet
 [*UserApi*](doc/UserApi.md) | [**changeCurrentUserPassword**](doc/UserApi.md#changecurrentuserpassword) | **PATCH** /users/me/password | Mengubah password akun
 [*UserApi*](doc/UserApi.md) | [**changeCurrentUserPin**](doc/UserApi.md#changecurrentuserpin) | **PATCH** /users/me/pin | Mengubah PIN akun
+[*UserApi*](doc/UserApi.md) | [**createAvatarUploadIntent**](doc/UserApi.md#createavataruploadintent) | **POST** /users/me/avatar-upload-intents | Buat signed upload URL avatar
 [*UserApi*](doc/UserApi.md) | [**getCurrentUser**](doc/UserApi.md#getcurrentuser) | **GET** /users/me | Mengambil profil user aktif
 [*UserApi*](doc/UserApi.md) | [**listProfileGenders**](doc/UserApi.md#listprofilegenders) | **GET** /users/me/genders | Pilihan gender profil
 [*UserApi*](doc/UserApi.md) | [**updateCurrentUser**](doc/UserApi.md#updatecurrentuser) | **PATCH** /users/me | Memperbarui profil sendiri
@@ -146,6 +149,9 @@ Class | Method | HTTP request | Description
  - [ActivityData](doc/ActivityData.md)
  - [ActivityMeta](doc/ActivityMeta.md)
  - [ActivityPage](doc/ActivityPage.md)
+ - [AvatarUploadIntentData](doc/AvatarUploadIntentData.md)
+ - [AvatarUploadIntentOutputBody](doc/AvatarUploadIntentOutputBody.md)
+ - [AvatarUploadIntentRequest](doc/AvatarUploadIntentRequest.md)
  - [Body](doc/Body.md)
  - [CashActivityEvent](doc/CashActivityEvent.md)
  - [CashCloseOutputBody](doc/CashCloseOutputBody.md)
@@ -209,6 +215,9 @@ Class | Method | HTTP request | Description
  - [Preview](doc/Preview.md)
  - [PreviewOutputBody](doc/PreviewOutputBody.md)
  - [ProductData](doc/ProductData.md)
+ - [ProductImageUploadIntentData](doc/ProductImageUploadIntentData.md)
+ - [ProductImageUploadIntentOutputBody](doc/ProductImageUploadIntentOutputBody.md)
+ - [ProductImageUploadIntentRequest](doc/ProductImageUploadIntentRequest.md)
  - [ProductOutputBody](doc/ProductOutputBody.md)
  - [ProductTypeData](doc/ProductTypeData.md)
  - [ProductTypesOutputBody](doc/ProductTypesOutputBody.md)
@@ -218,6 +227,9 @@ Class | Method | HTTP request | Description
  - [Profile](doc/Profile.md)
  - [ProfileResponse](doc/ProfileResponse.md)
  - [ProofLink](doc/ProofLink.md)
+ - [ProofUploadIntentData](doc/ProofUploadIntentData.md)
+ - [ProofUploadIntentOutputBody](doc/ProofUploadIntentOutputBody.md)
+ - [ProofUploadIntentRequest](doc/ProofUploadIntentRequest.md)
  - [ReceiptItem](doc/ReceiptItem.md)
  - [ReceiptSnapshot](doc/ReceiptSnapshot.md)
  - [ReconciliationSummary](doc/ReconciliationSummary.md)
@@ -268,7 +280,7 @@ Class | Method | HTTP request | Description
 
 
 Authentication schemes defined for the API:
-### firebaseBearer
+### supabaseBearer
 
 - **Type**: HTTP Bearer Token authentication (JWT)
 

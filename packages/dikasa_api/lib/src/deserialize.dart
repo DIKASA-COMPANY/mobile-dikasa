@@ -1,6 +1,9 @@
 import 'package:dikasa_api/src/model/activity_data.dart';
 import 'package:dikasa_api/src/model/activity_meta.dart';
 import 'package:dikasa_api/src/model/activity_page.dart';
+import 'package:dikasa_api/src/model/avatar_upload_intent_data.dart';
+import 'package:dikasa_api/src/model/avatar_upload_intent_output_body.dart';
+import 'package:dikasa_api/src/model/avatar_upload_intent_request.dart';
 import 'package:dikasa_api/src/model/body.dart';
 import 'package:dikasa_api/src/model/cash_activity_event.dart';
 import 'package:dikasa_api/src/model/cash_close_output_body.dart';
@@ -64,6 +67,9 @@ import 'package:dikasa_api/src/model/pagination_meta.dart';
 import 'package:dikasa_api/src/model/preview.dart';
 import 'package:dikasa_api/src/model/preview_output_body.dart';
 import 'package:dikasa_api/src/model/product_data.dart';
+import 'package:dikasa_api/src/model/product_image_upload_intent_data.dart';
+import 'package:dikasa_api/src/model/product_image_upload_intent_output_body.dart';
+import 'package:dikasa_api/src/model/product_image_upload_intent_request.dart';
 import 'package:dikasa_api/src/model/product_output_body.dart';
 import 'package:dikasa_api/src/model/product_type_data.dart';
 import 'package:dikasa_api/src/model/product_types_output_body.dart';
@@ -73,6 +79,9 @@ import 'package:dikasa_api/src/model/products_output_body.dart';
 import 'package:dikasa_api/src/model/profile.dart';
 import 'package:dikasa_api/src/model/profile_response.dart';
 import 'package:dikasa_api/src/model/proof_link.dart';
+import 'package:dikasa_api/src/model/proof_upload_intent_data.dart';
+import 'package:dikasa_api/src/model/proof_upload_intent_output_body.dart';
+import 'package:dikasa_api/src/model/proof_upload_intent_request.dart';
 import 'package:dikasa_api/src/model/receipt_item.dart';
 import 'package:dikasa_api/src/model/receipt_snapshot.dart';
 import 'package:dikasa_api/src/model/reconciliation_summary.dart';
@@ -146,6 +155,17 @@ ReturnType deserialize<ReturnType, BaseType>(
       return ActivityMeta.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'ActivityPage':
       return ActivityPage.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'AvatarUploadIntentData':
+      return AvatarUploadIntentData.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AvatarUploadIntentOutputBody':
+      return AvatarUploadIntentOutputBody.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AvatarUploadIntentRequest':
+      return AvatarUploadIntentRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
     case 'Body':
       return Body.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'CashActivityEvent':
@@ -312,6 +332,21 @@ ReturnType deserialize<ReturnType, BaseType>(
           as ReturnType;
     case 'ProductData':
       return ProductData.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ProductImageUploadIntentData':
+      return ProductImageUploadIntentData.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'ProductImageUploadIntentOutputBody':
+      return ProductImageUploadIntentOutputBody.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'ProductImageUploadIntentRequest':
+      return ProductImageUploadIntentRequest.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
     case 'ProductOutputBody':
       return ProductOutputBody.fromJson(value as Map<String, dynamic>)
           as ReturnType;
@@ -337,6 +372,15 @@ ReturnType deserialize<ReturnType, BaseType>(
           as ReturnType;
     case 'ProofLink':
       return ProofLink.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'ProofUploadIntentData':
+      return ProofUploadIntentData.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ProofUploadIntentOutputBody':
+      return ProofUploadIntentOutputBody.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'ProofUploadIntentRequest':
+      return ProofUploadIntentRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
     case 'ReceiptItem':
       return ReceiptItem.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'ReceiptSnapshot':

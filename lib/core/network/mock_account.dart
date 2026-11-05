@@ -1,11 +1,19 @@
+import 'mock_image_uploads.dart';
 import 'dart:convert';
 import 'package:dio/dio.dart';
 
 /// In-memory account fixture; never used when USE_MOCK_API is false.
 class MockAccount {
+  MockAccount({MockImageUploads? uploads})
+    : uploads = uploads ?? MockImageUploads();
+  final MockImageUploads uploads;
   String password = 'dikasa123', pin = '';
   final profile = <String, dynamic>{
     'id': '1',
+    'role_id': 'mock-role',
+    'supabase_user_id': 'mock-supabase-user',
+    'is_active': true,
+    'gender_name': null,
     'username': 'admin',
     'first_name': 'Jane',
     'last_name': 'Doe',
@@ -74,16 +82,9 @@ class MockAccount {
           profile['avatar_url'] = null;
         }
       }
-      for (final entry in f.files) {
-        if (entry.key == 'avatar') {
-          final file = entry.value;
-          final bytes = await file.finalize().fold<List<int>>(
-            [],
-            (a, b) => a..addAll(b),
-          );
-          profile['avatar_url'] =
-              'data:${file.contentType};base64,${base64Encode(bytes)}';
-        }
+      final objectName = Map.fromEntries(f.fields)['avatar_object_name'];
+      if (objectName != null) {
+        profile['avatar_url'] = uploads.publicUrl(objectName);
       }
       reply(200, {'data': Map<String, dynamic>.from(profile)});
       return true;

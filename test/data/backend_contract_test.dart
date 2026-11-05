@@ -36,7 +36,7 @@ void main() {
                       'refresh_token': '',
                       'token_type': 'Bearer',
                       'expires_in': 3600,
-                      'firebase_uid': 'user-uuid',
+                      'supabase_user_id': 'user-uuid',
                     },
                   },
                 ),

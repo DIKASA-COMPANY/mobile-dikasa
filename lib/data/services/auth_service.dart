@@ -26,7 +26,7 @@ class AuthService {
       );
 
       final body = response.data as Map<String, dynamic>;
-      // The mock keeps its legacy session fixture; real APIs return a token envelope.
+      // Accept legacy session fixtures while the API and demo use the token envelope.
       if (body['data'] == null) return AuthSession.fromJson(body);
       final data = body['data'] as Map<String, dynamic>;
       final token = data['access_token'] as String;

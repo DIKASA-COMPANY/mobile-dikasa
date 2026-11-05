@@ -1,10 +1,12 @@
+import 'mock_image_uploads.dart';
 import 'dart:convert';
 import 'mock_workbook.dart';
 import 'package:dio/dio.dart';
 
 /// Session-local demo catalog. Never used when USE_MOCK_API=false.
 class MockCatalog {
-  MockCatalog(List<Map<String, dynamic>> source) {
+  MockCatalog(List<Map<String, dynamic>> source, {MockImageUploads? uploads})
+    : uploads = uploads ?? MockImageUploads() {
     for (final row in source) {
       final type = row['group'] == 'minuman'
           ? 'drink'
@@ -31,6 +33,10 @@ class MockCatalog {
         'product_type': type,
         'selling_price': row['price'],
         'stock_status': 'available',
+        'track_stock': false,
+        'stock_quantity': 0,
+        'low_stock_threshold': 0,
+        'effective_stock_status': 'available',
         'description': '',
         'sort_order': 0,
         'is_active': true,
@@ -39,6 +45,7 @@ class MockCatalog {
     }
   }
   final List<Map<String, dynamic>> products = [], categories = [];
+  final MockImageUploads uploads;
   int serial = 0;
   final Map<String, Map<String, dynamic>> stockRequests = {};
   final Map<String, List<Map<String, dynamic>>> movements = {};
@@ -271,6 +278,15 @@ class MockCatalog {
         if (index >= 0) ...products[index],
         ...fields,
         'id': id ?? 'new-product-${++serial}',
+        'track_stock': index >= 0
+            ? products[index]['track_stock'] ?? false
+            : false,
+        'stock_quantity': index >= 0
+            ? products[index]['stock_quantity'] ?? 0
+            : 0,
+        'low_stock_threshold': index >= 0
+            ? products[index]['low_stock_threshold'] ?? 0
+            : 0,
         'category': category,
         'selling_price': int.parse(fields['selling_price']!),
         'price': int.parse(fields['selling_price']!),
@@ -295,13 +311,9 @@ class MockCatalog {
       value['variations'] ??= <dynamic>[];
       value.remove('group');
       if (fields['remove_image'] == 'true') value['image_url'] = null;
-      for (final part in form.files.where((f) => f.key == 'image')) {
-        final bytes = await part.value.finalize().fold<List<int>>(
-          [],
-          (a, b) => a..addAll(b),
-        );
-        value['image_url'] =
-            'data:${part.value.contentType!.mimeType};base64,${base64Encode(bytes)}';
+      final objectName = fields['image_object_name'];
+      if (objectName != null) {
+        value['image_url'] = uploads.publicUrl(objectName);
       }
       value['variations'] = (value['variations'] as List)
           .map(

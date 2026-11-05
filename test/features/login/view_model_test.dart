@@ -50,7 +50,7 @@ void main() {
       expect(viewModel.isSubmitting, isFalse);
       expect(viewModel.loggedInUser?.username, MockApiInterceptor.demoUsername);
       // Session tersimpan di repository, bukan di ViewModel.
-      expect(authRepository.isLoggedIn, isTrue);
+      expect(authRepository.currentUser, same(viewModel.loggedInUser));
     });
 
     test('gagal dengan pesan yang jelas saat password salah', () async {
@@ -62,7 +62,7 @@ void main() {
       expect(isSuccess, isFalse);
       expect(viewModel.errorMessage, 'Username atau password salah.');
       expect(viewModel.isSubmitting, isFalse);
-      expect(authRepository.isLoggedIn, isFalse);
+      expect(authRepository.currentUser, isNull);
     });
 
     test('pesan error hilang begitu pengguna mengetik ulang', () async {

@@ -10,8 +10,7 @@ import 'package:mobile_dikasa/data/services/cash_movement_service.dart';
 void main() {
   setUp(
     () => dotenv.loadFromString(
-      envString:
-          'API_BASE_URL=http://localhost/dikasa/v1\nUSE_MOCK_API=false',
+      envString: 'API_BASE_URL=http://localhost/dikasa/v1\nUSE_MOCK_API=false',
     ),
   );
 
@@ -47,16 +46,48 @@ void main() {
   test(
     'same pending command recreates identical multipart and treats lost reply as uncertain',
     () async {
-      final client = ApiClient();
+      final storage = Dio();
+      final client = ApiClient(storageDio: storage);
+      var uploads = 0;
+      storage.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (o, h) {
+            uploads++;
+            h.resolve(Response(requestOptions: o, statusCode: 200));
+          },
+        ),
+      );
+      var intents = 0;
       var calls = 0;
       client.dio.interceptors.add(
         InterceptorsWrapper(
           onRequest: (options, handler) {
+            if (options.path.endsWith('movement-proof-upload-intents')) {
+              intents++;
+              handler.resolve(
+                Response(
+                  requestOptions: options,
+                  statusCode: 200,
+                  data: {
+                    'data': {
+                      'upload_url': 'https://storage.example/proof',
+                      'object_name': 'cash-proofs/proof.png',
+                      'expires_in': 7200,
+                    },
+                  },
+                ),
+              );
+              return;
+            }
             calls++;
             final data = options.data as FormData;
             expect(Map.fromEntries(data.fields)['request_id'], 'request');
             expect(Map.fromEntries(data.fields)['amount'], '123');
-            expect(data.files.single.key, 'proof');
+            expect(data.files, isEmpty);
+            expect(
+              Map.fromEntries(data.fields)['proof_object_name'],
+              'cash-proofs/proof.png',
+            );
             handler.reject(
               DioException(
                 requestOptions: options,
@@ -86,6 +117,8 @@ void main() {
         throwsA(isA<CashMovementUncertainException>()),
       );
       expect(calls, 2);
+      expect(intents, 1);
+      expect(uploads, 1);
     },
   );
 }

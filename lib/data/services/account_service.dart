@@ -1,3 +1,4 @@
+import 'image_upload_service.dart';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import '../../core/network/api_client.dart';
@@ -49,27 +50,27 @@ class AccountService {
     Uint8List? avatarBytes,
     String? avatarFilename,
   }) => _read(() async {
-    final data = FormData.fromMap(fields);
-    if (avatarBytes != null) {
-      final name = avatarFilename ?? 'avatar.png';
-      data.files.add(
-        MapEntry(
-          'avatar',
-          MultipartFile.fromBytes(
-            avatarBytes,
-            filename: name,
-            contentType: DioMediaType(
-              'image',
-              name.toLowerCase().endsWith('.png') ? 'png' : 'jpeg',
-            ),
-          ),
-        ),
-      );
-    }
-    return AccountProfile.fromJson(
-      _data(await client.dio.patch<dynamic>('/users/me', data: data)),
+    final objectName = avatarBytes == null
+        ? null
+        : await ImageUploadService(
+            client,
+          ).avatar(avatarBytes, avatarFilename ?? 'avatar.png');
+    final response = await client.generated.getUserApi().updateCurrentUser(
+      avatarObjectName: objectName,
+      dateOfBirth: fields['date_of_birth'],
+      email: fields['email'],
+      firstName: fields['first_name'],
+      lastName: fields['last_name'],
+      genderId: fields['gender_id'],
+      personalAddress: fields['personal_address'],
+      phoneNumber: fields['phone_number'],
+      removeAvatar: fields.containsKey('remove_avatar')
+          ? fields['remove_avatar'] == 'true'
+          : null,
     );
+    return AccountProfile.fromJson(response.data!.data.toJson());
   });
+
   Future<void> _credential(String path, Map<String, String> data) async {
     try {
       final r = await client.dio.patch<dynamic>(path, data: data);
