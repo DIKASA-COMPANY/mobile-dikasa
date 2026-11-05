@@ -28,7 +28,6 @@ class ApiClient {
   int _authRevision = 0;
   int get authRevision => _authRevision;
   late final DikasaApi generated;
-  DikasaApi get api => generated;
 
   /// Token yang dilampirkan otomatis ke setiap request setelah login.
   String? _authToken;

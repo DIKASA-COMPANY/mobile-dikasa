@@ -48,14 +48,14 @@ Please follow the [installation procedure](#installation--usage) and then run th
 import 'package:dikasa_api/dikasa_api.dart';
 
 
-final api = DikasaApi().getAutentikasiApi();
-final LoginRequest loginRequest = ; // LoginRequest | 
+final api = DikasaApi().getAbsensiApi();
+final AttendanceChallengeInputBody attendanceChallengeInputBody = ; // AttendanceChallengeInputBody |
 
 try {
-    final response = await api.login(loginRequest);
+    final response = await api.createAttendanceChallenge(attendanceChallengeInputBody);
     print(response);
 } on DioException catch (e) {
-    print("Exception when calling AutentikasiApi->login: $e\n");
+    print("Exception when calling AbsensiApi->createAttendanceChallenge: $e\n");
 }
 
 ```
@@ -66,6 +66,13 @@ All URIs are relative to */dikasa/v1*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+[*AbsensiApi*](doc/AbsensiApi.md) | [**createAttendanceChallenge**](doc/AbsensiApi.md#createattendancechallenge) | **POST** /attendance/biometric/challenge | Buat challenge fingerprint
+[*AbsensiApi*](doc/AbsensiApi.md) | [**enrollAttendanceBiometric**](doc/AbsensiApi.md#enrollattendancebiometric) | **PUT** /attendance/biometric/enrollment | Daftarkan fingerprint akun sendiri dengan PIN
+[*AbsensiApi*](doc/AbsensiApi.md) | [**getAttendanceStatus**](doc/AbsensiApi.md#getattendancestatus) | **GET** /attendance/status | Status absensi pegawai
+[*AbsensiApi*](doc/AbsensiApi.md) | [**listAttendance**](doc/AbsensiApi.md#listattendance) | **GET** /attendance | Laporan absensi (maksimal 31 hari / 500 baris)
+[*AbsensiApi*](doc/AbsensiApi.md) | [**listEmployees**](doc/AbsensiApi.md#listemployees) | **GET** /employees | Daftar pegawai outlet
+[*AbsensiApi*](doc/AbsensiApi.md) | [**punchAttendanceBiometric**](doc/AbsensiApi.md#punchattendancebiometric) | **POST** /attendance/biometric | Absen dengan tanda tangan fingerprint
+[*AbsensiApi*](doc/AbsensiApi.md) | [**punchAttendancePin**](doc/AbsensiApi.md#punchattendancepin) | **POST** /attendance/pin | Absen masuk atau pulang dengan PIN
 [*AutentikasiApi*](doc/AutentikasiApi.md) | [**login**](doc/AutentikasiApi.md#login) | **POST** /login | Masuk ke aplikasi
 [*JenisOrderApi*](doc/JenisOrderApi.md) | [**createOrderType**](doc/JenisOrderApi.md#createordertype) | **POST** /order-types | Membuat jenis order
 [*JenisOrderApi*](doc/JenisOrderApi.md) | [**deleteOrderType**](doc/JenisOrderApi.md#deleteordertype) | **DELETE** /order-types/{order_type_id} | Menonaktifkan jenis order
@@ -149,6 +156,17 @@ Class | Method | HTTP request | Description
  - [ActivityData](doc/ActivityData.md)
  - [ActivityMeta](doc/ActivityMeta.md)
  - [ActivityPage](doc/ActivityPage.md)
+ - [AttendanceBiometricInputBody](doc/AttendanceBiometricInputBody.md)
+ - [AttendanceChallengeInputBody](doc/AttendanceChallengeInputBody.md)
+ - [AttendanceChallengeOutputBody](doc/AttendanceChallengeOutputBody.md)
+ - [AttendanceEmployee](doc/AttendanceEmployee.md)
+ - [AttendanceEnrollmentRequest](doc/AttendanceEnrollmentRequest.md)
+ - [AttendanceHistoryOutputBody](doc/AttendanceHistoryOutputBody.md)
+ - [AttendanceOutputBody](doc/AttendanceOutputBody.md)
+ - [AttendancePINRequest](doc/AttendancePINRequest.md)
+ - [AttendanceRecord](doc/AttendanceRecord.md)
+ - [AttendanceStaffOutputBody](doc/AttendanceStaffOutputBody.md)
+ - [AttendanceStatusOutputBody](doc/AttendanceStatusOutputBody.md)
  - [AvatarUploadIntentData](doc/AvatarUploadIntentData.md)
  - [AvatarUploadIntentOutputBody](doc/AvatarUploadIntentOutputBody.md)
  - [AvatarUploadIntentRequest](doc/AvatarUploadIntentRequest.md)
@@ -163,6 +181,7 @@ Class | Method | HTTP request | Description
  - [CategoryData](doc/CategoryData.md)
  - [CategoryOutputBody](doc/CategoryOutputBody.md)
  - [CategoryRequest](doc/CategoryRequest.md)
+ - [Challenge](doc/Challenge.md)
  - [ChangePINRequest](doc/ChangePINRequest.md)
  - [ChangePasswordRequest](doc/ChangePasswordRequest.md)
  - [CloseCommand](doc/CloseCommand.md)

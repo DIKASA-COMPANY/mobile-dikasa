@@ -14,6 +14,7 @@ class OrderTopBar extends StatelessWidget implements PreferredSizeWidget {
     required this.user,
     required this.onMenuPressed,
     required this.onLockPressed,
+    this.sectionLabel = 'Transaksi',
   });
 
   static const double height = 88;
@@ -21,6 +22,7 @@ class OrderTopBar extends StatelessWidget implements PreferredSizeWidget {
   final User? user;
   final VoidCallback onMenuPressed;
   final VoidCallback onLockPressed;
+  final String sectionLabel;
 
   @override
   Size get preferredSize => const Size.fromHeight(height);
@@ -42,7 +44,7 @@ class OrderTopBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: onMenuPressed,
               ),
               SizedBox(width: 36.w),
-              const _SectionSwitch(),
+              _SectionSwitch(label: sectionLabel),
               const Spacer(),
               _IconAction(
                 assetPath: 'assets/icons/lock_circle_icon.svg',
@@ -88,7 +90,8 @@ class _IconAction extends StatelessWidget {
 /// Halaman Notifikasi belum dibuat, sehingga tab kedua masih menampilkan
 /// pemberitahuan singkat alih-alih berpindah halaman.
 class _SectionSwitch extends StatelessWidget {
-  const _SectionSwitch();
+  const _SectionSwitch({required this.label});
+  final String label;
 
   @override
   Widget build(BuildContext context) {
@@ -99,11 +102,7 @@ class _SectionSwitch extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              _SwitchSegment(
-                label: 'Transaksi',
-                isActive: true,
-                onPressed: () {},
-              ),
+              _SwitchSegment(label: label, isActive: true, onPressed: () {}),
               _SwitchSegment(
                 label: 'Notifikasi',
                 isActive: false,
