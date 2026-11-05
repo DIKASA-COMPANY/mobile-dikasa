@@ -28,7 +28,7 @@ void main() {
     apiClient.updateAuthToken('supabase-access-token');
 
     await expectLater(
-      apiClient.api.getJenisOrderApi().listOrderTypes(),
+      apiClient.generated.getJenisOrderApi().listOrderTypes(),
       throwsA(isA<DioException>()),
     );
     expect(authorization, 'Bearer supabase-access-token');

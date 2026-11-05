@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_dikasa/features/login/view.dart';
-import 'package:mobile_dikasa/features/new_order/view.dart';
 import 'package:mobile_dikasa/features/splash/view.dart';
 
 /// Daftar nama route beserta pemetaannya ke halaman.
@@ -14,9 +13,11 @@ class AppRoutes {
   static const String login = '/login';
   static const String newOrder = '/order';
 
-  static Map<String, WidgetBuilder> get routes => <String, WidgetBuilder>{
+  static Map<String, WidgetBuilder> routes({
+    required WidgetBuilder newOrderBuilder,
+  }) => <String, WidgetBuilder>{
     splash: (_) => const SplashView(),
     login: (_) => const LoginView(),
-    newOrder: (_) => const NewOrderView(),
+    newOrder: newOrderBuilder,
   };
 }

@@ -292,10 +292,16 @@ or restart is needed for this batch. Printing/WhatsApp sharing and deferred
 customer creation/attachment remain disabled. See the [batch-1 history](../FIGMA_ALIGNMENT_BATCH_1_IMPLEMENTATION_LOG_2026-10-24.md)
 for design references, adaptations, test evidence and remaining batch-2 work.
 
+## Employee attendance
+
+Employee attendance integration and its backend dependency are documented in
+[Absensi pegawai](docs/attendance.md).
+
 ## Supabase authentication and signed images
 
-The versioned OpenAPI snapshot matches backend commit `5277d6a` (SHA-256
-`3c266e1652f974627e56a4d1edd2bd2996d54c3b7e0c837b2faa5ed4bbee495f`).
+Signed image uploads follow the committed backend contract from `5277d6a`.
+The current OpenAPI snapshot also includes the pending attendance contract;
+its hash and unpublished backend dependency are recorded in the attendance guide.
 The generated client uses `supabaseBearer`; login fixtures use `supabase_user_id`.
 OpenAPI Generator **7.24.0**, CLI **2.41.0**, and `tool/generate_api.ps1` reproduce
 the client from `openapi/dikasa.openapi.yaml`. Use a committed backend spec when

@@ -15,6 +15,13 @@ import 'package:mobile_dikasa/data/services/catalog_service.dart';
 import 'package:mobile_dikasa/features/login/view_model.dart';
 import 'package:mobile_dikasa/features/new_order/view_model.dart';
 import 'package:provider/provider.dart';
+import 'package:biometric_signature/biometric_signature.dart';
+import 'package:mobile_dikasa/features/new_order/view.dart';
+import 'package:mobile_dikasa/features/attendance/repository.dart';
+import 'package:mobile_dikasa/features/attendance/fingerprint_service.dart';
+import 'package:mobile_dikasa/features/attendance/view_model.dart';
+import 'package:mobile_dikasa/features/attendance/view.dart';
+import 'package:mobile_dikasa/features/attendance/report_view_model.dart';
 
 Future<void> main() async {
   // Wajib dipanggil sebelum memakai plugin (dotenv) di dalam `main`.
@@ -63,6 +70,14 @@ class MobileDikasaApp extends StatelessWidget {
           Provider<AccountService>(
             create: (context) => AccountService(context.read<ApiClient>()),
           ),
+          Provider<AttendanceRepository>(
+            create: (context) => ApiAttendanceRepository(
+              context.read<ApiClient>().generated.getAbsensiApi(),
+            ),
+          ),
+          Provider<FingerprintService>(
+            create: (_) => DeviceFingerprintService(BiometricSignature()),
+          ),
 
           // --- Lapisan presentasi ---
           Provider<LoginViewModel>(
@@ -88,7 +103,30 @@ class MobileDikasaApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(seedColor: AppColors.c097BC2),
           ),
           initialRoute: AppRoutes.splash,
-          routes: AppRoutes.routes,
+          routes: AppRoutes.routes(
+            newOrderBuilder: (context) => NewOrderView(
+              attendanceBuilder: (_) {
+                final auth = context.read<AuthRepository>();
+                final repository = context.read<AttendanceRepository>();
+                return AttendanceView(
+                  viewModel: AttendanceViewModel(
+                    repository: repository,
+                    fingerprint: context.read<FingerprintService>(),
+                    accountId: auth.currentUser?.id ?? '',
+                  ),
+                  createReportViewModel: () =>
+                      AttendanceReportViewModel(repository),
+                  user: auth.currentUser,
+                  onLock: () {
+                    auth.logout();
+                    Navigator.of(
+                      context,
+                    ).pushNamedAndRemoveUntil(AppRoutes.login, (_) => false);
+                  },
+                );
+              },
+            ),
+          ),
         ),
       ),
     );

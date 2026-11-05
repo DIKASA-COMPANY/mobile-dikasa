@@ -1,4 +1,5 @@
 import 'widgets/payment_success_view.dart';
+import 'package:mobile_dikasa/components/navigation_sidebar.dart';
 import '../cash_movement/view.dart';
 import '../account/view.dart';
 import 'package:mobile_dikasa/features/report/main.dart';
@@ -27,7 +28,8 @@ import 'package:mobile_dikasa/features/product/view.dart';
 ///
 /// Kiri berisi katalog produk, kanan berisi pesanan yang sedang disusun.
 class NewOrderView extends StatefulWidget {
-  const NewOrderView({super.key});
+  const NewOrderView({super.key, this.attendanceBuilder});
+  final WidgetBuilder? attendanceBuilder;
 
   @override
   State<NewOrderView> createState() => _NewOrderViewState();
@@ -146,12 +148,36 @@ class _NewOrderViewState extends State<NewOrderView> {
   }
 
   Future<void> _onMenuPressed() async {
-    final openCatalog = await showModalBottomSheet<bool>(
+    final openCatalog = await showDialog<bool>(
       context: context,
-      builder: (c) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+      builder: (c) => Align(
+        alignment: Alignment.centerLeft,
+        child: NavigationSidebar(
+          destinations: [
+            if (widget.attendanceBuilder != null)
+              ListTile(
+                leading: const Icon(Icons.groups_outlined),
+                title: const Text('Pegawai'),
+                onTap: () {
+                  Navigator.pop(c, false);
+                  if (_viewModel.isPaying ||
+                      _viewModel.paymentUncertain ||
+                      _viewModel.draftLocked) {
+                    showAppSnackBar(
+                      context,
+                      'Selesaikan operasi kasir yang sedang berjalan.',
+                    );
+                    return;
+                  }
+                  final builder = widget.attendanceBuilder;
+                  if (builder != null) {
+                    Navigator.push<void>(
+                      context,
+                      MaterialPageRoute(builder: builder),
+                    );
+                  }
+                },
+              ),
             ListTile(
               leading: const Icon(Icons.account_balance_wallet_outlined),
               title: const Text('Kas Kasir / Uang Masuk-Keluar'),

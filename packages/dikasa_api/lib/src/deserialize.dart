@@ -1,6 +1,17 @@
 import 'package:dikasa_api/src/model/activity_data.dart';
 import 'package:dikasa_api/src/model/activity_meta.dart';
 import 'package:dikasa_api/src/model/activity_page.dart';
+import 'package:dikasa_api/src/model/attendance_biometric_input_body.dart';
+import 'package:dikasa_api/src/model/attendance_challenge_input_body.dart';
+import 'package:dikasa_api/src/model/attendance_challenge_output_body.dart';
+import 'package:dikasa_api/src/model/attendance_employee.dart';
+import 'package:dikasa_api/src/model/attendance_enrollment_request.dart';
+import 'package:dikasa_api/src/model/attendance_history_output_body.dart';
+import 'package:dikasa_api/src/model/attendance_output_body.dart';
+import 'package:dikasa_api/src/model/attendance_pin_request.dart';
+import 'package:dikasa_api/src/model/attendance_record.dart';
+import 'package:dikasa_api/src/model/attendance_staff_output_body.dart';
+import 'package:dikasa_api/src/model/attendance_status_output_body.dart';
 import 'package:dikasa_api/src/model/avatar_upload_intent_data.dart';
 import 'package:dikasa_api/src/model/avatar_upload_intent_output_body.dart';
 import 'package:dikasa_api/src/model/avatar_upload_intent_request.dart';
@@ -15,6 +26,7 @@ import 'package:dikasa_api/src/model/categories_output_body.dart';
 import 'package:dikasa_api/src/model/category_data.dart';
 import 'package:dikasa_api/src/model/category_output_body.dart';
 import 'package:dikasa_api/src/model/category_request.dart';
+import 'package:dikasa_api/src/model/challenge.dart';
 import 'package:dikasa_api/src/model/change_pin_request.dart';
 import 'package:dikasa_api/src/model/change_password_request.dart';
 import 'package:dikasa_api/src/model/close_command.dart';
@@ -155,6 +167,45 @@ ReturnType deserialize<ReturnType, BaseType>(
       return ActivityMeta.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'ActivityPage':
       return ActivityPage.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'AttendanceBiometricInputBody':
+      return AttendanceBiometricInputBody.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AttendanceChallengeInputBody':
+      return AttendanceChallengeInputBody.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AttendanceChallengeOutputBody':
+      return AttendanceChallengeOutputBody.fromJson(
+            value as Map<String, dynamic>,
+          )
+          as ReturnType;
+    case 'AttendanceEmployee':
+      return AttendanceEmployee.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AttendanceEnrollmentRequest':
+      return AttendanceEnrollmentRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AttendanceHistoryOutputBody':
+      return AttendanceHistoryOutputBody.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AttendanceOutputBody':
+      return AttendanceOutputBody.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AttendancePINRequest':
+      return AttendancePINRequest.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AttendanceRecord':
+      return AttendanceRecord.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AttendanceStaffOutputBody':
+      return AttendanceStaffOutputBody.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
+    case 'AttendanceStatusOutputBody':
+      return AttendanceStatusOutputBody.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
     case 'AvatarUploadIntentData':
       return AvatarUploadIntentData.fromJson(value as Map<String, dynamic>)
           as ReturnType;
@@ -197,6 +248,8 @@ ReturnType deserialize<ReturnType, BaseType>(
     case 'CategoryRequest':
       return CategoryRequest.fromJson(value as Map<String, dynamic>)
           as ReturnType;
+    case 'Challenge':
+      return Challenge.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'ChangePINRequest':
       return ChangePINRequest.fromJson(value as Map<String, dynamic>)
           as ReturnType;

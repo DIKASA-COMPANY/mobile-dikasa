@@ -7,6 +7,7 @@ import 'package:dikasa_api/src/auth/api_key_auth.dart';
 import 'package:dikasa_api/src/auth/basic_auth.dart';
 import 'package:dikasa_api/src/auth/bearer_auth.dart';
 import 'package:dikasa_api/src/auth/oauth.dart';
+import 'package:dikasa_api/src/api/absensi_api.dart';
 import 'package:dikasa_api/src/api/autentikasi_api.dart';
 import 'package:dikasa_api/src/api/jenis_order_api.dart';
 import 'package:dikasa_api/src/api/kas_kasir_api.dart';
@@ -144,6 +145,12 @@ class DikasaApi {
           .apiKeys
           .remove(name);
     }
+  }
+
+  /// Get AbsensiApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  AbsensiApi getAbsensiApi() {
+    return AbsensiApi(dio);
   }
 
   /// Get AutentikasiApi instance, base route and serializer can be overridden by a given but be careful,
